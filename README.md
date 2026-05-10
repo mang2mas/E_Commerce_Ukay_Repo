@@ -1,8 +1,3 @@
-# E_Commerce_Ukay_Repo
+# Backend Changes
 
-Members:
-Abalo Joshua,
-Buerano Sean,
-Flordeliza Tomas,
-Ronquillo Jenmarc,
-Sumile Alleah,
+Created Initial Classes, Functions, and Basic/Traditional Code Skeleton
