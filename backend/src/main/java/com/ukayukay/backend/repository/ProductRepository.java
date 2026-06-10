@@ -1,9 +1,13 @@
 package com.ukayukay.backend.repository;
 
-import com.ukayukay.backend.entity.Product;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import java.util.List;
 
-@Repository
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.ukayukay.backend.entity.Product;
+
 public interface ProductRepository extends JpaRepository<Product, Integer> {
+    List<Product> findByStatus(String status); 
+    
+    List<Product> findByCategoryAndStatus(String category, String status);
 }

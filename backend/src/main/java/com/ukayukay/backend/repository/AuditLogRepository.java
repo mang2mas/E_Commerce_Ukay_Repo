@@ -1,12 +1,9 @@
 package com.ukayukay.backend.repository;
-import java.util.List;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import com.ukayukay.backend.entity.AuditLog;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
 
-@Repository
-public interface AuditLogRepository extends JpaRepository<AuditLog, Integer>{
-    List<AuditLog> findByAdminId(Integer adminId);
+public interface AuditLogRepository extends JpaRepository<AuditLog, Integer> {
+    List<AuditLog> findByOrderByTimestampDesc();
 }

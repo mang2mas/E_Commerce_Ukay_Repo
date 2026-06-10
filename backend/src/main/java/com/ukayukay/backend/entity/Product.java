@@ -1,8 +1,14 @@
 package com.ukayukay.backend.entity;
 
-import jakarta.persistence.*;
-import lombok.Data;
 import java.math.BigDecimal;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
 @Table(name = "products")
@@ -31,4 +37,13 @@ public class Product {
 
     @Column(name = "image_path")
     private String imagePath;
+
+    @Column(name = "size", length = 10)
+    private String size;
+
+    @Column(name = "item_condition", length = 20)
+    private String itemCondition; 
+
+    @Column(name = "status", nullable = false, length = 20)
+    private String status = "AVAILABLE"; 
 }

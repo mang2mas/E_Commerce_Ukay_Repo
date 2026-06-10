@@ -1,6 +1,13 @@
 package com.ukayukay.backend.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
@@ -32,8 +39,12 @@ public class User {
     @Column(name = "is_discount_elig")
     private Boolean isDiscountElig = false;
 
+    // ADDED: To satisfy the prof's requirement for different calculation types (SENIOR, PWD, NONE)
+    @Column(name = "discount_type", length = 20)
+    private String discountType = "NONE"; // Default to NONE if not eligible
+
     @Column(name = "id_number", length = 50)
-    private String idNumber;
+    private String idNumber; // For storing Senior Citizen ID or PWD ID number
 
     public enum UserRole {
         buyer, admin, seller

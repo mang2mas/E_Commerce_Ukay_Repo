@@ -5,9 +5,13 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -20,11 +24,13 @@ public class Order {
     @Column(name = "order_id")
     private Integer orderId;
 
-    @Column(name = "customer_id", nullable = false)
-    private Integer customerId;
+    // Relates this order to the User who purchased it
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private User customer;
 
     @Column(name = "order_status", length = 50)
-    private String orderStatus;
+    private String orderStatus = "PENDING"; // PENDING, TO_SHIP, TO_RECEIVE, COMPLETED
 
     @Column(name = "base_amount", precision = 10, scale = 2)
     private BigDecimal baseAmount;
@@ -41,13 +47,17 @@ public class Order {
     @Column(name = "total_amount", precision = 10, scale = 2)
     private BigDecimal totalAmount;
 
-    @Column(name = "shipping_address", columnDefinition = "TEXT")
+    @Column(name = "shipping_address", columnDefinition = "TEXT", nullable = false)
     private String shippingAddress;
 
-    @Column(name = "payment_method", length = 50)
-    private String paymentMethod;
+    @Column(name = "payment_method", length = 50, nullable = false)
+    private String paymentMethod; // GCash, Maya, COD, etc.
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }
