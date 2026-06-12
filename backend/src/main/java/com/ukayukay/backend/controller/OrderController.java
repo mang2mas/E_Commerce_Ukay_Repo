@@ -3,7 +3,6 @@ package com.ukayukay.backend.controller;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +22,11 @@ import com.ukayukay.backend.service.OrderService;
 @CrossOrigin(origins = "*")
 public class OrderController {
 
-    @Autowired private OrderService orderService;
+    private final OrderService orderService;
+
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
 
     @PostMapping("/checkout/{userId}")
     public ResponseEntity<?> placeOrder(@PathVariable Integer userId, @RequestBody Map<String, String> request) {
@@ -36,7 +39,6 @@ public class OrderController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
 
     @GetMapping("/customer/{userId}")
     public List<Order> getCustomerHistory(@PathVariable Integer userId) {

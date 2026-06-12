@@ -39,9 +39,17 @@ public class User {
     @Column(name = "is_discount_elig")
     private Boolean isDiscountElig = false;
 
-    // ADDED: To satisfy the prof's requirement for different calculation types (SENIOR, PWD, NONE)
     @Column(name = "discount_type", length = 20)
-    private String discountType = "NONE"; // Default to NONE if not eligible
+    private String discountType = "NONE";
+
+    @Column(name = "business_name", length = 100)
+    private String businessName;
+
+    @Column(name = "business_description", columnDefinition = "TEXT")
+    private String businessDescription;
+
+    @Column(name = "seller_approved")
+    private Boolean sellerApproved = false;
 
     @Column(name = "id_number", length = 50)
     private String idNumber; // For storing Senior Citizen ID or PWD ID number

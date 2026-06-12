@@ -137,6 +137,50 @@ $(function(){
       .fail(function(xhr){ alert('Checkout failed: ' + xhr.responseText); });
   });
 
+  // --- Seller product form ---
+  function setSellerSection(user){
+    if(user && user.role === 'seller'){
+      $('#seller-section').show();
+      const approved = user.sellerApproved === true;
+      $('#sellerStatus').text(approved ? 'Seller is approved and can add products.' : 'Seller is not approved yet.');
+      if(approved){ $('#sellerProductForm').show(); }
+      else { $('#sellerProductForm').hide(); }
+    } else {
+      $('#seller-section').hide();
+    }
+  }
+
+  $('#sellerProductForm').on('submit', function(e){
+    e.preventDefault();
+    if(!currentUserId){ alert('Please login first'); return; }
+
+    const payload = {
+      itemName: $('#productName').val(),
+      category: $('#productCategory').val(),
+      price: parseFloat($('#productPrice').val()),
+      stockQuantity: parseInt($('#productStock').val(), 10),
+      size: $('#productSize').val(),
+      itemCondition: $('#productCondition').val(),
+      imagePath: $('#productImagePath').val(),
+      description: $('#productDescription').val()
+    };
+
+    $.ajax({
+      url: '/api/products/seller/' + currentUserId,
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(payload)
+    })
+      .done(function(){
+        $('#sellerProductStatus').text('Product added successfully.');
+        $('#sellerProductForm')[0].reset();
+        loadProducts();
+      })
+      .fail(function(xhr){
+        $('#sellerProductStatus').text('Add product failed: ' + xhr.responseText);
+      });
+  });
+
   // --- Seller requests ---
   function renderSellerRequests(list){
     const $c = $('#sellerRequests').empty();

@@ -2,9 +2,11 @@ body { font-family: Arial, sans-serif; margin: 20px; }
 h1 { color: #2c3e50; }
 #orders .order { border: 1px solid #ddd; padding: 8px; margin: 6px 0; border-radius: 4px; }
 #orders .order button { margin-top: 6px; }
+.product, .cart-item, .order { border: 1px solid #ddd; padding: 8px; margin: 6px 0; border-radius: 4px; }
 section { margin-bottom: 20px; }
-form input, form select { width: 100%; max-width: 360px; padding: 6px; margin-top: 6px; }
+form input, form select, form textarea { width: 100%; max-width: 360px; padding: 6px; margin-top: 6px; }
 button { padding: 8px 12px; cursor: pointer; }
+#loginStatus, #registerStatus, #sellerStatus, #sellerProductStatus { margin-top: 10px; color: #333; }
 .product, .cart-item { border: 1px solid #eee; padding: 8px; margin: 6px 0; border-radius: 4px; }
 .product button, .cart-item button { margin-left: 8px; }
 .flex { display: flex; gap: 12px; align-items: center; }

@@ -12,6 +12,7 @@
 
   <section id="login-section">
     <h2>Login</h2>
+    <p>Demo verified seller account: <strong>seller@example.com</strong> / <strong>seller123</strong></p>
     <form id="loginForm">
       <label>Email<br>
         <input type="email" id="email" required>
@@ -48,6 +49,16 @@
         </select>
       </label>
       <br>
+      <div id="sellerFields" style="display:none;">
+        <label>Business name<br>
+          <input type="text" id="registerBusinessName">
+        </label>
+        <br>
+        <label>Business description<br>
+          <textarea id="registerBusinessDescription" rows="3"></textarea>
+        </label>
+        <br>
+      </div>
       <button type="submit">Register</button>
       <div id="registerStatus"></div>
     </form>
@@ -110,6 +121,47 @@
       </label>
       <br>
       <button type="submit">Place Order</button>
+    </form>
+  </section>
+
+  <section id="seller-section" style="display:none;">
+    <h2>Seller Dashboard</h2>
+    <div id="sellerStatus"></div>
+    <form id="sellerProductForm" style="display:none;">
+      <label>Product name<br>
+        <input type="text" id="productName" required>
+      </label>
+      <br>
+      <label>Category<br>
+        <input type="text" id="productCategory" required>
+      </label>
+      <br>
+      <label>Price<br>
+        <input type="number" id="productPrice" step="0.01" required>
+      </label>
+      <br>
+      <label>Stock quantity<br>
+        <input type="number" id="productStock" min="1" value="1" required>
+      </label>
+      <br>
+      <label>Size<br>
+        <input type="text" id="productSize">
+      </label>
+      <br>
+      <label>Condition<br>
+        <input type="text" id="productCondition">
+      </label>
+      <br>
+      <label>Image path<br>
+        <input type="text" id="productImagePath">
+      </label>
+      <br>
+      <label>Description<br>
+        <textarea id="productDescription" rows="4"></textarea>
+      </label>
+      <br>
+      <button type="submit">Add Product</button>
+      <div id="sellerProductStatus"></div>
     </form>
   </section>
 
