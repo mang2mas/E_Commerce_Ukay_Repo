@@ -1,6 +1,7 @@
 package com.ukayukay.backend.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,8 +14,7 @@ import com.ukayukay.backend.service.AuthService;
 
 @RestController
 @RequestMapping("/api/auth")
-
-
+@CrossOrigin(origins = "*")
 public class AuthController {
     @Autowired
     private AuthService authService;
@@ -22,8 +22,7 @@ public class AuthController {
     private AuditLogService auditLogService;
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User newUser) {
-        // Here, the waiter hands the new user data to the Kitchen (Service) to save
-        return ResponseEntity.ok(authService.register(newUser)); 
+        return ResponseEntity.ok(authService.register(newUser));
     }
 
     @PostMapping("/login")

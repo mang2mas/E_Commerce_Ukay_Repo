@@ -50,7 +50,9 @@ public class OrderService {
             if ("SOLD".equalsIgnoreCase(item.getProduct().getStatus())) {
                 throw new RuntimeException("Item '" + item.getProduct().getItemName() + "' is already sold!");
             }
-            baseAmount = baseAmount.add(item.getProduct().getPrice());
+            int quantity = item.getQuantity() == null ? 1 : item.getQuantity();
+            BigDecimal itemTotal = item.getProduct().getPrice().multiply(BigDecimal.valueOf(quantity));
+            baseAmount = baseAmount.add(itemTotal);
         }
 
         BigDecimal discountAmount = BigDecimal.ZERO;
@@ -80,12 +82,14 @@ public class OrderService {
         // FIX LOGIC: Process inventory changes AND save receipt history entry
         for (Cart item : cartItems) {
             Product prod = item.getProduct();
-            
+            int quantity = item.getQuantity() == null ? 1 : item.getQuantity();
+
             // 1. Log this item snapshot into the OrderItems history table
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(savedOrder);
             orderItem.setProduct(prod);
             orderItem.setPriceAtPurchase(prod.getPrice()); // Freeze price at this instant
+            orderItem.setQuantity(quantity);
             orderItemRepository.save(orderItem);
 
             // 2. Flip stock status

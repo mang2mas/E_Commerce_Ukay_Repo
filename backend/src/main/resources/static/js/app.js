@@ -84,9 +84,37 @@ $(function(){
     const email = $('#email').val();
     const password = $('#password').val();
     $('#loginStatus').text('Logging in…');
-    $.get('/api/auth/login', { email: email, password: password })
+    $.ajax({
+      url: '/api/auth/login',
+      method: 'POST',
+      data: { email: email, password: password }
+    })
       .done(function(user){ setLoggedIn(user); })
       .fail(function(xhr){ $('#loginStatus').text('Login failed: ' + xhr.responseText); });
+  });
+
+  // --- Register ---
+  $('#registerForm').on('submit', function(e){
+    e.preventDefault();
+    const payload = {
+      fullName: $('#registerName').val(),
+      email: $('#registerEmail').val(),
+      password: $('#registerPassword').val(),
+      role: $('#registerRole').val()
+    };
+    $('#registerStatus').text('Registering…');
+    $.ajax({
+      url: '/api/auth/register',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(payload)
+    })
+      .done(function(user){
+        $('#registerStatus').text('Registration successful! You can now log in.');
+      })
+      .fail(function(xhr){
+        $('#registerStatus').text('Register failed: ' + xhr.responseText);
+      });
   });
 
   // --- Checkout ---
