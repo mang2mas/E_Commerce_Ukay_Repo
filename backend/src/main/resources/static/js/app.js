@@ -1,11 +1,21 @@
 $(function(){
   let currentUserId = null;
+  let currentUserRole = null;
 
   function setLoggedIn(user){
     currentUserId = user ? user.userId || user.userID || user.id : null;
-    $('#loginStatus').text(currentUserId ? 'Logged in as ' + (user.fullName || user.email) : 'Not logged in');
+    currentUserRole = user ? user.role : null;
+    $('#loginStatus').text(currentUserId ? 'Logged in as ' + (user.fullName || user.email) + ' (' + (currentUserRole||'') + ')' : 'Not logged in');
     if(currentUserId){ loadProducts(); loadCart(); loadOrders(); }
     else { $('#products').text('Please login to see products.'); $('#cart').text('Not logged in.'); $('#orders').text('Not logged in.'); }
+
+    // Show seller UI when logged in as seller
+    if(currentUserRole === 'seller'){
+      $('#seller-section').show();
+      loadSellerRequests();
+    } else {
+      $('#seller-section').hide();
+    }
   }
 
   // --- Products ---
@@ -169,6 +179,45 @@ $(function(){
       .fail(function(xhr){
         $('#sellerProductStatus').text('Add product failed: ' + xhr.responseText);
       });
+  });
+
+  // --- Seller requests ---
+  function renderSellerRequests(list){
+    const $c = $('#sellerRequests').empty();
+    if(!list || list.length === 0){ $c.text('No requests found.'); return; }
+    list.forEach(r => {
+      const $card = $('<div>').addClass('request');
+      $card.append($('<div>').text('Request #' + (r.requestId || r.id || 'N/A') + ' — Status: ' + (r.status || 'PENDING')));
+      $card.append($('<div>').text('Business: ' + (r.businessName || '')));
+      $card.append($('<div>').text('Description: ' + (r.businessDescription || '')));
+      $card.append($('<div>').text('Permit: ' + (r.businessPermit || '')));
+      $card.append($('<div>').text('Notes: ' + (r.notes || '')));
+      $c.append($card);
+    });
+  }
+
+  function loadSellerRequests(){
+    if(!currentUserId){ $('#sellerRequests').text('Not logged in.'); return; }
+    $('#sellerRequests').text('Loading requests…');
+    $.get('/api/seller/requests?userId=' + currentUserId)
+      .done(renderSellerRequests)
+      .fail(function(xhr){ $('#sellerRequests').text('Failed to load requests: ' + xhr.responseText); });
+  }
+
+  $('#sellerRequestForm').on('submit', function(e){
+    e.preventDefault();
+    if(!currentUserId){ alert('Please login as a seller'); return; }
+    const payload = {
+      userId: currentUserId,
+      businessName: $('#bizName').val(),
+      businessDescription: $('#bizDescription').val(),
+      businessPermit: $('#bizPermit').val(),
+      notes: $('#bizNotes').val()
+    };
+    $('#sellerRequestStatus').text('Submitting…');
+    $.ajax({ url: '/api/seller/request', method: 'POST', contentType: 'application/json', data: JSON.stringify(payload) })
+      .done(function(){ $('#sellerRequestStatus').text('Submitted.'); $('#sellerRequestForm')[0].reset(); loadSellerRequests(); })
+      .fail(function(xhr){ $('#sellerRequestStatus').text('Submit failed: ' + xhr.responseText); });
   });
 
   // Start state
