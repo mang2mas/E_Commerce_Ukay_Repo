@@ -43,6 +43,15 @@ public class User {
     @Column(name = "discount_type", length = 20)
     private String discountType = "NONE"; // Default to NONE if not eligible
 
+    @Column(name = "business_name", length = 100)
+    private String businessName;
+
+    @Column(name = "business_description", columnDefinition = "TEXT")
+    private String businessDescription;
+
+    @Column(name = "seller_approved")
+    private Boolean sellerApproved = false;
+
     @Column(name = "id_number", length = 50)
     private String idNumber; // For storing Senior Citizen ID or PWD ID number
 

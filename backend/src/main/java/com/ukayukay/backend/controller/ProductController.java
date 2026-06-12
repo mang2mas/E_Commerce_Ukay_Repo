@@ -46,6 +46,11 @@ public class ProductController {
         return productService.createProduct(product);
     }
 
+    @PostMapping("/seller/{sellerId}")
+    public Product addProductAsSeller(@PathVariable Integer sellerId, @RequestBody Product product) {
+        return productService.createProductForSeller(sellerId, product);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Integer id, @RequestBody Product product) {
         return ResponseEntity.ok(productService.updateProduct(id, product));
