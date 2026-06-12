@@ -46,6 +46,21 @@ public class User {
     @Column(name = "id_number", length = 50)
     private String idNumber; // For storing Senior Citizen ID or PWD ID number
 
+
+    public enum VerificationStatus {
+        PENDING, APPROVED, REJECTED
+    }
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "verification_status")
+    private VerificationStatus verificationStatus = VerificationStatus.PENDING;
+
+    @Column(name = "business_permit_url")
+    private String businessPermitUrl; // Stores image path/link of uploaded document
+
+    @Column(name = "is_active")
+    private Boolean isActive = true; 
+
     public enum UserRole {
         buyer, admin, seller
     }

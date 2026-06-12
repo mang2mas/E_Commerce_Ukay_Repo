@@ -24,6 +24,14 @@ public class AuthService {
 
         // 3. If everything is correct, return the user. 
         // The user object will naturally contain their "role" (Customer/Admin) flag!
+
+        if (!user.getPassword().equals(password)) {
+            throw new RuntimeException("Invalid password!");
+        }
+
+        if (user.getIsActive() != null && !user.getIsActive()) {
+            throw new RuntimeException("Your account has been suspended by administration.");
+        }
         return user;
     }
     public User register(User newUser) {

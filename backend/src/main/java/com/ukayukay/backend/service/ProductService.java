@@ -14,6 +14,8 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private AuditLogService auditLogService; // 🆕 Injected to support moderation tracing
 
     public List<Product> getAvailableProducts() {
         return productRepository.findByStatus("AVAILABLE");
@@ -28,10 +30,24 @@ public class ProductService {
                 .orElseThrow(() -> new RuntimeException("Product not found with ID: " + id));
     }
 
-
     public Product createProduct(Product product) {
-        product.setStatus("AVAILABLE"); // New items default to available
+        // 🔄 CHANGED: New thrift items now hold for moderation instead of posting live instantly
+        product.setStatus("PENDING_APPROVAL"); 
         return productRepository.save(product);
+    }
+
+    // 🆕 ADDED: Moderation method to handle Admin approvals/rejections
+    public Product moderateProduct(Integer productId, String newStatus, Integer adminId) {
+        Product product = getProductById(productId);
+        
+        // Update the operational state (e.g., "AVAILABLE" or "REJECTED")
+        product.setStatus(newStatus.toUpperCase());
+        Product updatedProduct = productRepository.save(product);
+        
+        // Push a fresh log footprint into your audit table
+        auditLogService.logAction(adminId, "PRODUCT_MODERATION_" + newStatus.toUpperCase(), "products");
+        
+        return updatedProduct;
     }
 
     public Product updateProduct(Integer id, Product updatedProduct) {
