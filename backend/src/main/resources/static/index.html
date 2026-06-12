@@ -53,6 +53,33 @@
     </form>
   </section>
 
+  <section id="seller-section" style="display:none;">
+    <h2>Seller — Business Approval Request</h2>
+    <form id="sellerRequestForm">
+      <label>Business name<br>
+        <input type="text" id="bizName" required>
+      </label>
+      <br>
+      <label>Business description<br>
+        <textarea id="bizDescription" rows="4" cols="40" required></textarea>
+      </label>
+      <br>
+      <label>Business permit (URL or filename)<br>
+        <input type="text" id="bizPermit">
+      </label>
+      <br>
+      <label>Notes<br>
+        <textarea id="bizNotes" rows="3" cols="40"></textarea>
+      </label>
+      <br>
+      <button type="submit">Submit Business Request</button>
+      <div id="sellerRequestStatus"></div>
+    </form>
+
+    <h3>Your Requests</h3>
+    <div id="sellerRequests">Not loaded.</div>
+  </section>
+
   <section id="products-section">
     <h2>Products</h2>
     <div id="products">Loading products…</div>
