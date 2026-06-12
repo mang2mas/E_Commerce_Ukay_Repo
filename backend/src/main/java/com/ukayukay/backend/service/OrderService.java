@@ -8,10 +8,12 @@ import org.springframework.stereotype.Service;
 
 import com.ukayukay.backend.entity.Cart;
 import com.ukayukay.backend.entity.Order;
+import com.ukayukay.backend.entity.OrderItem; // Import added
 import com.ukayukay.backend.entity.Product;
 import com.ukayukay.backend.entity.User;
 import com.ukayukay.backend.repository.CartRepository;
-import com.ukayukay.backend.repository.OrderRepository;
+import com.ukayukay.backend.repository.OrderItemRepository;
+import com.ukayukay.backend.repository.OrderRepository; // Import added
 import com.ukayukay.backend.repository.ProductRepository;
 import com.ukayukay.backend.repository.UserRepository;
 
@@ -24,6 +26,7 @@ public class OrderService {
     @Autowired private CartRepository cartRepository;
     @Autowired private UserRepository userRepository;
     @Autowired private ProductRepository productRepository;
+    @Autowired private OrderItemRepository orderItemRepository; // Injected new repository
 
     @Transactional
     public Order checkout(Integer userId, String shippingAddress, String paymentMethod) {
@@ -50,19 +53,15 @@ public class OrderService {
             baseAmount = baseAmount.add(item.getProduct().getPrice());
         }
 
-       BigDecimal discountAmount = BigDecimal.ZERO;
+        BigDecimal discountAmount = BigDecimal.ZERO;
         if (customer.getIsDiscountElig() != null && customer.getIsDiscountElig() && 
-        ("SENIOR".equalsIgnoreCase(customer.getDiscountType()) || "PWD".equalsIgnoreCase(customer.getDiscountType()))) {
-    
-    discountAmount = baseAmount.multiply(new BigDecimal("0.20"));
-}
+            ("SENIOR".equalsIgnoreCase(customer.getDiscountType()) || "PWD".equalsIgnoreCase(customer.getDiscountType()))) {
+            discountAmount = baseAmount.multiply(new BigDecimal("0.20"));
+        }
 
         BigDecimal discountedBase = baseAmount.subtract(discountAmount);
-
         BigDecimal taxAmount = discountedBase.multiply(new BigDecimal("0.12"));
-
         BigDecimal shippingFee = new BigDecimal("100.00");
-
         BigDecimal totalAmount = discountedBase.add(taxAmount).add(shippingFee);
 
         Order order = new Order();
@@ -78,10 +77,22 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
+        // FIX LOGIC: Process inventory changes AND save receipt history entry
         for (Cart item : cartItems) {
             Product prod = item.getProduct();
+            
+            // 1. Log this item snapshot into the OrderItems history table
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrder(savedOrder);
+            orderItem.setProduct(prod);
+            orderItem.setPriceAtPurchase(prod.getPrice()); // Freeze price at this instant
+            orderItemRepository.save(orderItem);
+
+            // 2. Flip stock status
             prod.setStatus("SOLD");
             productRepository.save(prod);
+            
+            // 3. Clear from shopping cart
             cartRepository.delete(item);
         }
 
