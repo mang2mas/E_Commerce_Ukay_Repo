@@ -2,7 +2,6 @@ package com.ukayukay.backend.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 
 import com.ukayukay.backend.entity.User;
 import com.ukayukay.backend.repository.UserRepository;
