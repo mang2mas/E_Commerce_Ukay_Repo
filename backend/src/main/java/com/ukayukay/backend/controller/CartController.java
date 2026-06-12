@@ -2,7 +2,6 @@ package com.ukayukay.backend.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,14 +14,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ukayukay.backend.entity.Cart;
 import com.ukayukay.backend.service.CartService;
+import com.ukayukay.backend.util.AppConstants;
 
 @RestController
 @RequestMapping("/api/cart")
 @CrossOrigin(origins = "*")
 public class CartController {
 
-    @Autowired
-    private CartService cartService;
+    private final CartService cartService;
+
+    public CartController(CartService cartService) {
+        this.cartService = cartService;
+    }
 
     @GetMapping("/user/{userId}")
     public List<Cart> getCart(@PathVariable Integer userId) {
@@ -42,6 +45,6 @@ public class CartController {
     @DeleteMapping("/{cartId}")
     public ResponseEntity<String> removeFromCart(@PathVariable Integer cartId) {
         cartService.removeFromCart(cartId);
-        return ResponseEntity.ok("Item removed from cart successfully.");
+        return ResponseEntity.ok(AppConstants.ITEM_REMOVED_CART);
     }
 }

@@ -3,103 +3,70 @@ package com.ukayukay.backend.service;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ukayukay.backend.entity.Cart;
 import com.ukayukay.backend.entity.Order;
-import com.ukayukay.backend.entity.OrderItem; // Import added
+import com.ukayukay.backend.entity.OrderItem;
 import com.ukayukay.backend.entity.Product;
 import com.ukayukay.backend.entity.User;
 import com.ukayukay.backend.repository.CartRepository;
 import com.ukayukay.backend.repository.OrderItemRepository;
-import com.ukayukay.backend.repository.OrderRepository; // Import added
+import com.ukayukay.backend.repository.OrderRepository;
 import com.ukayukay.backend.repository.ProductRepository;
 import com.ukayukay.backend.repository.UserRepository;
+import com.ukayukay.backend.util.AppConstants;
 
 import jakarta.transaction.Transactional;
 
 @Service
 public class OrderService {
 
-    @Autowired private OrderRepository orderRepository;
-    @Autowired private CartRepository cartRepository;
-    @Autowired private UserRepository userRepository;
-    @Autowired private ProductRepository productRepository;
-    @Autowired private OrderItemRepository orderItemRepository; // Injected new repository
+    private final OrderRepository orderRepository;
+    private final CartRepository cartRepository;
+    private final UserRepository userRepository;
+    private final ProductRepository productRepository;
+    private final OrderItemRepository orderItemRepository;
+
+    public OrderService(OrderRepository orderRepository, CartRepository cartRepository,
+                       UserRepository userRepository, ProductRepository productRepository,
+                       OrderItemRepository orderItemRepository) {
+        this.orderRepository = orderRepository;
+        this.cartRepository = cartRepository;
+        this.userRepository = userRepository;
+        this.productRepository = productRepository;
+        this.orderItemRepository = orderItemRepository;
+    }
 
     @Transactional
     public Order checkout(Integer userId, String shippingAddress, String paymentMethod) {
         if (shippingAddress == null || shippingAddress.trim().isEmpty()) {
-            throw new RuntimeException("Billing and Shipping Address information is mandatory!");
+            throw new RuntimeException(AppConstants.ADDRESS_REQUIRED);
         }
         if (paymentMethod == null || paymentMethod.trim().isEmpty()) {
-            throw new RuntimeException("Payment Method selection is mandatory!");
+            throw new RuntimeException(AppConstants.PAYMENT_METHOD_REQUIRED);
         }
 
         User customer = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Customer profile not found"));
+                .orElseThrow(() -> new RuntimeException(
+                    String.format(AppConstants.USER_NOT_FOUND, userId)));
 
         List<Cart> cartItems = cartRepository.findByUser_UserId(userId);
         if (cartItems.isEmpty()) {
-            throw new RuntimeException("Your shopping cart is empty!");
+            throw new RuntimeException(AppConstants.CART_EMPTY);
         }
 
-        BigDecimal baseAmount = BigDecimal.ZERO;
-        for (Cart item : cartItems) {
-            if ("SOLD".equalsIgnoreCase(item.getProduct().getStatus())) {
-                throw new RuntimeException("Item '" + item.getProduct().getItemName() + "' is already sold!");
-            }
-            int quantity = item.getQuantity() == null ? 1 : item.getQuantity();
-            BigDecimal itemTotal = item.getProduct().getPrice().multiply(BigDecimal.valueOf(quantity));
-            baseAmount = baseAmount.add(itemTotal);
-        }
-
-        BigDecimal discountAmount = BigDecimal.ZERO;
-        if (customer.getIsDiscountElig() != null && customer.getIsDiscountElig() && 
-            ("SENIOR".equalsIgnoreCase(customer.getDiscountType()) || "PWD".equalsIgnoreCase(customer.getDiscountType()))) {
-            discountAmount = baseAmount.multiply(new BigDecimal("0.20"));
-        }
-
+        BigDecimal baseAmount = calculateBaseAmount(cartItems);
+        BigDecimal discountAmount = calculateDiscount(customer, baseAmount);
         BigDecimal discountedBase = baseAmount.subtract(discountAmount);
-        BigDecimal taxAmount = discountedBase.multiply(new BigDecimal("0.12"));
-        BigDecimal shippingFee = new BigDecimal("100.00");
-        BigDecimal totalAmount = discountedBase.add(taxAmount).add(shippingFee);
+        BigDecimal taxAmount = discountedBase.multiply(AppConstants.TAX_RATE);
+        BigDecimal totalAmount = discountedBase.add(taxAmount).add(AppConstants.SHIPPING_FEE);
 
-        Order order = new Order();
-        order.setCustomer(customer);
-        order.setBaseAmount(baseAmount);
-        order.setDiscountAmount(discountAmount);
-        order.setTaxAmount(taxAmount);
-        order.setShippingFee(shippingFee);
-        order.setTotalAmount(totalAmount);
-        order.setShippingAddress(shippingAddress);
-        order.setPaymentMethod(paymentMethod);
-        order.setOrderStatus("PENDING");
-
+        Order order = createOrder(customer, shippingAddress, paymentMethod, 
+                                 baseAmount, discountAmount, taxAmount, totalAmount);
         Order savedOrder = orderRepository.save(order);
 
-        // FIX LOGIC: Process inventory changes AND save receipt history entry
-        for (Cart item : cartItems) {
-            Product prod = item.getProduct();
-            int quantity = item.getQuantity() == null ? 1 : item.getQuantity();
-
-            // 1. Log this item snapshot into the OrderItems history table
-            OrderItem orderItem = new OrderItem();
-            orderItem.setOrder(savedOrder);
-            orderItem.setProduct(prod);
-            orderItem.setPriceAtPurchase(prod.getPrice()); // Freeze price at this instant
-            orderItem.setQuantity(quantity);
-            orderItemRepository.save(orderItem);
-
-            // 2. Flip stock status
-            prod.setStatus("SOLD");
-            productRepository.save(prod);
-            
-            // 3. Clear from shopping cart
-            cartRepository.delete(item);
-        }
-
+        processCartItems(cartItems, savedOrder);
         return savedOrder;
     }
 
@@ -113,8 +80,80 @@ public class OrderService {
 
     public Order updateOrderStatus(Integer orderId, String newStatus) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order record matching ID not found"));
+                .orElseThrow(() -> new RuntimeException(AppConstants.ORDER_NOT_FOUND));
         order.setOrderStatus(newStatus.toUpperCase());
         return orderRepository.save(order);
+    }
+
+    private BigDecimal calculateBaseAmount(List<Cart> cartItems) {
+        BigDecimal baseAmount = BigDecimal.ZERO;
+        for (Cart item : cartItems) {
+            if (AppConstants.PRODUCT_STATUS_SOLD.equalsIgnoreCase(item.getProduct().getStatus())) {
+                throw new RuntimeException(
+                    String.format("Item '%s' is already sold!", item.getProduct().getItemName()));
+            }
+            int quantity = item.getQuantity() == null ? 1 : item.getQuantity();
+            BigDecimal itemTotal = item.getProduct().getPrice()
+                    .multiply(BigDecimal.valueOf(quantity));
+            baseAmount = baseAmount.add(itemTotal);
+        }
+        return baseAmount;
+    }
+
+    private BigDecimal calculateDiscount(User customer, BigDecimal baseAmount) {
+        if (customer.getIsDiscountElig() != null && customer.getIsDiscountElig() && 
+            isEligibleForDiscount(customer.getDiscountType())) {
+            return baseAmount.multiply(AppConstants.DISCOUNT_RATE);
+        }
+        return BigDecimal.ZERO;
+    }
+
+    private boolean isEligibleForDiscount(String discountType) {
+        return "SENIOR".equalsIgnoreCase(discountType) || "PWD".equalsIgnoreCase(discountType);
+    }
+
+    private Order createOrder(User customer, String shippingAddress, String paymentMethod,
+                             BigDecimal baseAmount, BigDecimal discountAmount, 
+                             BigDecimal taxAmount, BigDecimal totalAmount) {
+        Order order = new Order();
+        order.setCustomer(customer);
+        order.setBaseAmount(baseAmount);
+        order.setDiscountAmount(discountAmount);
+        order.setTaxAmount(taxAmount);
+        order.setShippingFee(AppConstants.SHIPPING_FEE);
+        order.setTotalAmount(totalAmount);
+        order.setShippingAddress(shippingAddress);
+        order.setPaymentMethod(paymentMethod);
+        order.setOrderStatus(AppConstants.ORDER_STATUS_PENDING);
+        return order;
+    }
+
+    private void processCartItems(List<Cart> cartItems, Order savedOrder) {
+        for (Cart item : cartItems) {
+            Product prod = item.getProduct();
+            int quantity = item.getQuantity() == null ? 1 : item.getQuantity();
+
+            createOrderItem(savedOrder, prod, quantity);
+            markProductAsSold(prod);
+            removeFromCart(item);
+        }
+    }
+
+    private void createOrderItem(Order order, Product product, int quantity) {
+        OrderItem orderItem = new OrderItem();
+        orderItem.setOrder(order);
+        orderItem.setProduct(product);
+        orderItem.setPriceAtPurchase(product.getPrice());
+        orderItem.setQuantity(quantity);
+        orderItemRepository.save(orderItem);
+    }
+
+    private void markProductAsSold(Product product) {
+        product.setStatus(AppConstants.PRODUCT_STATUS_SOLD);
+        productRepository.save(product);
+    }
+
+    private void removeFromCart(Cart item) {
+        cartRepository.delete(item);
     }
 }

@@ -2,7 +2,6 @@ package com.ukayukay.backend.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ukayukay.backend.entity.BusinessRequest;
 import com.ukayukay.backend.service.BusinessRequestService;
-
 import lombok.Data;
 
 @RestController
@@ -22,13 +20,22 @@ import lombok.Data;
 @CrossOrigin(origins = "*")
 public class SellerController {
 
-    @Autowired
-    private BusinessRequestService businessRequestService;
+    private final BusinessRequestService businessRequestService;
+
+    public SellerController(BusinessRequestService businessRequestService) {
+        this.businessRequestService = businessRequestService;
+    }
 
     @PostMapping("/request")
     public ResponseEntity<?> submitBusinessRequest(@RequestBody BusinessRequestRequest req) {
         try {
-            BusinessRequest saved = businessRequestService.submitRequest(req.getUserId(), req.getBusinessName(), req.getBusinessDescription(), req.getBusinessPermit(), req.getNotes());
+            BusinessRequest saved = businessRequestService.submitRequest(
+                req.getUserId(),
+                req.getBusinessName(),
+                req.getBusinessDescription(),
+                req.getBusinessPermit(),
+                req.getNotes()
+            );
             return ResponseEntity.ok(saved);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

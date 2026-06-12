@@ -2,7 +2,6 @@ package com.ukayukay.backend.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ukayukay.backend.entity.BusinessRequest;
@@ -13,15 +12,20 @@ import com.ukayukay.backend.repository.UserRepository;
 @Service
 public class BusinessRequestService {
 
-    @Autowired
-    private BusinessRequestRepository businessRequestRepository;
+    private final BusinessRequestRepository businessRequestRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    public BusinessRequestService(BusinessRequestRepository businessRequestRepository,
+                                   UserRepository userRepository) {
+        this.businessRequestRepository = businessRequestRepository;
+        this.userRepository = userRepository;
+    }
 
-    public BusinessRequest submitRequest(Integer userId, String businessName, String businessDescription, String businessPermit, String notes) {
+    public BusinessRequest submitRequest(Integer userId, String businessName, String businessDescription,
+                                        String businessPermit, String notes) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException(
+                    String.format("User not found with ID: %d", userId)));
 
         if (!User.UserRole.seller.equals(user.getRole())) {
             throw new RuntimeException("Only users with role 'seller' can submit business requests");
@@ -39,7 +43,8 @@ public class BusinessRequestService {
 
     public List<BusinessRequest> getRequestsForUser(Integer userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException(
+                    String.format("User not found with ID: %d", userId)));
         return businessRequestRepository.findByUser(user);
     }
 }

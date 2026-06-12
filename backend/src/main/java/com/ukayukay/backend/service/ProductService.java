@@ -2,58 +2,62 @@ package com.ukayukay.backend.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ukayukay.backend.entity.Product;
 import com.ukayukay.backend.entity.User;
 import com.ukayukay.backend.repository.ProductRepository;
 import com.ukayukay.backend.repository.UserRepository;
+import com.ukayukay.backend.util.AppConstants;
 
 @Service
 public class ProductService {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    public ProductService(ProductRepository productRepository, UserRepository userRepository) {
+        this.productRepository = productRepository;
+        this.userRepository = userRepository;
+    }
 
     public List<Product> getAvailableProducts() {
-        return productRepository.findByStatus("AVAILABLE");
+        return productRepository.findByStatus(AppConstants.PRODUCT_STATUS_AVAILABLE);
     }
 
     public List<Product> getAvailableProductsByCategory(String category) {
-        return productRepository.findByCategoryAndStatus(category, "AVAILABLE");
+        return productRepository.findByCategoryAndStatus(category, AppConstants.PRODUCT_STATUS_AVAILABLE);
     }
 
     public Product getProductById(Integer id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + id));
+                .orElseThrow(() -> new RuntimeException(
+                    String.format(AppConstants.PRODUCT_NOT_FOUND, id)));
     }
 
     public Product createProductForSeller(Integer sellerId, Product product) {
         User seller = userRepository.findById(sellerId)
-                .orElseThrow(() -> new RuntimeException("Seller not found with ID: " + sellerId));
+                .orElseThrow(() -> new RuntimeException(
+                    String.format(AppConstants.SELLER_NOT_FOUND, sellerId)));
 
         if (seller.getRole() == null || !User.UserRole.seller.equals(seller.getRole())) {
-            throw new RuntimeException("Only approved sellers can add products.");
+            throw new RuntimeException(AppConstants.INVALID_SELLER);
         }
         if (!Boolean.TRUE.equals(seller.getSellerApproved())) {
-            throw new RuntimeException("Seller account is not approved yet.");
+            throw new RuntimeException(AppConstants.SELLER_NOT_APPROVED);
         }
         if (seller.getBusinessName() == null || seller.getBusinessName().isBlank()
                 || seller.getBusinessDescription() == null || seller.getBusinessDescription().isBlank()) {
-            throw new RuntimeException("Seller business name and description must be approved before adding products.");
+            throw new RuntimeException(AppConstants.SELLER_INFO_INCOMPLETE);
         }
 
-        product.setStatus("AVAILABLE");
+        product.setStatus(AppConstants.PRODUCT_STATUS_AVAILABLE);
         product.setSeller(seller);
         return productRepository.save(product);
     }
 
     public Product createProduct(Product product) {
-        product.setStatus("AVAILABLE"); // New items default to available
+        product.setStatus(AppConstants.PRODUCT_STATUS_AVAILABLE);
         return productRepository.save(product);
     }
 

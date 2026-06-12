@@ -39,9 +39,8 @@ public class User {
     @Column(name = "is_discount_elig")
     private Boolean isDiscountElig = false;
 
-    // ADDED: To satisfy the prof's requirement for different calculation types (SENIOR, PWD, NONE)
     @Column(name = "discount_type", length = 20)
-    private String discountType = "NONE"; // Default to NONE if not eligible
+    private String discountType = "NONE";
 
     @Column(name = "business_name", length = 100)
     private String businessName;

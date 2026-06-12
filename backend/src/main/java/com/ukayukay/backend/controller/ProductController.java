@@ -2,7 +2,6 @@ package com.ukayukay.backend.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,14 +16,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ukayukay.backend.entity.Product;
 import com.ukayukay.backend.service.ProductService;
+import com.ukayukay.backend.util.AppConstants;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "*") 
+@CrossOrigin(origins = "*")
 public class ProductController {
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
+
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
 
     @GetMapping
     public List<Product> getAllProducts(@RequestParam(required = false) String category) {
@@ -34,12 +37,10 @@ public class ProductController {
         return productService.getAvailableProducts();
     }
 
-
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Integer id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
-
 
     @PostMapping
     public Product addProduct(@RequestBody Product product) {
@@ -59,6 +60,6 @@ public class ProductController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable Integer id) {
         productService.deleteProduct(id);
-        return ResponseEntity.ok("Product with ID " + id + " has been successfully deleted.");
+        return ResponseEntity.ok(String.format(AppConstants.PRODUCT_DELETED, id));
     }
 }

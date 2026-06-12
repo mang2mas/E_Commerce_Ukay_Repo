@@ -24,13 +24,12 @@ public class Order {
     @Column(name = "order_id")
     private Integer orderId;
 
-    // Relates this order to the User who purchased it
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id", nullable = false)
     private User customer;
 
     @Column(name = "order_status", length = 50)
-    private String orderStatus = "PENDING"; // PENDING, TO_SHIP, TO_RECEIVE, COMPLETED
+    private String orderStatus = "PENDING";
 
     @Column(name = "base_amount", precision = 10, scale = 2)
     private BigDecimal baseAmount;
@@ -51,7 +50,7 @@ public class Order {
     private String shippingAddress;
 
     @Column(name = "payment_method", length = 50, nullable = false)
-    private String paymentMethod; // GCash, Maya, COD, etc.
+    private String paymentMethod;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
