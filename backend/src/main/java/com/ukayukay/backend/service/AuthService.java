@@ -26,5 +26,20 @@ public class AuthService {
         // The user object will naturally contain their "role" (Customer/Admin) flag!
         return user;
     }
+    public User register(User newUser) {
+        
+        // Safety Check: Make sure the email isn't already taken!
+        if (userRepository.findByEmail(newUser.getEmail()).isPresent()) {
+            throw new RuntimeException("An account with this email already exists!");
+        }
+
+        // If the frontend didn't specify a role, default them to a normal Customer
+        if (newUser.getRole() == null) {
+            newUser.setRole(User.UserRole.buyer); 
+        } 
+
+        // Save the new user to the database and return the saved data
+        return userRepository.save(newUser);
+    }
 
 }
