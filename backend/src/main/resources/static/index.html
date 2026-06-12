@@ -26,6 +26,33 @@
     </form>
   </section>
 
+  <section id="register-section">
+    <h2>Register</h2>
+    <form id="registerForm">
+      <label>Full name<br>
+        <input type="text" id="registerName" required>
+      </label>
+      <br>
+      <label>Email<br>
+        <input type="email" id="registerEmail" required>
+      </label>
+      <br>
+      <label>Password<br>
+        <input type="password" id="registerPassword" required>
+      </label>
+      <br>
+      <label>Account type<br>
+        <select id="registerRole">
+          <option value="buyer">Buyer</option>
+          <option value="seller">Seller</option>
+        </select>
+      </label>
+      <br>
+      <button type="submit">Register</button>
+      <div id="registerStatus"></div>
+    </form>
+  </section>
+
   <section id="products-section">
     <h2>Products</h2>
     <div id="products">Loading products…</div>

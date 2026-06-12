@@ -32,6 +32,9 @@ public class OrderItem {
     @Column(name = "price_at_purchase", nullable = false, precision = 10, scale = 2)
     private BigDecimal priceAtPurchase;
 
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity = 1;
+
     public OrderItem() {}
 
     public Integer getOrderItemId() { return orderItemId; }
@@ -45,4 +48,7 @@ public class OrderItem {
 
     public BigDecimal getPriceAtPurchase() { return priceAtPurchase; }
     public void setPriceAtPurchase(BigDecimal priceAtPurchase) { this.priceAtPurchase = priceAtPurchase; }
+
+    public Integer getQuantity() { return quantity; }
+    public void setQuantity(Integer quantity) { this.quantity = quantity; }
 }
