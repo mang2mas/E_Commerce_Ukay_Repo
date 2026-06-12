@@ -64,7 +64,7 @@
     </form>
   </section>
 
-  <section id="seller-section" style="display:none;">
+  <section id="seller-request-section" style="display:none;">
     <h2>Seller — Business Approval Request</h2>
     <form id="sellerRequestForm">
       <label>Business name<br>
@@ -121,6 +121,68 @@
       </label>
       <br>
       <button type="submit">Place Order</button>
+    </form>
+  </section>
+
+  <section id="admin-section" style="display:none;">
+    <h2>Admin Dashboard</h2>
+    <div id="adminStatus"></div>
+
+    <section id="admin-products-section">
+      <h3>Admin Product List</h3>
+      <div id="adminProducts">Loading admin products…</div>
+    </section>
+
+    <h3>Verify Seller</h3>
+    <form id="verifySellerForm">
+      <label>Seller ID<br>
+        <input type="number" id="adminSellerId" required>
+      </label>
+      <br>
+      <label>Status<br>
+        <select id="adminSellerStatus">
+          <option value="APPROVED">APPROVED</option>
+          <option value="REJECTED">REJECTED</option>
+        </select>
+      </label>
+      <br>
+      <button type="submit">Submit Verification</button>
+      <div id="verifySellerStatus"></div>
+    </form>
+
+    <h3>Change User Account Status</h3>
+    <form id="changeAccountStatusForm">
+      <label>User ID<br>
+        <input type="number" id="adminUserId" required>
+      </label>
+      <br>
+      <label>Active<br>
+        <select id="adminUserActive">
+          <option value="true">Active</option>
+          <option value="false">Suspended</option>
+        </select>
+      </label>
+      <br>
+      <button type="submit">Update Status</button>
+      <div id="changeAccountStatusStatus"></div>
+    </form>
+
+    <h3>Moderate Product</h3>
+    <form id="moderateProductForm">
+      <label>Product ID<br>
+        <input type="number" id="adminProductId" required>
+      </label>
+      <br>
+      <label>Status<br>
+        <select id="adminProductStatus">
+          <option value="AVAILABLE">AVAILABLE</option>
+          <option value="REJECTED">REJECTED</option>
+          <option value="PENDING_APPROVAL">PENDING_APPROVAL</option>
+        </select>
+      </label>
+      <br>
+      <button type="submit">Moderate</button>
+      <div id="moderateProductStatus"></div>
     </form>
   </section>
 

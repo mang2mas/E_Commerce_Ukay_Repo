@@ -15,16 +15,14 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final AuditLogService auditLogService;
 
-<<<<<<< HEAD
-    @Autowired
-    private AuditLogService auditLogService; // 🆕 Injected to support moderation tracing
-=======
-    public ProductService(ProductRepository productRepository, UserRepository userRepository) {
+    public ProductService(ProductRepository productRepository, UserRepository userRepository,
+            AuditLogService auditLogService) {
         this.productRepository = productRepository;
         this.userRepository = userRepository;
+        this.auditLogService = auditLogService;
     }
->>>>>>> fadce4da5cf5ae44b46070d81b06a183d04fa16a
 
     public List<Product> getAvailableProducts() {
         return productRepository.findByStatus(AppConstants.PRODUCT_STATUS_AVAILABLE);
@@ -34,17 +32,16 @@ public class ProductService {
         return productRepository.findByCategoryAndStatus(category, AppConstants.PRODUCT_STATUS_AVAILABLE);
     }
 
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
+    }
+
     public Product getProductById(Integer id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(
                     String.format(AppConstants.PRODUCT_NOT_FOUND, id)));
     }
 
-<<<<<<< HEAD
-    public Product createProduct(Product product) {
-        // 🔄 CHANGED: New thrift items now hold for moderation instead of posting live instantly
-        product.setStatus("PENDING_APPROVAL"); 
-=======
     public Product createProductForSeller(Integer sellerId, Product product) {
         User seller = userRepository.findById(sellerId)
                 .orElseThrow(() -> new RuntimeException(
@@ -67,8 +64,8 @@ public class ProductService {
     }
 
     public Product createProduct(Product product) {
-        product.setStatus(AppConstants.PRODUCT_STATUS_AVAILABLE);
->>>>>>> fadce4da5cf5ae44b46070d81b06a183d04fa16a
+        // New products added directly to the catalog are held for moderation.
+        product.setStatus("PENDING_APPROVAL");
         return productRepository.save(product);
     }
 

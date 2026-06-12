@@ -5,16 +5,26 @@ $(function(){
   function setLoggedIn(user){
     currentUserId = user ? user.userId || user.userID || user.id : null;
     currentUserRole = user ? user.role : null;
-    $('#loginStatus').text(currentUserId ? 'Logged in as ' + (user.fullName || user.email) + ' (' + (currentUserRole||'') + ')' : 'Not logged in');
+    $('#loginStatus').text(currentUserId ? 'Logged in as ' + (user.fullName || user.email) + ' (' + (currentUserRole || '') + ')' : 'Not logged in');
     if(currentUserId){ loadProducts(); loadCart(); loadOrders(); }
     else { $('#products').text('Please login to see products.'); $('#cart').text('Not logged in.'); $('#orders').text('Not logged in.'); }
 
-    // Show seller UI when logged in as seller
+    if(currentUserRole === 'admin'){
+      $('#admin-section').show();
+      $('#adminStatus').text('Admin controls are active.');
+      loadAdminProducts();
+    } else {
+      $('#admin-section').hide();
+      $('#adminStatus').text('');
+    }
+
     if(currentUserRole === 'seller'){
       $('#seller-section').show();
+      $('#seller-request-section').show();
       loadSellerRequests();
     } else {
       $('#seller-section').hide();
+      $('#seller-request-section').hide();
     }
   }
 
@@ -218,6 +228,90 @@ $(function(){
     $.ajax({ url: '/api/seller/request', method: 'POST', contentType: 'application/json', data: JSON.stringify(payload) })
       .done(function(){ $('#sellerRequestStatus').text('Submitted.'); $('#sellerRequestForm')[0].reset(); loadSellerRequests(); })
       .fail(function(xhr){ $('#sellerRequestStatus').text('Submit failed: ' + xhr.responseText); });
+  });
+
+  function renderAdminProducts(list){
+    const $c = $('#adminProducts').empty();
+    if(!list || list.length === 0){ $c.text('No products available.'); return; }
+    list.forEach(p => {
+      const $card = $('<div>').addClass('product admin-product');
+      const sellerName = p.seller?.fullName || p.seller?.email || 'Unknown seller';
+      $card.append($('<div>').html('<strong>' + p.itemName + '</strong> — ₱' + (p.price || '0')));
+      $card.append($('<div>').text('Status: ' + (p.status || 'N/A')));
+      $card.append($('<div>').text('Seller: ' + sellerName));
+      $card.append($('<div>').text('Category: ' + (p.category || 'N/A')));
+      $card.append($('<div>').text('Stock: ' + (p.stockQuantity || 0)));
+
+      const $select = $('<select>').addClass('admin-moderate-select');
+      ['AVAILABLE','REJECTED','PENDING_APPROVAL'].forEach(status => {
+        const $opt = $('<option>').attr('value', status).text(status);
+        if(status === p.status){ $opt.prop('selected', true); }
+        $select.append($opt);
+      });
+      const $button = $('<button>').text('Update status').click(function(){
+        moderateAdminProduct(p.productId, $select.val());
+      });
+      $card.append($('<div>').append('Set status: ', $select, ' ', $button));
+      $c.append($card);
+    });
+  }
+
+  function loadAdminProducts(){
+    $('#adminProducts').text('Loading admin products…');
+    $.get('/api/products/admin')
+      .done(renderAdminProducts)
+      .fail(function(xhr){ $('#adminProducts').text('Failed to load admin products: ' + xhr.responseText); });
+  }
+
+  function moderateAdminProduct(productId, status){
+    $.ajax({
+      url: '/api/admin/products/' + productId + '/moderate?status=' + status + '&adminId=' + currentUserId,
+      method: 'PUT'
+    })
+      .done(function(){ loadAdminProducts(); $('#moderateProductStatus').text('Product moderated successfully.'); })
+      .fail(function(xhr){ $('#moderateProductStatus').text('Moderation failed: ' + xhr.responseText); });
+  }
+
+  $('#verifySellerForm').on('submit', function(e){
+    e.preventDefault();
+    if(currentUserRole !== 'admin'){ alert('Admin login required'); return; }
+    const sellerId = $('#adminSellerId').val();
+    const status = $('#adminSellerStatus').val();
+    $('#verifySellerStatus').text('Verifying…');
+    $.ajax({
+      url: '/api/admin/sellers/' + sellerId + '/verify?status=' + status + '&adminId=' + currentUserId,
+      method: 'PUT'
+    })
+      .done(function(){ $('#verifySellerStatus').text('Seller verification updated.'); })
+      .fail(function(xhr){ $('#verifySellerStatus').text('Verify failed: ' + xhr.responseText); });
+  });
+
+  $('#changeAccountStatusForm').on('submit', function(e){
+    e.preventDefault();
+    if(currentUserRole !== 'admin'){ alert('Admin login required'); return; }
+    const userId = $('#adminUserId').val();
+    const isActive = $('#adminUserActive').val();
+    $('#changeAccountStatusStatus').text('Updating…');
+    $.ajax({
+      url: '/api/admin/users/' + userId + '/status?isActive=' + isActive + '&adminId=' + currentUserId,
+      method: 'PUT'
+    })
+      .done(function(){ $('#changeAccountStatusStatus').text('Account status updated.'); })
+      .fail(function(xhr){ $('#changeAccountStatusStatus').text('Update failed: ' + xhr.responseText); });
+  });
+
+  $('#moderateProductForm').on('submit', function(e){
+    e.preventDefault();
+    if(currentUserRole !== 'admin'){ alert('Admin login required'); return; }
+    const productId = $('#adminProductId').val();
+    const status = $('#adminProductStatus').val();
+    $('#moderateProductStatus').text('Moderating…');
+    $.ajax({
+      url: '/api/admin/products/' + productId + '/moderate?status=' + status + '&adminId=' + currentUserId,
+      method: 'PUT'
+    })
+      .done(function(){ $('#moderateProductStatus').text('Product moderated successfully.'); loadProducts(); })
+      .fail(function(xhr){ $('#moderateProductStatus').text('Moderation failed: ' + xhr.responseText); });
   });
 
   // Start state
