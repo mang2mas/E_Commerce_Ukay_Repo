@@ -1,0 +1,254 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Ukay Shop</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+</head>
+<body>
+  <section id="login-section" class="login-container">
+    <div class="login-card">
+      <div class="logo">UKAY</div>
+      <h1 class="login-title">Log in to continue shopping</h1>
+      
+      <form id="loginForm" class="login-form">
+        <div class="form-group">
+          <label>EMAIL</label>
+          <input type="email" id="email" placeholder="Enter your email" required>
+        </div>
+        
+        <div class="form-group">
+          <label>PASSWORD</label>
+          <input type="password" id="password" placeholder="Enter your password" required>
+        </div>
+        
+        <a href="#" class="forgot-password">Forgot password?</a>
+        
+        <button type="submit" class="btn-primary">LOG IN</button>
+        <div id="loginStatus" class="login-status"></div>
+      </form>
+
+      <div class="divider">OR</div>
+
+      <button class="btn-social btn-google">
+        <span class="social-icon">G</span> Continue with Google
+      </button>
+      <button class="btn-social btn-apple">
+        <span class="social-icon">🍎</span> Continue with Apple
+      </button>
+
+      <div class="signup-footer">
+        Don't have an account? <a href="#" class="signup-link">Sign up</a>
+      </div>
+      
+      <div class="admin-footer">
+        <a href="#" class="admin-link">Admin</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="register-section">
+    <h2>Register</h2>
+    <form id="registerForm">
+      <label>Full name<br>
+        <input type="text" id="registerName" required>
+      </label>
+      <br>
+      <label>Email<br>
+        <input type="email" id="registerEmail" required>
+      </label>
+      <br>
+      <label>Password<br>
+        <input type="password" id="registerPassword" required>
+      </label>
+      <br>
+      <label>Account type<br>
+        <select id="registerRole">
+          <option value="buyer">Buyer</option>
+          <option value="seller">Seller</option>
+        </select>
+      </label>
+      <br>
+      <div id="sellerFields" style="display:none;">
+        <label>Business name<br>
+          <input type="text" id="registerBusinessName">
+        </label>
+        <br>
+        <label>Business description<br>
+          <textarea id="registerBusinessDescription" rows="3"></textarea>
+        </label>
+        <br>
+      </div>
+      <button type="submit">Register</button>
+      <div id="registerStatus"></div>
+    </form>
+  </section>
+
+  <section id="seller-request-section" style="display:none;">
+    <h2>Seller — Business Approval Request</h2>
+    <form id="sellerRequestForm">
+      <label>Business name<br>
+        <input type="text" id="bizName" required>
+      </label>
+      <br>
+      <label>Business description<br>
+        <textarea id="bizDescription" rows="4" cols="40" required></textarea>
+      </label>
+      <br>
+      <label>Business permit (URL or filename)<br>
+        <input type="text" id="bizPermit">
+      </label>
+      <br>
+      <label>Notes<br>
+        <textarea id="bizNotes" rows="3" cols="40"></textarea>
+      </label>
+      <br>
+      <button type="submit">Submit Business Request</button>
+      <div id="sellerRequestStatus"></div>
+    </form>
+
+    <h3>Your Requests</h3>
+    <div id="sellerRequests">Not loaded.</div>
+  </section>
+
+  <section id="products-section">
+    <h2>Products</h2>
+    <div id="products">Loading products…</div>
+  </section>
+
+  <section id="cart-section">
+    <h2>Your Cart</h2>
+    <div id="cart">Not logged in.</div>
+  </section>
+
+  <section id="orders-section">
+    <h2>Your Orders</h2>
+    <div id="orders">Not logged in.</div>
+  </section>
+
+  <section id="checkout-section">
+    <h2>Checkout</h2>
+    <form id="checkoutForm">
+      <label>Shipping address<br>
+        <input type="text" id="shippingAddress" required>
+      </label>
+      <br>
+      <label>Payment method<br>
+        <select id="paymentMethod">
+          <option>Cash on Delivery</option>
+          <option>Card</option>
+        </select>
+      </label>
+      <br>
+      <button type="submit">Place Order</button>
+    </form>
+  </section>
+
+  <section id="admin-section" style="display:none;">
+    <h2>Admin Dashboard</h2>
+    <div id="adminStatus"></div>
+
+    <section id="admin-products-section">
+      <h3>Admin Product List</h3>
+      <div id="adminProducts">Loading admin products…</div>
+    </section>
+
+    <h3>Verify Seller</h3>
+    <form id="verifySellerForm">
+      <label>Seller ID<br>
+        <input type="number" id="adminSellerId" required>
+      </label>
+      <br>
+      <label>Status<br>
+        <select id="adminSellerStatus">
+          <option value="APPROVED">APPROVED</option>
+          <option value="REJECTED">REJECTED</option>
+        </select>
+      </label>
+      <br>
+      <button type="submit">Submit Verification</button>
+      <div id="verifySellerStatus"></div>
+    </form>
+
+    <h3>Change User Account Status</h3>
+    <form id="changeAccountStatusForm">
+      <label>User ID<br>
+        <input type="number" id="adminUserId" required>
+      </label>
+      <br>
+      <label>Active<br>
+        <select id="adminUserActive">
+          <option value="true">Active</option>
+          <option value="false">Suspended</option>
+        </select>
+      </label>
+      <br>
+      <button type="submit">Update Status</button>
+      <div id="changeAccountStatusStatus"></div>
+    </form>
+
+    <h3>Moderate Product</h3>
+    <form id="moderateProductForm">
+      <label>Product ID<br>
+        <input type="number" id="adminProductId" required>
+      </label>
+      <br>
+      <label>Status<br>
+        <select id="adminProductStatus">
+          <option value="AVAILABLE">AVAILABLE</option>
+          <option value="REJECTED">REJECTED</option>
+          <option value="PENDING_APPROVAL">PENDING_APPROVAL</option>
+        </select>
+      </label>
+      <br>
+      <button type="submit">Moderate</button>
+      <div id="moderateProductStatus"></div>
+    </form>
+  </section>
+
+  <section id="seller-section" style="display:none;">
+    <h2>Seller Dashboard</h2>
+    <div id="sellerStatus"></div>
+    <form id="sellerProductForm" style="display:none;">
+      <label>Product name<br>
+        <input type="text" id="productName" required>
+      </label>
+      <br>
+      <label>Category<br>
+        <input type="text" id="productCategory" required>
+      </label>
+      <br>
+      <label>Price<br>
+        <input type="number" id="productPrice" step="0.01" required>
+      </label>
+      <br>
+      <label>Stock quantity<br>
+        <input type="number" id="productStock" min="1" value="1" required>
+      </label>
+      <br>
+      <label>Size<br>
+        <input type="text" id="productSize">
+      </label>
+      <br>
+      <label>Condition<br>
+        <input type="text" id="productCondition">
+      </label>
+      <br>
+      <label>Image path<br>
+        <input type="text" id="productImagePath">
+      </label>
+      <br>
+      <label>Description<br>
+        <textarea id="productDescription" rows="4"></textarea>
+      </label>
+      <br>
+      <button type="submit">Add Product</button>
+      <div id="sellerProductStatus"></div>
+    </form>
+  </section>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
