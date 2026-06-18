@@ -4,67 +4,77 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Ukay Shop</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/login.css">
   <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 </head>
 <body>
-  <h1>Ukay Shop — Demo UI</h1>
-
-  <section id="login-section">
-    <h2>Login</h2>
-    <p>Demo verified seller account: <strong>seller@example.com</strong> / <strong>seller123</strong></p>
-    <form id="loginForm">
-      <label>Email<br>
-        <input type="email" id="email" required>
-      </label>
-      <br>
-      <label>Password<br>
-        <input type="password" id="password" required>
-      </label>
-      <br>
-      <button type="submit">Login</button>
-      <div id="loginStatus"></div>
-    </form>
-  </section>
-
-  <section id="register-section">
-    <h2>Register</h2>
-    <form id="registerForm">
-      <label>Full name<br>
-        <input type="text" id="registerName" required>
-      </label>
-      <br>
-      <label>Email<br>
-        <input type="email" id="registerEmail" required>
-      </label>
-      <br>
-      <label>Password<br>
-        <input type="password" id="registerPassword" required>
-      </label>
-      <br>
-      <label>Account type<br>
-        <select id="registerRole">
-          <option value="buyer">Buyer</option>
-          <option value="seller">Seller</option>
-        </select>
-      </label>
-      <br>
-      <div id="sellerFields" style="display:none;">
-        <label>Business name<br>
-          <input type="text" id="registerBusinessName">
+ <div class="login-wrapper">
+    <div class="login-card">
+      <img src="images/LOGO.png" class="login-logo" alt="Ukay Shop Logo">
+      <h2><span class="headline-bold">Log in</span> to continue shopping</h2>
+      <form id="loginForm">
+        <label class="input-label">EMAIL
+          <input type="email" id="email" placeholder="Enter your email" required>
         </label>
-        <br>
-        <label>Business description<br>
-          <textarea id="registerBusinessDescription" rows="3"></textarea>
+        <label class="input-label">PASSWORD
+          <input type="password" id="password" placeholder="Enter your password" required>
         </label>
-        <br>
-      </div>
-      <button type="submit">Register</button>
-      <div id="registerStatus"></div>
-    </form>
-  </section>
+        <div class="forgot-row">
+          <a href="#">Forgot password?</a>
+        </div>
+        <button type="submit" class="primary-btn">LOG IN</button>
+        <div id="loginStatus" class="status-text"></div>
+      </form>
+      <div class="divider"><span>OR</span></div>
+      <button type="button" class="social-btn google-btn">
+        <!-- TODO: add Google icon here -->
+        Continue with Google
+      </button>
+      <button type="button" class="social-btn apple-btn">
+        <!-- TODO: add Apple icon here -->
+        Continue with Apple
+      </button>
+      <p class="signup-line">Don’t have an account? <a href="#" id="showRegisterLink">Sign up</a></p>
+      <p class="admin-link"><a href="#">Admin</a></p>
+    </div>
+  </div>
 
-  <section id="seller-request-section" style="display:none;">
+  <section id="main-app">
+    <h1>Ukay Shop — Demo UI</h1>
+
+    <section id="register-section" class="hidden-section">
+      <h2>Register</h2>
+      <form id="registerForm">
+        <label>Full name
+          <input type="text" id="registerName" required>
+        </label>
+        <label>Email
+          <input type="email" id="registerEmail" required>
+        </label>
+        <label>Password
+          <input type="password" id="registerPassword" required>
+        </label>
+        <label>Account type
+          <select id="registerRole">
+            <option value="buyer">Buyer</option>
+            <option value="seller">Seller</option>
+          </select>
+        </label>
+        <div id="sellerFields" style="display:none;">
+          <label>Business name
+            <input type="text" id="registerBusinessName">
+          </label>
+          <label>Business description
+            <textarea id="registerBusinessDescription" rows="3"></textarea>
+          </label>
+        </div>
+        <button type="submit">Register</button>
+        <div id="registerStatus"></div>
+      </form>
+      <p><a href="#" id="backToLoginLink">Back to login</a></p>
+    </section>
+
+    <section id="seller-request-section" style="display:none;">
     <h2>Seller — Business Approval Request</h2>
     <form id="sellerRequestForm">
       <label>Business name<br>

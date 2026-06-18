@@ -5,9 +5,22 @@ $(function(){
   function setLoggedIn(user){
     currentUserId = user ? user.userId || user.userID || user.id : null;
     currentUserRole = user ? user.role : null;
-    $('#loginStatus').text(currentUserId ? 'Logged in as ' + (user.fullName || user.email) + ' (' + (currentUserRole || '') + ')' : 'Not logged in');
-    if(currentUserId){ loadProducts(); loadCart(); loadOrders(); }
-    else { $('#products').text('Please login to see products.'); $('#cart').text('Not logged in.'); $('#orders').text('Not logged in.'); }
+    if(currentUserId){
+      $('#loginStatus').text('Logged in as ' + (user.fullName || user.email) + ' (' + (currentUserRole || '') + ')');
+      $('#main-app').show();
+      $('.login-wrapper').hide();
+      $('#register-section').addClass('hidden-section').hide();
+      loadProducts();
+      loadCart();
+      loadOrders();
+    } else {
+      $('#loginStatus').text('Not logged in');
+      $('#main-app').hide();
+      $('.login-wrapper').show();
+      $('#products').text('Please login to see products.');
+      $('#cart').text('Not logged in.');
+      $('#orders').text('Not logged in.');
+    }
 
     if(currentUserRole === 'admin'){
       $('#admin-section').show();
@@ -27,6 +40,20 @@ $(function(){
       $('#seller-request-section').hide();
     }
   }
+
+  $('#showRegisterLink').on('click', function(e){
+    e.preventDefault();
+    $('.login-wrapper').hide();
+    $('#main-app').show();
+    $('#register-section').removeClass('hidden-section').show();
+  });
+
+  $('#backToLoginLink').on('click', function(e){
+    e.preventDefault();
+    $('#register-section').addClass('hidden-section').hide();
+    $('.login-wrapper').show();
+    $('#main-app').hide();
+  });
 
   // --- Products ---
   function renderProducts(list){
