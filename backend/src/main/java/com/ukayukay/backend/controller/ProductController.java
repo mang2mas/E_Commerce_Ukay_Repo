@@ -42,6 +42,11 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
+    @GetMapping("/seller/{sellerId}")
+    public ResponseEntity<List<Product>> getProductsBySeller(@PathVariable Integer sellerId) {
+        return ResponseEntity.ok(productService.getProductsBySeller(sellerId));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Integer id) {
         return ResponseEntity.ok(productService.getProductById(id));

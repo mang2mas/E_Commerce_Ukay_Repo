@@ -35,11 +35,11 @@
         Continue with Apple
       </button>
       <p class="signup-line">Don’t have an account? <a href="#" id="showRegisterLink">Sign up</a></p>
-      <p class="admin-link"><a href="#">Admin</a></p>
+      <p class="admin-link"><a href="#" id="adminLink">Admin</a></p>
     </div>
   </div>
 
-  <section id="main-app">
+  <section id="main-app" style="display:none;">
     <h1>Ukay Shop — Demo UI</h1>
 
     <section id="register-section" class="hidden-section">
@@ -137,6 +137,18 @@
   <section id="admin-section" style="display:none;">
     <h2>Admin Dashboard</h2>
     <div id="adminStatus"></div>
+    <style>
+      .admin-card{border:1px solid #ddd;padding:12px;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,0.06);max-width:720px;margin:10px 0;background:#fff}
+      .admin-card .card-header{font-weight:700;margin-bottom:8px}
+      .admin-card .card-row{display:flex;gap:12px;flex-wrap:wrap}
+      .admin-card .card-col{flex:1 1 200px}
+      .admin-card .muted{color:#666;font-size:0.9em}
+    </style>
+
+    <div id="adminDetailCard" class="admin-card" style="display:none;">
+      <div class="card-header">Selected Item</div>
+      <div id="adminCardBody" class="card-body muted">No item selected.</div>
+    </div>
 
     <section id="admin-products-section">
       <h3>Admin Product List</h3>
@@ -148,6 +160,7 @@
       <label>Seller ID<br>
         <input type="number" id="adminSellerId" required>
       </label>
+      <button type="button" id="loadSellerDetailsBtn">Load Seller Details</button>
       <br>
       <label>Status<br>
         <select id="adminSellerStatus">
@@ -159,6 +172,12 @@
       <button type="submit">Submit Verification</button>
       <div id="verifySellerStatus"></div>
     </form>
+    <div id="sellerInfo">
+      <h4>Seller Details</h4>
+      <div id="sellerDetails">Enter a Seller ID and click Load Seller Details.</div>
+      <h4>Seller Products</h4>
+      <div id="sellerProducts">Seller products will appear here.</div>
+    </div>
 
     <h3>Change User Account Status</h3>
     <form id="changeAccountStatusForm">
@@ -177,6 +196,28 @@
       <div id="changeAccountStatusStatus"></div>
     </form>
 
+    <h3>Shadow Ban User</h3>
+    <form id="shadowBanForm">
+      <label>User ID<br>
+        <input type="number" id="shadowBanUserId" required>
+      </label>
+      <button type="button" id="loadShadowBanUserBtn">Load User Details</button>
+      <br>
+      <label>Shadow Ban<br>
+        <select id="adminUserShadowBan">
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+        </select>
+      </label>
+      <br>
+      <button type="submit">Update Shadow Ban</button>
+      <div id="shadowBanStatus"></div>
+    </form>
+    <div id="shadowBanInfo">
+      <h4>User Details</h4>
+      <div id="shadowBanUserDetails">Enter a User ID and click Load User Details.</div>
+    </div>
+
     <h3>Moderate Product</h3>
     <form id="moderateProductForm">
       <label>Product ID<br>
@@ -190,10 +231,15 @@
           <option value="PENDING_APPROVAL">PENDING_APPROVAL</option>
         </select>
       </label>
+      <button type="button" id="loadProductDetailsBtn">Load Product Details</button>
       <br>
       <button type="submit">Moderate</button>
       <div id="moderateProductStatus"></div>
     </form>
+    <div id="productModerationInfo">
+      <h4>Product Details</h4>
+      <div id="moderationProductDetails">Enter a Product ID and click Load Product Details.</div>
+    </div>
   </section>
 
   <section id="seller-section" style="display:none;">

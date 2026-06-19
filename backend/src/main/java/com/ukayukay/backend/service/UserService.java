@@ -40,4 +40,17 @@ public class UserService {
         
         return updatedUser;
     }
+
+    public User toggleShadowBan(Integer userId, boolean shadowBanned, Integer adminId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User account not found with ID: " + userId));
+
+        user.setIsShadowBanned(shadowBanned);
+        User updatedUser = userRepository.save(user);
+
+        String actionType = shadowBanned ? "ACCOUNT_SHADOW_BANNED" : "ACCOUNT_SHADOW_BAN_REMOVED";
+        auditLogService.logAction(adminId, actionType, "users");
+
+        return updatedUser;
+    }
 }

@@ -15,7 +15,7 @@ import lombok.Data;
 public class AuditLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "log_id")
+    @Column(name = "log_id", nullable = false, updatable = false)
     private Integer logId;
 
     @Column(name = "admin_id", nullable = false)

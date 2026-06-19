@@ -42,6 +42,13 @@ public class ProductService {
                     String.format(AppConstants.PRODUCT_NOT_FOUND, id)));
     }
 
+    public List<Product> getProductsBySeller(Integer sellerId) {
+        if (!userRepository.existsById(sellerId)) {
+            throw new RuntimeException(String.format(AppConstants.SELLER_NOT_FOUND, sellerId));
+        }
+        return productRepository.findBySeller_UserId(sellerId);
+    }
+
     public Product createProductForSeller(Integer sellerId, Product product) {
         User seller = userRepository.findById(sellerId)
                 .orElseThrow(() -> new RuntimeException(

@@ -69,6 +69,9 @@ public class User {
     @Column(name = "is_active")
     private Boolean isActive = true; 
 
+    @Column(name = "is_shadow_banned")
+    private Boolean isShadowBanned = false;
+
     public enum UserRole {
         buyer, admin, seller
     }

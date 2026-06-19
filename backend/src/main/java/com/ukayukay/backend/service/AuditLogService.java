@@ -18,12 +18,18 @@ public class AuditLogService {
     }
 
     public void logAction(Integer adminId, String action, String tableAffected) {
-        AuditLog log = new AuditLog();
-        log.setAdminId(adminId);
-        log.setAction(action);
-        log.setTableAffected(tableAffected);
-        log.setTimestamp(LocalDateTime.now());
-        auditLogRepository.save(log);
+        try {
+            AuditLog log = new AuditLog();
+            log.setAdminId(adminId);
+            log.setAction(action);
+            log.setTableAffected(tableAffected);
+            log.setTimestamp(LocalDateTime.now());
+            auditLogRepository.save(log);
+        } catch (Exception e) {
+            // Audit logging should not prevent admin actions from succeeding
+            System.err.println("Failed to persist audit log: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public List<AuditLog> getAllLogs() {

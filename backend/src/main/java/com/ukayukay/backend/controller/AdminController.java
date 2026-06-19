@@ -52,6 +52,19 @@ public class AdminController {
         }
     }
 
+    @PutMapping("/users/{userId}/shadow-ban")
+    public ResponseEntity<?> shadowBanUser(
+            @PathVariable Integer userId,
+            @RequestParam boolean shadowBanned,
+            @RequestParam Integer adminId) {
+        try {
+            User updatedUser = userService.toggleShadowBan(userId, shadowBanned, adminId);
+            return ResponseEntity.ok(updatedUser);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @Autowired
 private ProductService productService;
 
