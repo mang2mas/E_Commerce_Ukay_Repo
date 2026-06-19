@@ -8,11 +8,17 @@ public class AppConstants {
     public static final String PRODUCT_STATUS_AVAILABLE = "AVAILABLE";
     public static final String PRODUCT_STATUS_SOLD = "SOLD";
     public static final String ORDER_STATUS_PENDING = "PENDING";
+    public static final String ORDER_STATUS_SHIPPED = "SHIPPED";
+    public static final String ORDER_STATUS_DELIVERED = "DELIVERED";
+    public static final String ORDER_STATUS_CANCELLED = "CANCELLED";
+    public static final String ORDER_STATUS_RETURN_REQUESTED = "RETURN_REQUESTED";
+    public static final String ORDER_STATUS_RETURNED = "RETURNED";
     
     // Error Messages
     public static final String PRODUCT_NOT_FOUND = "Product not found with ID: %d";
     public static final String USER_NOT_FOUND = "User not found with ID: %d";
     public static final String SELLER_NOT_FOUND = "Seller not found with ID: %d";
+    public static final String SHOP_NOT_FOUND = "Shop not found for seller ID: %d";
     public static final String INVALID_SELLER = "Only approved sellers can add products.";
     public static final String SELLER_NOT_APPROVED = "Seller account is not approved yet.";
     public static final String SELLER_INFO_INCOMPLETE = 

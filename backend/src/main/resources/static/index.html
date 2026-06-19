@@ -232,6 +232,41 @@
                     </div>
                 </div>
             </div>
+  <section id="profile-section">
+    <h2>About Me</h2>
+    <div id="profileInfo">Not logged in.</div>
+    <form id="profileForm" style="margin-top:10px; display:none;">
+      <label>Full name<br><input type="text" id="profileFullName"></label><br>
+      <label>Contact number<br><input type="text" id="profileContactNo"></label><br>
+      <label>Email<br><input type="email" id="profileEmail"></label><br>
+      <label>Password<br><input type="password" id="profilePassword" placeholder="Leave blank to keep current"></label><br>
+      <button type="submit">Update Profile</button>
+      <div id="profileStatus"></div>
+    </form>
+  </section>
+
+  <section id="notifications-section">
+    <h2>Notifications</h2>
+    <div id="notifications">Not logged in.</div>
+  </section>
+
+  <section id="checkout-section">
+    <h2>Checkout</h2>
+    <form id="checkoutForm">
+      <label>Shipping address<br>
+        <input type="text" id="shippingAddress" required>
+      </label>
+      <br>
+      <label>Payment method<br>
+        <select id="paymentMethod">
+          <option>Cash on Delivery</option>
+          <option>Card</option>
+        </select>
+      </label>
+      <br>
+      <button type="submit">Place Order</button>
+    </form>
+  </section>
 
             <!-- TRACK COLUMN 4 -->
             <div class="masonry-column">
@@ -325,6 +360,49 @@
             <img src="/images/story3.jpg" alt="Story 3">
         </div>
     </section>
+    <h3>Verify Seller</h3>
+    <form id="verifySellerForm">
+      <label>Seller ID<br>
+        <input type="number" id="adminSellerId" required>
+      </label>
+      <button type="button" id="loadSellerDetailsBtn">Load Seller Details</button>
+      <br>
+      <label>Status<br>
+        <select id="adminSellerStatus">
+          <option value="APPROVED">APPROVED</option>
+          <option value="REJECTED">REJECTED</option>
+        </select>
+      </label>
+      <br>
+      <button type="submit">Submit Verification</button>
+      <div id="verifySellerStatus"></div>
+    </form>
+    <div id="sellerInfo">
+      <h4>Seller Details</h4>
+      <div id="sellerDetails">Enter a Seller ID and click Load Seller Details.</div>
+      <h4>Seller Products</h4>
+      <div id="sellerProducts">Seller products will appear here.</div>
+    </div>
+
+    <h3>Business Requests</h3>
+    <div id="adminRequests">Loading requests…</div>
+
+    <h3>Change User Account Status</h3>
+    <form id="changeAccountStatusForm">
+      <label>User ID<br>
+        <input type="number" id="adminUserId" required>
+      </label>
+      <br>
+      <label>Active<br>
+        <select id="adminUserActive">
+          <option value="true">Active</option>
+          <option value="false">Suspended</option>
+        </select>
+      </label>
+      <br>
+      <button type="submit">Update Status</button>
+      <div id="changeAccountStatusStatus"></div>
+    </form>
 
     <!-- ==========================================================================
          7. REAL FITS, REAL PEOPLE
@@ -368,7 +446,7 @@
     <!-- ==========================================================================
          9. GLOBAL SYSTEM FOOTER
          ========================================================================== -->
-    <footer class="main-footer">
+<footer class="main-footer">
         <div class="footer-links">
             <a href="#">PRIVACY POLICY</a>
             <a href="#">ABOUT UKAY</a>
@@ -380,6 +458,80 @@
         </div>
         <p class="copyright">© Ukay 2026</p>
     </footer>
+
+
+    <div class="backend-dashboard-drawer" style="padding: 40px 5%; background: #ffffff; border-top: 2px solid #000000; margin-top: 50px;">
+        
+        <section id="profile-section">
+            <h2>About Me</h2>
+            <div id="profileInfo">Not logged in.</div>
+            <form id="profileForm" style="margin-top:10px; display:none;">
+                <label>Full name<br><input type="text" id="profileFullName"></label><br>
+                <label>Contact number<br><input type="text" id="profileContactNo"></label><br>
+                <label>Email<br><input type="email" id="profileEmail"></label><br>
+                <label>Password<br><input type="password" id="profilePassword" placeholder="Leave blank to keep current"></label><br>
+                <button type="submit">Update Profile</button>
+                <div id="profileStatus"></div>
+            </form>
+        </section>
+
+        <section id="notifications-section">
+            <h2>Notifications</h2>
+            <div id="notifications">Not logged in.</div>
+        </section>
+
+        <section id="checkout-section">
+            <h2>Checkout</h2>
+            <form id="checkoutForm">
+                <label>Shipping address<br><input type="text" id="shippingAddress" required></label><br>
+                <label>Payment method<br>
+                    <select id="paymentMethod">
+                        <option>Cash on Delivery</option>
+                        <option>Card</option>
+                    </select>
+                </label><br>
+                <button type="submit">Place Order</button>
+            </form>
+        </section>
+
+        <section id="admin-section" style="margin-top: 30px; padding-top: 30px; border-top: 1px dashed #ccc;">
+            <h3>Verify Seller</h3>
+            <form id="verifySellerForm">
+                <label>Seller ID<br><input type="number" id="adminSellerId" required></label>
+                <button type="button" id="loadSellerDetailsBtn">Load Seller Details</button><br>
+                <label>Status<br>
+                    <select id="adminSellerStatus">
+                        <option value="APPROVED">APPROVED</option>
+                        <option value="REJECTED">REJECTED</option>
+                    </select>
+                </label><br>
+                <button type="submit">Submit Verification</button>
+                <div id="verifySellerStatus"></div>
+            </form>
+            <div id="sellerInfo">
+                <h4>Seller Details</h4>
+                <div id="sellerDetails">Enter a Seller ID and click Load Seller Details.</div>
+                <h4>Seller Products</h4>
+                <div id="sellerProducts">Seller products will appear here.</div>
+            </div>
+
+            <h3>Business Requests</h3>
+            <div id="adminRequests">Loading requests…</div>
+
+            <h3>Change User Account Status</h3>
+            <form id="changeAccountStatusForm">
+                <label>User ID<br><input type="number" id="adminUserId" required></label><br>
+                <label>Active<br>
+                    <select id="adminUserActive">
+                        <option value="true">Active</option>
+                        <option value="false">Suspended</option>
+                    </select>
+                </label><br>
+                <button type="submit">Update Status</button>
+                <div id="changeAccountStatusStatus"></div>
+            </form>
+        </section>
+    </div>
 
     <script src="/js/app.js"></script>
 </body>

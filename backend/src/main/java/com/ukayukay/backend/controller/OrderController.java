@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ukayukay.backend.entity.Order;
+import com.ukayukay.backend.entity.OrderItem;
 import com.ukayukay.backend.service.OrderService;
 
 @RestController
@@ -43,6 +44,11 @@ public class OrderController {
     @GetMapping("/customer/{userId}")
     public List<Order> getCustomerHistory(@PathVariable Integer userId) {
         return orderService.getCustomerOrders(userId);
+    }
+
+    @GetMapping("/{orderId}/items")
+    public ResponseEntity<List<OrderItem>> getOrderItems(@PathVariable Integer orderId) {
+        return ResponseEntity.ok(orderService.getOrderItems(orderId));
     }
 
     @GetMapping
