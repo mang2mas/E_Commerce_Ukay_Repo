@@ -2,6 +2,7 @@ package com.ukayukay.backend.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ukayukay.backend.entity.BusinessRequest;
@@ -14,6 +15,9 @@ public class BusinessRequestService {
 
     private final BusinessRequestRepository businessRequestRepository;
     private final UserRepository userRepository;
+
+    @Autowired
+    private AuditLogService auditLogService;
 
     public BusinessRequestService(BusinessRequestRepository businessRequestRepository,
                                    UserRepository userRepository) {
@@ -46,5 +50,36 @@ public class BusinessRequestService {
                 .orElseThrow(() -> new RuntimeException(
                     String.format("User not found with ID: %d", userId)));
         return businessRequestRepository.findByUser(user);
+    }
+
+    public List<BusinessRequest> getAllRequests() {
+        return businessRequestRepository.findAll();
+    }
+
+    public BusinessRequest decideRequest(Integer requestId, BusinessRequest.RequestStatus newStatus, Integer adminId) {
+        BusinessRequest req = businessRequestRepository.findById(requestId)
+                .orElseThrow(() -> new RuntimeException(String.format("BusinessRequest not found: %d", requestId)));
+
+        req.setStatus(newStatus);
+        BusinessRequest saved = businessRequestRepository.save(req);
+
+        // Update linked user verification state
+        User user = req.getUser();
+        if (user != null) {
+            user.setVerificationStatus(newStatus == BusinessRequest.RequestStatus.APPROVED
+                    ? User.VerificationStatus.APPROVED
+                    : User.VerificationStatus.REJECTED);
+            user.setSellerApproved(newStatus == BusinessRequest.RequestStatus.APPROVED);
+            userRepository.save(user);
+        }
+
+        // Audit
+        try {
+            auditLogService.logAction(adminId, "BUSINESS_REQUEST_" + newStatus, "business_requests");
+        } catch (Exception e) {
+            System.err.println("Failed to log audit for business request: " + e.getMessage());
+        }
+
+        return saved;
     }
 }

@@ -1,9 +1,13 @@
 package com.ukayukay.backend.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ukayukay.backend.entity.BusinessRequest;
 import com.ukayukay.backend.entity.User;
+import com.ukayukay.backend.repository.BusinessRequestRepository;
 import com.ukayukay.backend.repository.UserRepository;
 
 @Service
@@ -11,6 +15,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private BusinessRequestRepository businessRequestRepository;
 
     @Autowired
     private AuditLogService auditLogService; // Inject this to track admin actions
@@ -21,7 +28,17 @@ public class UserService {
             .orElseThrow(() -> new RuntimeException("Seller account not found with ID: " + sellerId));
             
         seller.setVerificationStatus(status);
+        seller.setSellerApproved(status == User.VerificationStatus.APPROVED);
+
         User updatedSeller = userRepository.save(seller);
+
+        List<BusinessRequest> requests = businessRequestRepository.findByUser(seller);
+        for (BusinessRequest request : requests) {
+            request.setStatus(status == User.VerificationStatus.APPROVED
+                    ? BusinessRequest.RequestStatus.APPROVED
+                    : BusinessRequest.RequestStatus.REJECTED);
+        }
+        businessRequestRepository.saveAll(requests);
         
         auditLogService.logAction(adminId, "SELLER_VERIFICATION_" + status, "users");
         

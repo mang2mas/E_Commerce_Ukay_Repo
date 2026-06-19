@@ -321,6 +321,37 @@ $(function(){
     });
   }
 
+  // --- Admin: Business requests ---
+  function renderAdminRequests(list){
+    const $c = $('#adminRequests').empty();
+    if(!list || list.length === 0){ $c.text('No requests found.'); return; }
+    list.forEach(r => {
+      const $card = $('<div>').addClass('admin-request');
+      $card.append($('<div>').html('<strong>Request #' + (r.requestId || r.id || 'N/A') + '</strong> — Status: ' + (r.status || 'PENDING')));
+      $card.append($('<div>').text('Business: ' + (r.businessName || '')));
+      $card.append($('<div>').text('Seller: ' + ((r.user && (r.user.fullName || r.user.email)) || 'Unknown')));
+      $card.append($('<div>').text('Description: ' + (r.businessDescription || '')));
+      const $select = $('<select>').append($('<option>').val('PENDING').text('PENDING')).append($('<option>').val('APPROVED').text('APPROVE')).append($('<option>').val('REJECTED').text('REJECT'));
+      $select.val(r.status || 'PENDING');
+      const $btn = $('<button>').text('Apply').click(function(){
+        const newStatus = $select.val();
+        const adminId = currentUserId || 1;
+        $.ajax({ url: '/api/admin/requests/' + (r.requestId || r.id) + '/decide?status=' + newStatus + '&adminId=' + adminId, method: 'PUT' })
+          .done(function(){ loadAdminRequests(); $('#verifySellerStatus').text('Request updated.'); loadSellerRequests(); })
+          .fail(function(xhr){ $('#verifySellerStatus').text('Update failed: ' + xhr.responseText); });
+      });
+      $card.append($('<div>').append('Decision: ', $select, ' ', $btn));
+      $c.append($card);
+    });
+  }
+
+  function loadAdminRequests(){
+    $('#adminRequests').text('Loading requests…');
+    $.get('/api/admin/requests/')
+      .done(renderAdminRequests)
+      .fail(function(xhr){ $('#adminRequests').text('Failed to load requests: ' + xhr.responseText); });
+  }
+
   function loadAdminProducts(){
     $('#adminProducts').text('Loading admin products…');
     $.get('/api/products/admin')
