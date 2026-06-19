@@ -27,15 +27,17 @@ public class OrderService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final OrderItemRepository orderItemRepository;
+    private final NotificationService notificationService;
 
     public OrderService(OrderRepository orderRepository, CartRepository cartRepository,
                        UserRepository userRepository, ProductRepository productRepository,
-                       OrderItemRepository orderItemRepository) {
+                       OrderItemRepository orderItemRepository, NotificationService notificationService) {
         this.orderRepository = orderRepository;
         this.cartRepository = cartRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.orderItemRepository = orderItemRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -67,11 +69,23 @@ public class OrderService {
         Order savedOrder = orderRepository.save(order);
 
         processCartItems(cartItems, savedOrder);
+
+        notificationService.createNotification(userId,
+                "ORDER_PLACED",
+                "Order placed successfully",
+                String.format("Your order #%d has been placed successfully.", savedOrder.getOrderId()),
+                savedOrder.getOrderId(),
+                null);
+
         return savedOrder;
     }
 
     public List<Order> getCustomerOrders(Integer userId) {
         return orderRepository.findByCustomer_UserIdOrderByCreatedAtDesc(userId);
+    }
+
+    public List<OrderItem> getOrderItems(Integer orderId) {
+        return orderItemRepository.findByOrder_OrderId(orderId);
     }
 
     public List<Order> getAllOrders() {
@@ -92,7 +106,8 @@ public class OrderService {
                 throw new RuntimeException(
                     String.format("Item '%s' is already sold!", item.getProduct().getItemName()));
             }
-            int quantity = item.getQuantity() == null ? 1 : item.getQuantity();
+            Integer quantityValue = item.getQuantity();
+            int quantity = quantityValue == null ? 1 : quantityValue;
             BigDecimal itemTotal = item.getProduct().getPrice()
                     .multiply(BigDecimal.valueOf(quantity));
             baseAmount = baseAmount.add(itemTotal);
@@ -131,7 +146,8 @@ public class OrderService {
     private void processCartItems(List<Cart> cartItems, Order savedOrder) {
         for (Cart item : cartItems) {
             Product prod = item.getProduct();
-            int quantity = item.getQuantity() == null ? 1 : item.getQuantity();
+            Integer quantityValue = item.getQuantity();
+            int quantity = quantityValue == null ? 1 : quantityValue;
 
             createOrderItem(savedOrder, prod, quantity);
             markProductAsSold(prod);

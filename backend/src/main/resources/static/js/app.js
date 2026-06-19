@@ -42,6 +42,8 @@ $(function(){
       loadProducts();
       loadCart();
       loadOrders();
+      loadProfile();
+      loadNotifications();
     } else {
       $('#loginStatus').text('Not logged in');
       $('#main-app').hide();
@@ -139,10 +141,22 @@ $(function(){
     const $container = $('#orders').empty();
     if(!data || data.length === 0){ $container.text('No orders found.'); return; }
     data.forEach(o => {
+      const orderId = o.orderId || o.id || 'N/A';
+      const status = o.orderStatus || o.status || 'N/A';
       const $card = $('<div>').addClass('order');
-      $card.append($('<div>').text('Order #' + (o.id || o.orderId || 'N/A') + ' — Status: ' + (o.status || 'N/A')));
+      $card.append($('<div>').html('<strong>Order #' + orderId + '</strong> — Status: ' + status));
       $card.append($('<div>').text('Shipping: ' + (o.shippingAddress || '')));
+      $card.append($('<div>').text('Payment: ' + (o.paymentMethod || '')));
+      $card.append($('<div>').text('Total: ₱' + ((o.totalAmount != null) ? o.totalAmount : '0')));
+      const $shipmentArea = $('<div>').addClass('order-shipments').text('Loading shipment status...');
+      const $itemsArea = $('<div>').addClass('order-items').text('Loading purchased items...');
+      $card.append($itemsArea);
+      $card.append($shipmentArea);
       $container.append($card);
+      if(orderId !== 'N/A'){
+        loadOrderItems(orderId, $itemsArea);
+        loadShipments(orderId, $shipmentArea);
+      }
     });
   }
 
@@ -152,6 +166,133 @@ $(function(){
     $.get('/api/orders/customer/' + currentUserId)
       .done(function(data){ renderOrders(data); })
       .fail(function(xhr){ $('#orders').text('Failed to load orders: ' + xhr.responseText); });
+  }
+
+  function loadOrderItems(orderId, $container){
+    $.get('/api/orders/' + orderId + '/items')
+      .done(function(items){
+        $container.empty();
+        if(!items || items.length === 0){ $container.text('No order details found.'); return; }
+        items.forEach(item => {
+          const productId = item.product?.productId || item.product?.id;
+          const $itemRow = $('<div>').addClass('order-item');
+          $itemRow.append($('<div>').html('<strong>' + (item.product?.itemName || 'Product') + '</strong> x' + (item.quantity || 1)));
+          $itemRow.append($('<div>').text('Price: ₱' + ((item.priceAtPurchase != null) ? item.priceAtPurchase : '0')));
+          if(currentUserRole === 'buyer'){
+            const $reviewBtn = $('<button>').text('Leave Review').click(function(){
+              showReviewForm(productId, item.product?.itemName || 'Product');
+            });
+            $itemRow.append($reviewBtn);
+          }
+          $container.append($itemRow);
+        });
+      })
+      .fail(function(xhr){ $container.text('Unable to load order items: ' + xhr.responseText); });
+  }
+
+  function loadShipments(orderId, $container){
+    $.get('/api/shipments/order/' + orderId)
+      .done(function(shipments){
+        $container.empty();
+        if(!shipments || shipments.length === 0){ $container.text('No shipment information available yet.'); return; }
+        shipments.forEach(ship => {
+          const status = ship.status || 'N/A';
+          const lines = [];
+          lines.push('Shipment status: ' + status);
+          if(ship.trackingNumber) lines.push('Tracking: ' + ship.trackingNumber);
+          if(ship.courierCompany) lines.push('Courier: ' + ship.courierCompany);
+          if(ship.estimatedDeliveryDate) lines.push('ETA: ' + ship.estimatedDeliveryDate);
+          if(ship.deliveredDate) lines.push('Delivered: ' + ship.deliveredDate);
+          if(ship.shippedDate) lines.push('Shipped: ' + ship.shippedDate);
+          $container.append($('<div>').html(lines.join('<br>')));
+        });
+      })
+      .fail(function(xhr){ $container.text('Unable to load shipments: ' + xhr.responseText); });
+  }
+
+  function showReviewForm(productId, productName){
+    const $form = $('<div>').addClass('review-form');
+    $form.append($('<h4>').text('Review ' + productName));
+    $form.append($('<label>').text('Rating: ').append($('<select>').attr('id', 'reviewRating')
+      .append($('<option>').val('1').text('1'))
+      .append($('<option>').val('2').text('2'))
+      .append($('<option>').val('3').text('3'))
+      .append($('<option>').val('4').text('4'))
+      .append($('<option>').val('5').text('5'))));
+    $form.append($('<br>'));
+    $form.append($('<label>').text('Comment: ').append($('<textarea>').attr({id:'reviewComment',rows:3,cols:40})));  
+    const $submit = $('<button>').text('Submit Review').click(function(){
+      const payload = { buyerId: currentUserId, productId: productId, rating: parseInt($('#reviewRating').val(), 10), comment: $('#reviewComment').val() };
+      $.ajax({ url: '/api/reviews', method: 'POST', contentType: 'application/json', data: JSON.stringify(payload) })
+        .done(function(){ alert('Review submitted.'); $form.remove(); })
+        .fail(function(xhr){ alert('Review submission failed: ' + xhr.responseText); });
+    });
+    $form.append($('<div>').append($submit));
+    $('#orders').prepend($form);
+    $('html, body').animate({ scrollTop: $form.offset().top - 50 }, 400);
+  }
+
+  function loadProfile(){
+    if(!currentUserId){ $('#profileInfo').text('Not logged in.'); $('#profileForm').hide(); return; }
+    $('#profileInfo').text('Loading profile…');
+    $.get('/api/profile/' + currentUserId)
+      .done(function(user){
+        const details = [];
+        details.push('Name: ' + (user.fullName || 'N/A'));
+        details.push('Email: ' + (user.email || 'N/A'));
+        details.push('Contact: ' + (user.contactNo || 'N/A'));
+        details.push('Role: ' + (user.role || 'N/A'));
+        if(user.businessName) details.push('Business: ' + user.businessName);
+        if(user.businessDescription) details.push('About: ' + user.businessDescription);
+        $('#profileInfo').html(details.join('<br>'));
+        $('#profileFullName').val(user.fullName || '');
+        $('#profileContactNo').val(user.contactNo || '');
+        $('#profileEmail').val(user.email || '');
+        $('#profilePassword').val('');
+        $('#profileForm').show();
+        setSellerSection(user);
+      })
+      .fail(function(xhr){ $('#profileInfo').text('Failed to load profile: ' + xhr.responseText); $('#profileForm').hide(); });
+  }
+
+  $('#profileForm').on('submit', function(e){
+    e.preventDefault();
+    if(!currentUserId){ alert('Please login first'); return; }
+    const payload = {
+      fullName: $('#profileFullName').val(),
+      contactNo: $('#profileContactNo').val(),
+      email: $('#profileEmail').val()
+    };
+    const password = $('#profilePassword').val();
+    if(password){ payload.password = password; }
+    $.ajax({ url: '/api/profile/' + currentUserId, method: 'PUT', contentType: 'application/json', data: JSON.stringify(payload) })
+      .done(function(){ $('#profileStatus').text('Profile updated.'); loadProfile(); })
+      .fail(function(xhr){ $('#profileStatus').text('Update failed: ' + xhr.responseText); });
+  });
+
+  function loadNotifications(){
+    if(!currentUserId){ $('#notifications').text('Not logged in.'); return; }
+    $('#notifications').text('Loading notifications…');
+    $.get('/api/notifications/user/' + currentUserId)
+      .done(function(items){
+        const $container = $('#notifications').empty();
+        if(!items || items.length === 0){ $container.text('No notifications yet.'); return; }
+        items.forEach(n => {
+          const $note = $('<div>').addClass('notification');
+          const status = n.isRead ? 'Read' : 'New';
+          $note.append($('<div>').html('<strong>' + n.title + '</strong> (' + status + ')'));
+          $note.append($('<div>').text(n.message || ''));
+          if(n.relatedOrderId){ $note.append($('<div>').text('Order: #' + n.relatedOrderId)); }
+          const $mark = $('<button>').text(n.isRead ? 'Mark read' : 'Mark as read').click(function(){
+            $.ajax({ url: '/api/notifications/' + n.notificationId + '/read', method: 'PUT' })
+              .done(function(){ loadNotifications(); })
+              .fail(function(xhr){ alert('Unable to mark notification as read: ' + xhr.responseText); });
+          });
+          $note.append($mark);
+          $container.append($note);
+        });
+      })
+      .fail(function(xhr){ $('#notifications').text('Unable to load notifications: ' + xhr.responseText); });
   }
 
   // --- Login ---
