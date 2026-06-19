@@ -1,32 +1,42 @@
-$(function(){
-  let currentUserId = null;
-  let currentUserRole = null;
+document.addEventListener("DOMContentLoaded", () => {
+    
+    // ==========================================================================
+    // 1. BUY/SELL NAVBAR TOGGLE STATES
+    // ==========================================================================
+    const toggleButtons = document.querySelectorAll(".toggle-btn");
+    toggleButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            toggleButtons.forEach(btn => btn.classList.remove("active"));
+            button.classList.add("active");
+        });
+    });
 
-  // Render a compact admin detail card for seller/product/user
-  function renderAdminCard(type, data) {
-    if(!type || !data){
-      $('#adminDetailCard').hide();
-      return;
-    }
-    let html = '';
-    if(type === 'seller' || type === 'user'){
-      html += '<div class="card-row">';
-      html += '<div class="card-col"><strong>' + (data.fullName || data.email || 'Unknown') + '</strong><div class="muted">ID: ' + (data.userId || data.id || '') + '</div></div>';
-      html += '<div class="card-col">Role: ' + (data.role || '') + '<br/>Verified: ' + (data.verificationStatus || 'N/A') + '</div>';
-      html += '<div class="card-col">Active: ' + (data.isActive ? 'Yes' : 'No') + '<br/>Shadow Banned: ' + (data.isShadowBanned ? 'Yes' : 'No') + '</div>';
-      html += '</div>';
-      if(type === 'seller' && data.productsHtml){
-        html += '<hr/>' + data.productsHtml;
-      }
-    } else if(type === 'product'){
-      html += '<div class="card-row">';
-      html += '<div class="card-col"><strong>' + (data.itemName || data.name || 'Product') + '</strong><div class="muted">ID: ' + (data.productId || data.id || '') + '</div></div>';
-      html += '<div class="card-col">Price: ₱' + (data.price || '0') + '<br/>Status: ' + (data.status || '') + '</div>';
-      html += '<div class="card-col">Category: ' + (data.category || '') + '<br/>Seller: ' + ((data.seller && (data.seller.fullName || data.seller.email)) || 'N/A') + '</div>';
-      html += '</div>';
-      if(data.description){ html += '<hr/><div>' + (data.description || '') + '</div>'; }
+    // ==========================================================================
+    // 2. HERO CAROUSEL CONTROLLER
+    // ==========================================================================
+    const slides = document.querySelectorAll(".slide");
+    const prevBtn = document.getElementById("prevSlide");
+    const nextBtn = document.getElementById("nextSlide");
+    let currentIdx = 0;
+    let slideInterval;
+
+    function showSlide(index) {
+        if (slides.length === 0) return;
+        
+        // Deactivate all active slides smoothly via CSS transitions
+        slides.forEach(slide => slide.classList.remove("active"));
+        
+        currentIdx = index;
+        // Keep index looping mathematically bound within array length
+        if (currentIdx >= slides.length) currentIdx = 0;
+        if (currentIdx < 0) currentIdx = slides.length - 1;
+        
+        // Wake up targeted slide view layer
+        slides[currentIdx].classList.add("active");
     }
 
+    function nextSlide() {
+        showSlide(currentIdx + 1);
     $('#adminCardBody').html(html);
     $('#adminDetailCard').show().data('type', type).data('id', (data.userId||data.productId||data.id||'')).removeClass('muted');
   }
@@ -53,81 +63,27 @@ $(function(){
       $('#orders').text('Not logged in.');
     }
 
-    if(currentUserRole === 'admin'){
-      $('#admin-section').show();
-      $('#adminStatus').text('Admin controls are active.');
-      loadAdminProducts();
-    } else {
-      $('#admin-section').hide();
-      $('#adminStatus').text('');
+    function startAutoplay() {
+        if (slides.length > 0) {
+            slideInterval = setInterval(nextSlide, 5000); // Changes background image automatically every 5 seconds
+        }
     }
 
-    if(currentUserRole === 'seller'){
-      $('#seller-section').show();
-      $('#seller-request-section').show();
-      loadSellerRequests();
-    } else {
-      $('#seller-section').hide();
-      $('#seller-request-section').hide();
+    function resetAutoplay() {
+        clearInterval(slideInterval);
+        startAutoplay();
     }
-  }
 
-  $('#showRegisterLink').on('click', function(e){
-    e.preventDefault();
-    $('.login-wrapper').hide();
-    $('#main-app').show();
-    $('#register-section').removeClass('hidden-section').show();
-  });
-
-  $('#backToLoginLink').on('click', function(e){
-    e.preventDefault();
-    $('#register-section').addClass('hidden-section').hide();
-    $('.login-wrapper').show();
-    $('#main-app').hide();
-  });
-
-  // --- Products ---
-  function renderProducts(list){
-    const $c = $('#products').empty();
-    if(!list || list.length === 0){ $c.text('No products available.'); return; }
-    list.forEach(p => {
-      const $card = $('<div>').addClass('product');
-      $card.append($('<div>').text(p.itemName + ' — ₱' + (p.price || '0')));
-      const $btn = $('<button>').text('Add to cart').click(function(){
-        if(!currentUserId){ alert('Please login first'); return; }
-        $.post('/api/cart/add?userId=' + currentUserId + '&productId=' + p.productId)
-          .done(function(){ alert('Added to cart'); loadCart(); })
-          .fail(function(xhr){ alert('Add failed: ' + xhr.responseText); });
-      });
-      $card.append($btn);
-      $c.append($card);
-    });
-  }
-
-  function loadProducts(){
-    $('#products').text('Loading products…');
-    $.get('/api/products')
-      .done(renderProducts)
-      .fail(function(xhr){ $('#products').text('Failed to load products: ' + xhr.responseText); });
-  }
-
-  // --- Cart ---
-  function renderCart(items){
-    const $c = $('#cart').empty();
-    if(!items || items.length === 0){ $c.text('Cart is empty.'); return; }
-    items.forEach(it => {
-      const $row = $('<div>').addClass('cart-item');
-      $row.append($('<div>').text((it.product?.itemName || 'Item') + ' x' + (it.quantity || 1)));
-      const $rm = $('<button>').text('Remove').click(function(){
-        $.ajax({ url: '/api/cart/' + it.cartId, type: 'DELETE' })
-          .done(function(){ loadCart(); })
-          .fail(function(xhr){ alert('Remove failed: ' + xhr.responseText); });
-      });
-      $row.append($rm);
-      $c.append($row);
-    });
-  }
-
+    // Set interactive event tracking for manual slide stepping controls
+    if (nextBtn && prevBtn) {
+        nextBtn.addEventListener("click", () => { 
+            nextSlide(); 
+            resetAutoplay(); 
+        });
+        prevBtn.addEventListener("click", () => { 
+            showSlide(currentIdx - 1); 
+            resetAutoplay(); 
+        });
   function loadCart(){
     if(!currentUserId){ $('#cart').text('Not logged in.'); return; }
     $('#cart').text('Loading cart…');
@@ -364,11 +320,6 @@ $(function(){
     } else {
       $('#seller-section').hide();
     }
-  }
-
-  $('#sellerProductForm').on('submit', function(e){
-    e.preventDefault();
-    if(!currentUserId){ alert('Please login first'); return; }
 
     const payload = {
       itemName: $('#productName').val(),
@@ -539,122 +490,6 @@ $(function(){
         products.forEach(p => {
           $list.append($('<div>').html('<strong>' + p.itemName + '</strong> — ' + (p.price || '0') + ' (' + (p.status || 'N/A') + ')'));
         });
-        $('#sellerProducts').empty().append($list);
-        // If admin card currently shows this seller, append a compact product list
-        if($('#adminDetailCard').data('type') === 'seller' && String($('#adminDetailCard').data('id')) === String(sellerId)){
-          let productsHtml = '<div><strong>Products</strong><ul>' + products.map(p => '<li>' + (p.itemName || '') + ' — ₱' + (p.price||'0') + ' (' + (p.status||'') + ')</li>').join('') + '</ul></div>';
-          const existing = $('#adminCardBody').html() || '';
-          $('#adminCardBody').html(existing + '<hr/>' + productsHtml);
-        }
-      })
-      .fail(function(xhr){ $('#sellerProducts').text('Failed to load seller products: ' + xhr.responseText); });
-  }
+    });
 
-  function loadShadowBanUserDetails(){
-    const userId = $('#shadowBanUserId').val();
-    if(!userId){ $('#shadowBanUserDetails').text('User ID is required.'); return; }
-    $('#shadowBanUserDetails').text('Loading user details…');
-    $.get('/api/profile/' + userId)
-      .done(function(user){
-        const details = [];
-        details.push('Name: ' + (user.fullName || 'N/A'));
-        details.push('Email: ' + (user.email || 'N/A'));
-        details.push('Role: ' + (user.role || 'N/A'));
-        details.push('Active: ' + (user.isActive ? 'Yes' : 'No'));
-        details.push('Shadow Banned: ' + (user.isShadowBanned ? 'Yes' : 'No'));
-        $('#shadowBanUserDetails').html(details.join('<br>'));
-        renderAdminCard('user', user);
-      })
-      .fail(function(xhr){ $('#shadowBanUserDetails').text('Failed to load user details: ' + xhr.responseText); });
-  }
-
-  function loadProductDetails(){
-    const productId = $('#adminProductId').val();
-    if(!productId){ $('#moderationProductDetails').text('Product ID is required.'); return; }
-    $('#moderationProductDetails').text('Loading product details…');
-    $.get('/api/products/' + productId)
-      .done(function(product){
-        const details = [];
-        details.push('Name: ' + (product.itemName || 'N/A'));
-        details.push('Category: ' + (product.category || 'N/A'));
-        details.push('Price: ' + (product.price || 'N/A'));
-        details.push('Status: ' + (product.status || 'N/A'));
-        details.push('Seller: ' + ((product.seller && product.seller.fullName) || (product.seller && product.seller.email) || 'N/A'));
-        details.push('Description: ' + (product.description || 'N/A'));
-        $('#moderationProductDetails').html(details.join('<br>'));
-        renderAdminCard('product', product);
-      })
-      .fail(function(xhr){ $('#moderationProductDetails').text('Failed to load product details: ' + xhr.responseText); });
-  }
-
-  $('#verifySellerForm').on('submit', function(e){
-    e.preventDefault();
-    const sellerId = $('#adminSellerId').val();
-    const status = $('#adminSellerStatus').val();
-    const adminId = currentUserId || 1;
-    $('#verifySellerStatus').text('Verifying…');
-    $.ajax({
-      url: '/api/admin/sellers/' + sellerId + '/verify?status=' + status + '&adminId=' + adminId,
-      method: 'PUT'
-    })
-      .done(function(){ $('#verifySellerStatus').text('Seller verification updated.'); })
-      .fail(function(xhr){ $('#verifySellerStatus').text('Verify failed: ' + xhr.responseText); });
-  });
-
-  $('#changeAccountStatusForm').on('submit', function(e){
-    e.preventDefault();
-    const userId = $('#adminUserId').val();
-    const isActive = $('#adminUserActive').val();
-    const adminId = currentUserId || 1;
-    $('#changeAccountStatusStatus').text('Updating…');
-    $.ajax({
-      url: '/api/admin/users/' + userId + '/status?isActive=' + isActive + '&adminId=' + adminId,
-      method: 'PUT'
-    })
-      .done(function(){ $('#changeAccountStatusStatus').text('Account status updated.'); })
-      .fail(function(xhr){ $('#changeAccountStatusStatus').text('Update failed: ' + xhr.responseText); });
-  });
-
-  $('#shadowBanForm').on('submit', function(e){
-    e.preventDefault();
-    const userId = $('#shadowBanUserId').val();
-    const shadowBanned = $('#adminUserShadowBan').val();
-    const adminId = currentUserId || 1;
-    $('#shadowBanStatus').text('Updating…');
-    $.ajax({
-      url: '/api/admin/users/' + userId + '/shadow-ban?shadowBanned=' + shadowBanned + '&adminId=' + adminId,
-      method: 'PUT'
-    })
-      .done(function(){ $('#shadowBanStatus').text('Shadow ban status updated.'); loadShadowBanUserDetails(); })
-      .fail(function(xhr){ $('#shadowBanStatus').text('Update failed: ' + xhr.responseText); });
-  });
-
-  $('#loadSellerDetailsBtn').on('click', function(){
-    loadSellerDetails();
-  });
-
-  $('#loadShadowBanUserBtn').on('click', function(){
-    loadShadowBanUserDetails();
-  });
-
-  $('#loadProductDetailsBtn').on('click', function(){
-    loadProductDetails();
-  });
-
-  $('#moderateProductForm').on('submit', function(e){
-    e.preventDefault();
-    const productId = $('#adminProductId').val();
-    const status = $('#adminProductStatus').val();
-    const adminId = currentUserId || 1;
-    $('#moderateProductStatus').text('Moderating…');
-    $.ajax({
-      url: '/api/admin/products/' + productId + '/moderate?status=' + status + '&adminId=' + adminId,
-      method: 'PUT'
-    })
-      .done(function(){ $('#moderateProductStatus').text('Product moderated successfully.'); loadProducts(); })
-      .fail(function(xhr){ $('#moderateProductStatus').text('Moderation failed: ' + xhr.responseText); });
-  });
-
-  // Start state
-  $('#products').text('Please login to see products.');
 });
