@@ -1,0 +1,706 @@
+/* ==========================================================================
+   HOMEPAGE BRAND THEME VARIABLES
+   ========================================================================== */
+:root {
+    --bg-cream: #faf9ee;
+    --primary-yellow: #fbce60;
+    --text-black: #000000;
+    --text-muted: #555555;
+    --border-gray: #e0e0e0;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-cream);
+    font-family: 'Inter', sans-serif;
+    color: var(--text-black);
+    overflow-x: hidden;
+}
+
+/* ==========================================================================
+   GLOBAL STRUCTURE & SECTION REPAIR (Pushes View All to the far right)
+   ========================================================================== */
+.section-container {
+    padding: 40px 5%;
+    box-sizing: border-box;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 24px;
+    padding: 0;
+}
+
+.section-header h2 {
+    font-size: 22px;
+    font-weight: 900;
+    color: #1a1a1a;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.view-all {
+    font-size: 11px;
+    font-weight: 800;
+    color: #1a1a1a;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: opacity 0.2s;
+}
+
+.view-all:hover {
+    opacity: 0.7;
+}
+
+/* ==========================================================================
+   1. TRANSPARENT NAVIGATION OVERLAY HEADER (FIGMA EXACT MATCH)
+   ========================================================================== */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 5%;
+    background-color: transparent; 
+    border-bottom: none; 
+    position: absolute; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    height: 90px;
+    box-sizing: border-box;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.brand-logo {
+    height: 36px;
+    width: auto;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff; 
+    transition: transform 0.2s;
+}
+
+.icon-btn:hover {
+    transform: scale(1.1);
+}
+
+.toggle-container {
+    display: flex;
+    background-color: rgba(255, 255, 255, 0.2); 
+    padding: 3px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    margin-right: 12px;
+    backdrop-filter: blur(8px);
+}
+
+.toggle-btn {
+    background: none;
+    border: none;
+    padding: 6px 20px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    border-radius: 20px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+}
+
+.toggle-btn.active {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+/* ==========================================================================
+   2. HERO BLOCK (FIXED: LEFT-ALIGNED CONTENT & FULL VIEWPORT BLEED)
+   ========================================================================== */
+.hero-carousel {
+    position: relative;
+    height: 85vh; 
+    background-color: #111111;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end; 
+    justify-content: flex-start; 
+    width: 100%;
+}
+
+.carousel-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center 20%;
+    opacity: 0;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.slide.active {
+    opacity: 0.65; 
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.4) 100%);
+    z-index: 2;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: left; 
+    color: #ffffff;
+    width: 100%;
+    max-width: 850px;
+    padding-left: 5%; 
+    padding-bottom: 80px; 
+    box-sizing: border-box;
+}
+
+.hero-content h1 {
+    font-size: 64px; 
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    margin: 0 0 16px 0;
+    text-transform: uppercase;
+}
+
+.hero-content p {
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    margin: 0 0 32px 0;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.hero-buttons {
+    display: flex;
+    justify-content: flex-start; 
+    gap: 16px;
+}
+
+.btn {
+    padding: 14px 32px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    display: inline-block;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-yellow);
+    color: var(--text-black);
+    border: 1px solid var(--primary-yellow);
+}
+
+.btn-primary:hover {
+    background-color: #f5c44c;
+    transform: translateY(-1px);
+}
+
+.btn-outline {
+    border: 1px solid #ffffff;
+    color: #ffffff;
+}
+
+.btn-outline:hover {
+    background-color: #ffffff;
+    color: #000000;
+    transform: translateY(-1px);
+}
+
+.carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    color: rgba(255, 255, 255, 0.6);
+    border: none;
+    font-size: 32px;
+    cursor: pointer;
+    z-index: 15;
+    transition: color 0.2s;
+}
+
+.carousel-arrow:hover {
+    color: #ffffff;
+}
+
+.prev { left: 40px; }
+.next { right: 40px; }
+
+/* ==========================================================================
+   3. TRUST FEATURES STRIP (VERTICAL BORDER DIVIDERS)
+   ========================================================================== */
+.features-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e4da;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 12px;
+    padding: 20px 15px;
+    border-right: 1px solid #e5e4da; 
+    box-sizing: border-box;
+}
+
+.feature-item:last-child {
+    border-right: none;
+}
+
+.feature-item i {
+    font-size: 16px;
+    color: #1a1a1a;
+}
+
+.feature-item strong {
+    display: block;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: #1a1a1a;
+}
+
+.feature-item p {
+    margin: 2px 0 0 0;
+    font-size: 10px;
+    color: #777777;
+}
+
+/* ==========================================================================
+   4. SHOP BY CATEGORY (HIGH-RESOLUTION FULL IMAGE BOXES - NO SQUARES)
+   ========================================================================== */
+.category-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.category-card {
+    flex: 1;
+    background: transparent !important; /* 🔥 Clears background boxes entirely */
+    border: none !important; /* 🔥 Ensures zero restrictive borders */
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end; /* Keeps descriptions pinned flush to base line */
+    padding: 0;
+    text-decoration: none;
+}
+
+.category-card:hover {
+    transform: translateY(-4px);
+}
+
+.category-card img {
+    width: 100%; /* Spans across entire grid slot smoothly */
+    height: auto;
+    max-height: 140px; 
+    object-fit: contain; 
+    display: block;
+    background: transparent !important;
+    margin-bottom: 14px; 
+}
+
+.category-card span {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: #1a1a1a;
+    text-transform: uppercase;
+    display: block;
+    margin-top: auto;
+}
+
+/* ==========================================================================
+   5. NEW ARRIVALS (PERFECT FIGMA ACCURACY REFRESH)
+   ========================================================================== */
+.masonry-grid {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch; 
+    gap: 16px;
+    width: 100%;
+}
+
+.masonry-column {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between; 
+}
+
+.masonry-item {
+    position: relative; 
+    background-color: transparent;
+    border: none; 
+    margin-bottom: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    width: 100%;
+    display: block;
+}
+
+.masonry-column .masonry-item:last-child {
+    margin-bottom: 0;
+}
+
+.masonry-item img {
+    width: 100%;
+    height: auto; 
+    display: block;
+    object-fit: cover;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.masonry-item:hover img {
+    transform: scale(1.03);
+}
+
+/* ==========================================================================
+   FULL-FRAME HOVER OVERLAY SYSTEM (NO TOP GAP / SEAMLESS COVER)
+   ========================================================================== */
+.item-hover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; 
+    background-color: rgba(255, 255, 255, 0.15); 
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 12px;
+    box-sizing: border-box;
+    z-index: 10;
+}
+
+.masonry-item:hover .item-hover-overlay {
+    opacity: 1;
+}
+
+.overlay-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.item-title-badge {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 6px 10px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 82%;
+}
+
+.zoom-icon-circle {
+    background-color: #ffffff;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 13px;
+    color: #000000;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.overlay-bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.item-price-tag {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 4px;
+}
+
+.item-price-tag span {
+    color: #888888;
+    font-size: 9px;
+    margin-left: 3px;
+}
+
+.btn-add-cart-action {
+    background-color: #ffffff;
+    color: #000000;
+    border: 1px solid #1a1a1a;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-add-cart-action:hover {
+    background-color: var(--primary-yellow);
+    color: #000000;
+}
+
+/* ==========================================================================
+   6. OUR STORY SECTION (YELLOW CONTAINER BLOCK)
+   ========================================================================== */
+.our-story-section {
+    background-color: #f9d162;
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 40px;
+    padding: 60px 6%;
+    align-items: center;
+}
+
+.story-text h2 {
+    font-size: 28px;
+    font-weight: 900;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.story-text p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.btn-dark {
+    display: inline-block;
+    background-color: var(--text-black);
+    color: #ffffff;
+    padding: 12px 24px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+}
+
+.story-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.story-gallery img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    background-color: #e5e4da;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+/* ==========================================================================
+   7. REAL FITS INSTAGRAM GRID (8 COLUMNS ELEMENTS)
+   ========================================================================== */
+.instagram-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 10px;
+}
+
+.instagram-grid img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    background-color: #e5e4da;
+}
+
+.insta-follow-card {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.insta-follow-card p {
+    font-size: 10px;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    letter-spacing: 0.05em;
+}
+
+.insta-follow-card .icon {
+    font-size: 16px;
+}
+
+/* ==========================================================================
+   8. NEWSLETTER BANNER
+   ========================================================================== */
+.newsletter-bar {
+    background-color: #333333;
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 4%;
+}
+
+.news-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 24px;
+}
+
+.news-left strong {
+    display: block;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+}
+
+.news-left p {
+    margin: 4px 0 0 0;
+    font-size: 12px;
+    color: #cccccc;
+}
+
+.news-right {
+    display: flex;
+    gap: 10px;
+}
+
+.news-right input {
+    padding: 10px 15px;
+    border: 1px solid #555;
+    background-color: #222;
+    color: white;
+    width: 250px;
+}
+
+.news-right button {
+    background-color: #ffffff;
+    color: #000000;
+    border: none;
+    padding: 10px 20px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   9. GLOBAL SYSTEM FOOTER
+   ========================================================================== */
+.main-footer {
+    background-color: #111111;
+    color: #ffffff;
+    padding: 40px 4%;
+    text-align: center;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.footer-links a {
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffffff;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+}
+
+.footer-socials {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.footer-socials a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.copyright {
+    font-size: 11px;
+    color: #666666;
+    margin: 0;
+}

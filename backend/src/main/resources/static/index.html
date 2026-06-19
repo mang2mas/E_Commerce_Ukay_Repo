@@ -1,288 +1,386 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Ukay Shop</title>
-  <link rel="stylesheet" href="css/login.css">
-  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ukay Ukay | Curated Vintage</title>
+    <!-- Imports clean scalable vector icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Links to your unified homepage styles -->
+    <link rel="stylesheet" href="/css/homepage.css">
 </head>
 <body>
- <div class="login-wrapper">
-    <div class="login-card">
-      <img src="images/LOGO.png" class="login-logo" alt="Ukay Shop Logo">
-      <h2><span class="headline-bold">Log in</span> to continue shopping</h2>
-      <form id="loginForm">
-        <label class="input-label">EMAIL
-          <input type="email" id="email" placeholder="Enter your email" required>
-        </label>
-        <label class="input-label">PASSWORD
-          <input type="password" id="password" placeholder="Enter your password" required>
-        </label>
-        <div class="forgot-row">
-          <a href="#">Forgot password?</a>
-        </div>
-        <button type="submit" class="primary-btn">LOG IN</button>
-        <div id="loginStatus" class="status-text"></div>
-      </form>
-      <div class="divider"><span>OR</span></div>
-      <button type="button" class="social-btn google-btn">
-        <!-- TODO: add Google icon here -->
-        Continue with Google
-      </button>
-      <button type="button" class="social-btn apple-btn">
-        <!-- TODO: add Apple icon here -->
-        Continue with Apple
-      </button>
-      <p class="signup-line">Don’t have an account? <a href="#" id="showRegisterLink">Sign up</a></p>
-      <p class="admin-link"><a href="#" id="adminLink">Admin</a></p>
-    </div>
-  </div>
 
-  <section id="main-app" style="display:none;">
-    <h1>Ukay Shop — Demo UI</h1>
-
-    <section id="register-section" class="hidden-section">
-      <h2>Register</h2>
-      <form id="registerForm">
-        <label>Full name
-          <input type="text" id="registerName" required>
-        </label>
-        <label>Email
-          <input type="email" id="registerEmail" required>
-        </label>
-        <label>Password
-          <input type="password" id="registerPassword" required>
-        </label>
-        <label>Account type
-          <select id="registerRole">
-            <option value="buyer">Buyer</option>
-            <option value="seller">Seller</option>
-          </select>
-        </label>
-        <div id="sellerFields" style="display:none;">
-          <label>Business name
-            <input type="text" id="registerBusinessName">
-          </label>
-          <label>Business description
-            <textarea id="registerBusinessDescription" rows="3"></textarea>
-          </label>
+    <!-- ==========================================================================
+         1. STICKY NAVIGATION HEADER
+         ========================================================================== -->
+    <header class="navbar">
+        <div class="nav-left">
+            <button class="icon-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <img src="/images/logo.png" alt="Ukay Ukay" class="brand-logo">
         </div>
-        <button type="submit">Register</button>
-        <div id="registerStatus"></div>
-      </form>
-      <p><a href="#" id="backToLoginLink">Back to login</a></p>
+        <div class="nav-right">
+            <div class="toggle-container">
+                <button class="toggle-btn active">BUY</button>
+                <button class="toggle-btn">SELL</button>
+            </div>
+            <button class="icon-btn"><i class="fa-solid fa-house"></i></button>
+            <button class="icon-btn profile-trigger"><i class="fa-regular fa-user"></i></button>
+            <button class="icon-btn cart-trigger"><i class="fa-solid fa-bag-shopping"></i></button>
+        </div>
+    </header>
+
+    <!-- ==========================================================================
+         2. HERO SLIDER CAROUSEL (image_3a0bbe.jpg)
+         ========================================================================== -->
+    <section class="hero-carousel">
+        <div class="carousel-container" id="carouselContainer">
+            <div class="slide active" style="background-image: url('/images/carousel-img1.jpg');"></div>
+            <div class="slide" style="background-image: url('/images/carousel-img2.jpg');"></div>
+            <div class="slide" style="background-image: url('/images/carousel-img3.jpg');"></div>
+        </div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>CURATED VINTAGE.<br>ONE OF A KIND.</h1>
+            <p>Real clothes with real stories.</p>
+            <div class="hero-buttons">
+                <a href="#" class="btn btn-primary shop-trigger">SHOP NEW ARRIVALS</a>
+                <a href="#" class="btn btn-outline">BROWSE COLLECTION</a>
+            </div>
+        </div>
+        <button class="carousel-arrow prev" id="prevSlide">❮</button>
+        <button class="carousel-arrow next" id="nextSlide">❯</button>
+    </section>
+    
+<!-- ==========================================================================
+         3. TRUST FEATURES STRIP (FIGMA EXACT SEPARATORS)
+         ========================================================================== -->
+    <section class="features-bar">
+        <div class="feature-item">
+            <i class="fa-solid fa-bolt"></i> 
+            <div><strong>FAST SHIPPING</strong><p>Fast and reliable shipping</p></div>
+        </div>
+        <div class="feature-item">
+            <i class="fa-solid fa-arrows-rotate"></i> 
+            <div><strong>7-DAY RETURNS</strong><p>Easy Returns & Exchanges</p></div>
+        </div>
+        <div class="feature-item">
+            <i class="fa-solid fa-shield-halved"></i> 
+            <div><strong>SECURE CHECKOUTS</strong><p>Safe Payments</p></div>
+        </div>
+        <div class="feature-item">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> 
+            <div><strong>NEW DROPS WEEKLY</strong><p>Fresh pieces every week</p></div>
+        </div>
     </section>
 
-    <section id="seller-request-section" style="display:none;">
-    <h2>Seller — Business Approval Request</h2>
-    <form id="sellerRequestForm">
-      <label>Business name<br>
-        <input type="text" id="bizName" required>
-      </label>
-      <br>
-      <label>Business description<br>
-        <textarea id="bizDescription" rows="4" cols="40" required></textarea>
-      </label>
-      <br>
-      <label>Business permit (URL or filename)<br>
-        <input type="text" id="bizPermit">
-      </label>
-      <br>
-      <label>Notes<br>
-        <textarea id="bizNotes" rows="3" cols="40"></textarea>
-      </label>
-      <br>
-      <button type="submit">Submit Business Request</button>
-      <div id="sellerRequestStatus"></div>
-    </form>
-
-    <h3>Your Requests</h3>
-    <div id="sellerRequests">Not loaded.</div>
-  </section>
-
-  <section id="products-section">
-    <h2>Products</h2>
-    <div id="products">Loading products…</div>
-  </section>
-
-  <section id="cart-section">
-    <h2>Your Cart</h2>
-    <div id="cart">Not logged in.</div>
-  </section>
-
-  <section id="orders-section">
-    <h2>Your Orders</h2>
-    <div id="orders">Not logged in.</div>
-  </section>
-
-  <section id="checkout-section">
-    <h2>Checkout</h2>
-    <form id="checkoutForm">
-      <label>Shipping address<br>
-        <input type="text" id="shippingAddress" required>
-      </label>
-      <br>
-      <label>Payment method<br>
-        <select id="paymentMethod">
-          <option>Cash on Delivery</option>
-          <option>Card</option>
-        </select>
-      </label>
-      <br>
-      <button type="submit">Place Order</button>
-    </form>
-  </section>
-
-  <section id="admin-section" style="display:none;">
-    <h2>Admin Dashboard</h2>
-    <div id="adminStatus"></div>
-    <style>
-      .admin-card{border:1px solid #ddd;padding:12px;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,0.06);max-width:720px;margin:10px 0;background:#fff}
-      .admin-card .card-header{font-weight:700;margin-bottom:8px}
-      .admin-card .card-row{display:flex;gap:12px;flex-wrap:wrap}
-      .admin-card .card-col{flex:1 1 200px}
-      .admin-card .muted{color:#666;font-size:0.9em}
-    </style>
-
-    <div id="adminDetailCard" class="admin-card" style="display:none;">
-      <div class="card-header">Selected Item</div>
-      <div id="adminCardBody" class="card-body muted">No item selected.</div>
-    </div>
-
-    <section id="admin-products-section">
-      <h3>Admin Product List</h3>
-      <div id="adminProducts">Loading admin products…</div>
+    <!-- ==========================================================================
+         4. SHOP BY CATEGORY (FIGMA EXACT SPELLING & RENDERING)
+         ========================================================================== -->
+    <section class="section-container">
+        <div class="section-header">
+            <h2>SHOP BY CATEGORY</h2>
+            <a href="#" class="view-all">VIEW ALL ➔</a>
+        </div>
+        <div class="category-grid">
+            <div class="category-card"><img src="/images/tops.jpg" alt="Tops"><span>TOPS</span></div>
+            <div class="category-card"><img src="/images/bottoms.jpg" alt="Bottoms"><span>BOTTOMS</span></div>
+            <div class="category-card"><img src="/images/outerwear.jpg" alt="Outerwear"><span>OUTERWEAR</span></div>
+            <div class="category-card"><img src="/images/bags.jpg" alt="Bags"><span>BAGS</span></div>
+            <div class="category-card"><img src="/images/accessories.jpg" alt="Accesories"><span>ACCESORIES</span></div>
+            <div class="category-card"><img src="/images/shirts.jpg" alt="Shirts"><span>SHIRTS</span></div>
+            <div class="category-card"><img src="/images/sale.jpg" alt="Sale"><span>SALE</span></div>
+        </div>
     </section>
 
-    <h3>Verify Seller</h3>
-    <form id="verifySellerForm">
-      <label>Seller ID<br>
-        <input type="number" id="adminSellerId" required>
-      </label>
-      <button type="button" id="loadSellerDetailsBtn">Load Seller Details</button>
-      <br>
-      <label>Status<br>
-        <select id="adminSellerStatus">
-          <option value="APPROVED">APPROVED</option>
-          <option value="REJECTED">REJECTED</option>
-        </select>
-      </label>
-      <br>
-      <button type="submit">Submit Verification</button>
-      <div id="verifySellerStatus"></div>
-    </form>
-    <div id="sellerInfo">
-      <h4>Seller Details</h4>
-      <div id="sellerDetails">Enter a Seller ID and click Load Seller Details.</div>
-      <h4>Seller Products</h4>
-      <div id="sellerProducts">Seller products will appear here.</div>
-    </div>
+    <!-- ==========================================================================
+         5. NEW ARRIVALS (Exact 14-Item Masonry Layout Grid Framework)
+         ========================================================================== -->
+    <section class="section-container">
+        <div class="section-header">
+            <h2>NEW ARRIVALS</h2>
+            <a href="#" class="view-all">VIEW ALL ➔</a>
+        </div>
 
-    <h3>Change User Account Status</h3>
-    <form id="changeAccountStatusForm">
-      <label>User ID<br>
-        <input type="number" id="adminUserId" required>
-      </label>
-      <br>
-      <label>Active<br>
-        <select id="adminUserActive">
-          <option value="true">Active</option>
-          <option value="false">Suspended</option>
-        </select>
-      </label>
-      <br>
-      <button type="submit">Update Status</button>
-      <div id="changeAccountStatusStatus"></div>
-    </form>
+        <div class="masonry-grid">
+            
+            <!-- TRACK COLUMN 1 -->
+            <div class="masonry-column">
+                <div class="masonry-item item-short">
+                    <img src="/images/item1.jpg" alt="Orange Plaid Short Sleeve">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">ORANGE PLAID SHORT SLEEVE</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱350.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="masonry-item item-medium">
+                    <img src="/images/item2.jpg" alt="Asymmetric Dark Plaid Blouse">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">ASYMMETRIC DARK PLAID BLOUSE</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱390.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="masonry-item item-tall">
+                    <img src="/images/item3.jpg" alt="Green Flannel Layered Set">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">GREEN FLANNEL LAYERED SET</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱550.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    <h3>Shadow Ban User</h3>
-    <form id="shadowBanForm">
-      <label>User ID<br>
-        <input type="number" id="shadowBanUserId" required>
-      </label>
-      <button type="button" id="loadShadowBanUserBtn">Load User Details</button>
-      <br>
-      <label>Shadow Ban<br>
-        <select id="adminUserShadowBan">
-          <option value="true">Yes</option>
-          <option value="false">No</option>
-        </select>
-      </label>
-      <br>
-      <button type="submit">Update Shadow Ban</button>
-      <div id="shadowBanStatus"></div>
-    </form>
-    <div id="shadowBanInfo">
-      <h4>User Details</h4>
-      <div id="shadowBanUserDetails">Enter a User ID and click Load User Details.</div>
-    </div>
+            <!-- TRACK COLUMN 2 -->
+            <div class="masonry-column">
+                <div class="masonry-item item-tall">
+                    <img src="/images/item4.jpg" alt="Beige Traditional Short Sleeve">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">BEIGE TRADITIONAL SHORT SLEEVE</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱420.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="masonry-item item-medium">
+                    <img src="/images/item5.jpg" alt="Vintage Brown Plaid Shirt">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">VINTAGE BROWN PLAID SHIRT</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱380.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="masonry-item item-tall">
+                    <img src="/images/item6.jpg" alt="Pinstripe Corset Waist Blouse">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">PINSTRIPE CORSET WAIST BLOUSE</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱450.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    <h3>Moderate Product</h3>
-    <form id="moderateProductForm">
-      <label>Product ID<br>
-        <input type="number" id="adminProductId" required>
-      </label>
-      <br>
-      <label>Status<br>
-        <select id="adminProductStatus">
-          <option value="AVAILABLE">AVAILABLE</option>
-          <option value="REJECTED">REJECTED</option>
-          <option value="PENDING_APPROVAL">PENDING_APPROVAL</option>
-        </select>
-      </label>
-      <button type="button" id="loadProductDetailsBtn">Load Product Details</button>
-      <br>
-      <button type="submit">Moderate</button>
-      <div id="moderateProductStatus"></div>
-    </form>
-    <div id="productModerationInfo">
-      <h4>Product Details</h4>
-      <div id="moderationProductDetails">Enter a Product ID and click Load Product Details.</div>
-    </div>
-  </section>
+            <!-- TRACK COLUMN 3 -->
+            <div class="masonry-column">
+                <div class="masonry-item item-short">
+                    <img src="/images/item7.jpg" alt="Retro Striped Long Sleeve">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">RETRO STRIPED LONG SLEEVE</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱380.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="masonry-item item-tall">
+                    <img src="/images/item8.jpg" alt="Wide-Leg Pleated Trousers">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">WIDE-LEG PLEATED TROUSERS</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱590.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="masonry-item item-medium">
+                    <img src="/images/item9.jpg" alt="Y2K Coquette Lace Layered Dress">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">Y2K COQUETTE LAYERED DRESS</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱499.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-  <section id="seller-section" style="display:none;">
-    <h2>Seller Dashboard</h2>
-    <div id="sellerStatus"></div>
-    <form id="sellerProductForm" style="display:none;">
-      <label>Product name<br>
-        <input type="text" id="productName" required>
-      </label>
-      <br>
-      <label>Category<br>
-        <input type="text" id="productCategory" required>
-      </label>
-      <br>
-      <label>Price<br>
-        <input type="number" id="productPrice" step="0.01" required>
-      </label>
-      <br>
-      <label>Stock quantity<br>
-        <input type="number" id="productStock" min="1" value="1" required>
-      </label>
-      <br>
-      <label>Size<br>
-        <input type="text" id="productSize">
-      </label>
-      <br>
-      <label>Condition<br>
-        <input type="text" id="productCondition">
-      </label>
-      <br>
-      <label>Image path<br>
-        <input type="text" id="productImagePath">
-      </label>
-      <br>
-      <label>Description<br>
-        <textarea id="productDescription" rows="4"></textarea>
-      </label>
-      <br>
-      <button type="submit">Add Product</button>
-      <div id="sellerProductStatus"></div>
-    </form>
-  </section>
+            <!-- TRACK COLUMN 4 -->
+            <div class="masonry-column">
+                <div class="masonry-item item-tall">
+                    <img src="/images/item10.jpg" alt="Yellow Patterned Top with Baggy Jeans">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">COQUETTE TOP & DENIM SET</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱650.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="masonry-item item-short">
+                    <img src="/images/item11.jpg" alt="Military Buckled Jacket">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">MILITARY BUCKLED JACKET</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱480.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="masonry-item item-medium">
+                    <img src="/images/item12.jpg" alt="Red Ribbon Detail White Shirt">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">RED RIBBON DETAIL WHITE SHIRT</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱410.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-  <script src="js/app.js"></script>
+            <!-- TRACK COLUMN 5 -->
+            <div class="masonry-column">
+                <div class="masonry-item item-tall">
+                    <img src="/images/item13.jpg" alt="Red Gingham Ribbon Shirt">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">RED GINGHAM RIBBON SHIRT</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱390.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="masonry-item item-tall">
+                    <img src="/images/item14.jpg" alt="Asymmetric Slanted Grey Top">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">ASYMMETRIC SLANTED GREY TOP</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱430.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         6. OUR STORY SECTION
+         ========================================================================== -->
+    <section class="our-story-section">
+        <div class="story-text">
+            <h2>OUR STORY</h2>
+            <p>Ukay is more than a store; it’s a passion for timeless style, individuality, and sustainability. Every piece is handpicked for its quality, character, and uniqueness.</p>
+            <p><strong>No mass production. No restocks. Just real clothes with real stories.</strong></p>
+            <a href="#" class="btn-dark">LEARN MORE</a>
+        </div>
+        <div class="story-gallery">
+            <img src="/images/story1.jpg" alt="Story 1">
+            <img src="/images/story2.jpg" alt="Story 2">
+            <img src="/images/story3.jpg" alt="Story 3">
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         7. REAL FITS, REAL PEOPLE
+         ========================================================================== -->
+    <section class="section-container">
+        <div class="section-header">
+            <h2>REAL FITS, REAL PEOPLE. <span class="handle">@UKAY.OFFICIAL</span></h2>
+        </div>
+        <div class="instagram-grid">
+            <img src="/images/fit1.jpg" alt="Fit 1">
+            <img src="/images/fit2.jpg" alt="Fit 2">
+            <img src="/images/fit3.jpg" alt="Fit 3">
+            <img src="/images/fit4.jpg" alt="Fit 4">
+            <img src="/images/fit5.jpg" alt="Fit 5">
+            <img src="/images/fit6.jpg" alt="Fit 6">
+            <img src="/images/fit7.jpg" alt="Fit 7">
+            <div class="insta-follow-card">
+                <p>FOLLOW US ON INSTAGRAM</p>
+                <span class="icon"><i class="fa-brands fa-instagram"></i></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         8. NEWSLETTER BANNER
+         ========================================================================== -->
+    <section class="newsletter-bar">
+        <div class="news-left">
+            <span><i class="fa-regular fa-envelope"></i></span>
+            <div>
+                <strong>STAY CONNECTED</strong>
+                <p>New drops, exclusive offers and more.</p>
+            </div>
+        </div>
+        <div class="news-right">
+            <input type="email" placeholder="Enter your email">
+            <button>Subscribe</button>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         9. GLOBAL SYSTEM FOOTER
+         ========================================================================== -->
+    <footer class="main-footer">
+        <div class="footer-links">
+            <a href="#">PRIVACY POLICY</a>
+            <a href="#">ABOUT UKAY</a>
+        </div>
+        <div class="footer-socials">
+            <a href="#"><i class="fa-solid fa-globe"></i></a>
+            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+        </div>
+        <p class="copyright">© Ukay 2026</p>
+    </footer>
+
+    <script src="/js/app.js"></script>
 </body>
 </html>
