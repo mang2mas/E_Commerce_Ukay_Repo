@@ -9,4 +9,5 @@ import com.ukayukay.backend.entity.OrderItem;
 public interface OrderItemRepository extends JpaRepository<OrderItem, Integer> {
     // Easily find receipt detail rows for a specific order card
     List<OrderItem> findByOrder_OrderId(Integer orderId);
+    boolean existsByOrder_Customer_UserIdAndProduct_ProductId(Integer userId, Integer productId);
 }
