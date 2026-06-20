@@ -51,9 +51,21 @@
     </div>
 
     <script>
+        const nextUrl = new URLSearchParams(window.location.search).get('next') || './index.html';
+
+        if (sessionStorage.getItem('currentUserId')) {
+            window.location.href = nextUrl;
+        }
+
         document.getElementById('loginForm').addEventListener('submit', function(event) {
-            event.preventDefault(); 
-            window.location.href = '/';
+            event.preventDefault();
+            const emailValue = document.getElementById('email').value.trim();
+            const loginUserId = emailValue || 'guest-user';
+
+            sessionStorage.setItem('currentUserId', loginUserId);
+            sessionStorage.setItem('currentUserRole', 'buyer');
+
+            window.location.href = nextUrl;
         });
     </script>
 

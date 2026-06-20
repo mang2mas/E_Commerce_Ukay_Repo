@@ -1,28 +1,66 @@
-let currentUserId = null;
-let currentUserRole = null;
+let currentUserId = sessionStorage.getItem("currentUserId") || null;
+let currentUserRole = sessionStorage.getItem("currentUserRole") || null;
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ==========================================================================
+// ==========================================================================
     // 0. GLOBAL GATEWAY INTERCEPTOR (HARD REDIRECT TO LOGIN PAGE)
     // ==========================================================================
     document.body.addEventListener("click", (event) => {
-        // Identify if they clicked something interactive requiring a session
-        const target = event.target.closest('.profile-trigger, .cart-trigger, .shop-trigger, .category-card, .masonry-item, .btn-add-cart-action');
-        
-        if (target) {
-            // If the user session variable is completely empty, trigger the security gate
-            if (!currentUserId) {
+        const itemCard = event.target.closest('.masonry-item');
+        const addCartBtn = event.target.closest('.btn-add-cart-action');
+        const checkoutBtn = event.target.closest('.btn-checkout');
+        const protectedTarget = event.target.closest('.profile-trigger, .cart-trigger, .shop-trigger, .category-card, .view-all, .btn-primary, .btn-outline, .btn-add-cart-action, .btn-checkout');
+        const anchor = event.target.closest('a');
+        const isAuthenticated = Boolean(currentUserId);
+
+        if (itemCard || protectedTarget) {
+            if (!isAuthenticated) {
                 event.preventDefault();
                 event.stopPropagation();
-                
+
                 console.log("🔒 Access Denied: Hard redirecting user session to authentication page...");
-                
-                // Instantly break context and force load your standalone login page layout
-                window.location.href = "/login.html"; 
+
+                const nextUrl = anchor?.href || (itemCard
+                    ? './ItemDescription.html'
+                    : checkoutBtn
+                        ? './checkout.html'
+                        : window.location.href);
+
+                window.location.href = `./login.html?next=${encodeURIComponent(nextUrl)}`;
+                return;
+            }
+
+            if (addCartBtn) {
+                event.preventDefault();
+                event.stopPropagation();
+                alert('Item added to cart.');
+                return;
+            }
+
+            if (itemCard) {
+                event.preventDefault();
+                event.stopPropagation();
+                window.location.href = './ItemDescription.html';
+                return;
+            }
+
+            if (checkoutBtn) {
+                event.preventDefault();
+                event.stopPropagation();
+                window.location.href = './checkout.html';
+                return;
             }
         }
-    }, true); // Capturing phase set to true ensures we intercept before other logic executes
+    }, true);
+
+    function refreshLoginStatusIndicator() {
+        const statusLabel = document.getElementById('loginStatus');
+        if (!statusLabel) return;
+        statusLabel.textContent = currentUserId ? 'Logged in' : 'Not logged in';
+    }
+
+    refreshLoginStatusIndicator();
 
     // ==========================================================================
     // 1. NAVBAR TOGGLE STATES
@@ -84,29 +122,37 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================================================
     // 3. TEAM BACKEND LIFECYCLE CHANNELS
     // ==========================================================================
-    function setLoggedIn(user){
-        currentUserId = user ? user.userId || user.userID || user.id : null;
-        currentUserRole = user ? user.role : null;
-        if(currentUserId){
-            $('#loginStatus').text('Logged in as ' + (user.fullName || user.email) + ' (' + (currentUserRole || '') + ')');
-            $('#main-app').show();
-            $('.login-wrapper').hide();
-            $('#register-section').addClass('hidden-section').hide();
-            loadProducts();
-            loadCart();
-            loadOrders();
-            loadProfile();
-            loadNotifications();
-        } else {
-            $('#loginStatus').text('Not logged in');
-            $('#main-app').hide();
-            $('.login-wrapper').show();
-            $('#products').text('Please login to see products.');
-            $('#cart').text('Not logged in.');
-            $('#orders').text('Not logged in.');
-        }
-    }
+function setLoggedIn(user){
+    currentUserId = user ? user.userId || user.userID || user.id : null;
+    currentUserRole = user ? user.role : null;
+    
+    if(currentUserId){
+        // Add these two lines here to persist the session!
+        sessionStorage.setItem("currentUserId", currentUserId);
+        sessionStorage.setItem("currentUserRole", currentUserRole);
 
+        $('#loginStatus').text('Logged in as ' + (user.fullName || user.email) + ' (' + (currentUserRole || '') + ')');
+        $('#main-app').show();
+        $('.login-wrapper').hide();
+        $('#register-section').addClass('hidden-section').hide();
+        loadProducts();
+        loadCart();
+        loadOrders();
+        loadProfile();
+        loadNotifications();
+    } else {
+        // Clear them out if they log out
+        sessionStorage.removeItem("currentUserId");
+        sessionStorage.removeItem("currentUserRole");
+
+        $('#loginStatus').text('Not logged in');
+        $('#main-app').hide();
+        $('.login-wrapper').show();
+        $('#products').text('Please login to see products.');
+        $('#cart').text('Not logged in.');
+        $('#orders').text('Not logged in.');
+    }
+}
     function loadCart(){
         if(!currentUserId){ $('#cart').text('Not logged in.'); return; }
         $('#cart').text('Loading cart…');

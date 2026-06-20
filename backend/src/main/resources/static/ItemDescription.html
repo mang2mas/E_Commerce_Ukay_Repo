@@ -4,69 +4,69 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Item Description</title>
-  <link rel="stylesheet" href="css/ItemDescription.css" />
+  <link rel="stylesheet" href="/css/ItemDescription.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" defer></script>
 </head>
 <body>
-  <div class="header">
+  <header class="header">
     <div class="header-left">
-      <img class="logo" src="untitled-design-3-removebg-preview-10.png" alt="Logo" />
+      <a href="./index.html" class="logo-link">
+        <img class="logo" src="/images/logo.png" alt="Ukay Ukay Logo" />
+      </a>
       <div class="search-bar">
-        <input type="text" placeholder="Search..." />
+        <input type="text" placeholder="Search vintage pieces..." />
       </div>
     </div>
     <div class="header-right">
       <button class="btn-sell">SELL</button>
       <div class="nav-icons">
-        <img src="home-10.png" alt="Home" />
-        <img src="user-1-10.png" alt="User" />
-        <img src="shopping-cart-1-10.png" alt="Cart" />
+        <button class="icon-btn" aria-label="Home"><i class="fa-solid fa-house"></i></button>
+        <button class="icon-btn" aria-label="Profile"><i class="fa-regular fa-user"></i></button>
+        <button class="icon-btn" aria-label="Cart"><i class="fa-solid fa-shopping-cart"></i></button>
       </div>
     </div>
-  </div>
+  </header>
 
   <div class="page-layout">
     <aside class="sidebar">
-      <div class="product-image-section">
+      <section class="product-image-section">
         <div class="main-image">
-          <img src="placeholder-image.jpg" alt="Vintage Plaid Button-Down" />
+          <img src="/images/item1.jpg" alt="Plaid Wrap Blouse" />
         </div>
-      </div>
+      </section>
 
-      <div class="trust-badges">
+      <section class="trust-badges">
         <div class="badge">
-          <div class="badge-icon authentic"></div>
+          <div class="badge-icon authentic"><i class="fa-solid fa-shield-check"></i></div>
           <div class="badge-content">
             <div class="badge-title">AUTHENTIC VINTAGE</div>
             <div class="badge-desc">Carefully sourced and quality checked</div>
           </div>
         </div>
         <div class="badge">
-          <div class="badge-icon handpicked"></div>
+          <div class="badge-icon handpicked"><i class="fa-solid fa-heart-circle-check"></i></div>
           <div class="badge-content">
             <div class="badge-title">HANDPICKED</div>
             <div class="badge-desc">Carefully sourced and quality checked</div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="seller-section">
+      <section class="seller-section">
         <div class="seller-card">
-          <div class="seller-image">
-            <img src="placeholder-seller.jpg" alt="Seller" />
-          </div>
+          <div class="seller-icon"><i class="fa-solid fa-user"></i></div>
           <div class="seller-info">
             <div class="seller-name">Sold by <strong>@TIREDTHRIFT</strong></div>
             <div class="seller-details">Joined 2026 · 5 items sold</div>
           </div>
-          <div class="seller-action">→</div>
         </div>
-      </div>
+      </section>
 
-      <div class="dimensions-section">
+      <section class="dimensions-section">
         <h2>DIMENSIONS</h2>
         <div class="dimensions-grid">
           <div class="dimension-item">
-            <div class="dimension-label">Pit to pit</div>
+            <div class="dimension-label">Fit to pit</div>
             <div class="dimension-value">56 cm</div>
           </div>
           <div class="dimension-item">
@@ -82,131 +82,95 @@
             <div class="dimension-value">23 cm</div>
           </div>
         </div>
-        <p class="dimension-note">All measurements are taken flat. Slight variations might occur.</p>
-      </div>
+        <p class="dimension-note">All measurement are taken flat. Slight variations might occur.</p>
+      </section>
 
-      <div class="details-section">
-        <h2>DETAILS</h2>
+      <section class="details-section">
+        <h2>Details</h2>
         <ul>
           <li>Classic short sleeve button-down shirt.</li>
           <li>Warm-tone plaid pattern with a retro feel.</li>
           <li>Structured collar and chest pocket.</li>
           <li>Made with a soft and breathable cotton blend.</li>
         </ul>
-      </div>
+      </section>
     </aside>
 
     <main class="main-content">
-      <div class="product-details-section">
-        <div class="brand">UNIQLO</div>
-        <h1 class="product-title">VINTAGE PLAID BUTTON-DOWN</h1>
-
-        <div class="price-section">
-          <span class="price">₱499.00</span>
-          <span class="currency">PHP</span>
-        </div>
-        <hr class="divider" />
-
-        <div class="info-row">
-          <div class="info-item">
-            <div class="info-icon">🎨</div>
-            <div class="info-text">
-              <div class="info-label">Color</div>
-              <div class="info-value">Red, Yellow Orange</div>
-            </div>
-          </div>
-          <div class="info-item">
-            <div class="info-icon">✓</div>
-            <div class="info-text">
-              <div class="info-label">Condition</div>
-              <div class="info-value">10/10</div>
-            </div>
-          </div>
-          <div class="info-item">
-            <div class="info-icon">⚠</div>
-            <div class="info-text">
-              <div class="info-label">Issue</div>
-              <div class="info-value">None</div>
-            </div>
+      <section class="product-details-section">
+        <div class="product-header-row">
+          <span class="brand">UNIQLO</span>
+          <h1 class="product-title">PLAID WRAP BLOUSE</h1>
+          <div class="price-block">
+            <span class="price">₱499.00</span>
+            <span class="currency">PHP</span>
           </div>
         </div>
 
-        <div class="shipping-info">
-          <div class="shipping-item">
-            <div class="shipping-icon">📦</div>
+        <div class="meta-section">
+          <div class="meta-row">
+            <i class="fa-solid fa-scissors"></i>
             <div>
-              <div class="shipping-label">Ships within 1-2 days</div>
+              <span>Color: Red, Yellow Orange</span><br>
+              <span>Condition: 10/10</span><br>
+              <span>Issue: None</span>
+            </div>
+          </div>
+
+          <div class="shipping-info">
+            <i class="fa-solid fa-truck"></i>
+            <div>
+              <div class="shipping-label">ships within 1-2 days</div>
               <div class="shipping-sublabel">7-day returns</div>
             </div>
           </div>
         </div>
 
-        <div class="description">
+        <section class="description">
           <p>
-            Classic short sleeve button-down shirt featuring a warm-tone plaid
-            pattern, a structured collar, and a convenient chest pocket. Great for a
-            casual, retro look.
+            Classic short sleeve button-down shirt featuring a warm-tone plaid pattern, a structured collar, and a convenient chest pocket. Great for a casual, retro look.
           </p>
           <ul>
             <li>Size: M</li>
             <li>Condition: Excellent Pre-owned</li>
             <li>Material: Cotton Blend</li>
           </ul>
-        </div>
+        </section>
 
         <div class="action-buttons">
           <button class="btn-add-cart">
             <span>ADD TO CART</span>
-            <span class="icon">🛒</span>
+            <i class="fa-solid fa-cart-shopping"></i>
           </button>
           <button class="btn-checkout">
             <span>CHECKOUT</span>
-            <span class="icon">🛒</span>
+            <i class="fa-solid fa-cart-shopping"></i>
           </button>
         </div>
 
         <div class="secure-checkout">
-          <span class="shield-icon">🔒</span>
+          <span class="shield-icon"><i class="fa-regular fa-circle-check"></i></span>
           <span>Secure checkouts · Safe &amp; encrypted payments</span>
         </div>
-      </div>
+      </section>
 
-      <div class="recommendations-section">
-        <h2>YOU MIGHT ALSO LIKE</h2>
+      <section class="recommendations-section">
+        <h2>You might also like</h2>
         <div class="recommendations-grid">
-          <div class="recommendation-item">
-            <div class="recommendation-image">
-              <img src="placeholder-1.jpg" alt="Recommendation 1" />
-            </div>
-          </div>
-          <div class="recommendation-item">
-            <div class="recommendation-image">
-              <img src="placeholder-2.jpg" alt="Recommendation 2" />
-            </div>
-          </div>
-          <div class="recommendation-item">
-            <div class="recommendation-image">
-              <img src="placeholder-3.jpg" alt="Recommendation 3" />
-            </div>
-          </div>
-          <div class="recommendation-item">
-            <div class="recommendation-image">
-              <img src="placeholder-4.jpg" alt="Recommendation 4" />
-            </div>
-          </div>
-          <div class="recommendation-item">
-            <div class="recommendation-image">
-              <img src="placeholder-5.jpg" alt="Recommendation 5" />
-            </div>
-          </div>
-          <div class="recommendation-item">
-            <div class="recommendation-image">
-              <img src="placeholder-6.jpg" alt="Recommendation 6" />
-            </div>
-          </div>
+          <div class="recommendation-item"><img src="/images/item2.jpg" alt="Rec 1" /></div>
+          <div class="recommendation-item"><img src="/images/item3.jpg" alt="Rec 2" /></div>
+          <div class="recommendation-item"><img src="/images/item4.jpg" alt="Rec 3" /></div>
+          <div class="recommendation-item"><img src="/images/item5.jpg" alt="Rec 4" /></div>
+          <div class="recommendation-item"><img src="/images/item6.jpg" alt="Rec 5" /></div>
+          <div class="recommendation-item"><img src="/images/item7.jpg" alt="Rec 6" /></div>
+          <div class="recommendation-item"><img src="/images/item8.jpg" alt="Rec 7" /></div>
+          <div class="recommendation-item"><img src="/images/item9.jpg" alt="Rec 8" /></div>
         </div>
-      </div>
+      </section>
     </main>
   </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="/js/app.js"></script>
 </body>
 </html>

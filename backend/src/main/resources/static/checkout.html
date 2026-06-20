@@ -369,14 +369,22 @@
     </div>
 
     <script>
+      if (!sessionStorage.getItem('currentUserId')) {
+        window.location.href = './login.html?next=./checkout.html';
+      }
+
       var untitledDesign3RemovebgPImage = document.getElementById(
         "untitledDesign3RemovebgPImage"
       );
       if (untitledDesign3RemovebgPImage) {
         untitledDesign3RemovebgPImage.addEventListener("click", function (e) {
-          // Please sync "CUSTOMER - HOME PAGE" to the project
+          window.location.href = "./index.html";
         });
       }
     </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/app.js"></script>
   </body>
 </html>
+
