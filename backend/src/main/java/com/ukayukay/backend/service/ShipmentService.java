@@ -42,10 +42,14 @@ public class ShipmentService {
         Shipment shipment = shipmentRepository.findById(shipmentId)
                 .orElseThrow(() -> new RuntimeException("Shipment not found with ID: " + shipmentId));
 
-        shipment.setStatus(status.toUpperCase());
-        if ("SHIPPED".equalsIgnoreCase(status)) {
+        String current = shipment.getStatus();
+        String next = status.toUpperCase();
+        validateShipmentTransition(current, next);
+
+        shipment.setStatus(next);
+        if ("SHIPPED".equalsIgnoreCase(next)) {
             shipment.setShippedDate(LocalDateTime.now());
-        } else if ("DELIVERED".equalsIgnoreCase(status)) {
+        } else if ("DELIVERED".equalsIgnoreCase(next)) {
             shipment.setDeliveredDate(LocalDateTime.now());
         }
         shipment.setUpdatedAt(LocalDateTime.now());
@@ -62,6 +66,21 @@ public class ShipmentService {
         }
 
         return savedShipment;
+    }
+
+    private void validateShipmentTransition(String current, String next) {
+        boolean valid = switch (current) {
+            case "PENDING" -> "PROCESSING".equals(next) || "SHIPPED".equals(next);
+            case "PROCESSING" -> "SHIPPED".equals(next);
+            case "SHIPPED" -> "IN_TRANSIT".equals(next) || "DELIVERED".equals(next);
+            case "IN_TRANSIT" -> "DELIVERED".equals(next) || "RETURNED".equals(next);
+            case "DELIVERED" -> "RETURNED".equals(next);
+            default -> false;
+        };
+        if (!valid) {
+            throw new IllegalStateException(
+                String.format("Invalid shipment status transition: %s → %s", current, next));
+        }
     }
 
     public Shipment updateTrackingInfo(Integer shipmentId, Shipment request) {

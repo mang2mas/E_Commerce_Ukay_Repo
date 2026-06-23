@@ -1,85 +1,72 @@
 package com.ukayukay.backend.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.ukayukay.backend.entity.Product;
 import com.ukayukay.backend.entity.User;
 import com.ukayukay.backend.service.ProductService;
 import com.ukayukay.backend.service.UserService;
+import com.ukayukay.backend.security.JwtUtil;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/admin")
-@CrossOrigin(origins = "*")
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final ProductService productService;
+    private final JwtUtil jwtUtil;
 
-   
-    @PutMapping("/sellers/{sellerId}/verify")
-    public ResponseEntity<?> verifySellerPermit(
-            @PathVariable Integer sellerId,
-            @RequestParam User.VerificationStatus status,
-            @RequestParam Integer adminId) {
-        try {
-            User updatedSeller = userService.verifySeller(sellerId, status, adminId);
-            return ResponseEntity.ok(updatedSeller);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public AdminController(UserService userService, ProductService productService, JwtUtil jwtUtil) {
+        this.userService = userService;
+        this.productService = productService;
+        this.jwtUtil = jwtUtil;
     }
 
-    // Route to suspend or reactivate an account (true = active, false = suspended)
-    // URL Example: PUT http://localhost:8080/api/admin/users/3/status?isActive=false&adminId=1
+    @PutMapping("/sellers/{sellerId}/verify")
+    public ResponseEntity<User> verifySellerPermit(
+            @PathVariable Integer sellerId,
+            @RequestParam User.VerificationStatus status,
+            @RequestHeader("Authorization") String authHeader) {
+        Integer adminId = extractAdminId(authHeader);
+        return ResponseEntity.ok(userService.verifySeller(sellerId, status, adminId));
+    }
+
     @PutMapping("/users/{userId}/status")
-    public ResponseEntity<?> changeAccountStatus(
+    public ResponseEntity<User> changeAccountStatus(
             @PathVariable Integer userId,
             @RequestParam boolean isActive,
-            @RequestParam Integer adminId) {
-        try {
-            User updatedUser = userService.toggleAccountStatus(userId, isActive, adminId);
-            return ResponseEntity.ok(updatedUser);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+            @RequestHeader("Authorization") String authHeader) {
+        Integer adminId = extractAdminId(authHeader);
+        return ResponseEntity.ok(userService.toggleAccountStatus(userId, isActive, adminId));
     }
 
     @PutMapping("/users/{userId}/shadow-ban")
-    public ResponseEntity<?> shadowBanUser(
+    public ResponseEntity<User> shadowBanUser(
             @PathVariable Integer userId,
             @RequestParam boolean shadowBanned,
-            @RequestParam Integer adminId) {
-        try {
-            User updatedUser = userService.toggleShadowBan(userId, shadowBanned, adminId);
-            return ResponseEntity.ok(updatedUser);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+            @RequestHeader("Authorization") String authHeader) {
+        Integer adminId = extractAdminId(authHeader);
+        return ResponseEntity.ok(userService.toggleShadowBan(userId, shadowBanned, adminId));
     }
 
-    @Autowired
-private ProductService productService;
-
-// Route to approve or reject a thrift product listing
-// URL Example: PUT http://localhost:8080/api/admin/products/10/moderate?status=AVAILABLE&adminId=1
-@PutMapping("/products/{productId}/moderate")
-public ResponseEntity<?> moderateProductListing(
-        @PathVariable Integer productId,
-        @RequestParam String status,
-        @RequestParam Integer adminId) {
-    try {
-        Product moderatedProduct = productService.moderateProduct(productId, status, adminId);
-        return ResponseEntity.ok(moderatedProduct);
-    } catch (RuntimeException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    @PutMapping("/products/{productId}/moderate")
+    public ResponseEntity<Product> moderateProductListing(
+            @PathVariable Integer productId,
+            @RequestParam String status,
+            @RequestHeader("Authorization") String authHeader) {
+        Integer adminId = extractAdminId(authHeader);
+        return ResponseEntity.ok(productService.moderateProduct(productId, status, adminId));
     }
-}
 
+    private Integer extractAdminId(String authHeader) {
+        String token = authHeader.startsWith("Bearer ") ? authHeader.substring(7) : authHeader;
+        return jwtUtil.extractUserId(token);
+    }
 }

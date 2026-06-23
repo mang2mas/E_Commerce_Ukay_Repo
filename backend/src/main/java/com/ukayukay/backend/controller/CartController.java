@@ -3,7 +3,6 @@ package com.ukayukay.backend.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +17,6 @@ import com.ukayukay.backend.util.AppConstants;
 
 @RestController
 @RequestMapping("/api/cart")
-@CrossOrigin(origins = "*")
 public class CartController {
 
     private final CartService cartService;
@@ -33,13 +31,8 @@ public class CartController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addItemToCart(@RequestParam Integer userId, @RequestParam Integer productId) {
-        try {
-            Cart item = cartService.addToCart(userId, productId);
-            return ResponseEntity.ok(item);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Cart> addItemToCart(@RequestParam Integer userId, @RequestParam Integer productId) {
+        return ResponseEntity.ok(cartService.addToCart(userId, productId));
     }
 
     @DeleteMapping("/{cartId}")

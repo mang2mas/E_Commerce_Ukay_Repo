@@ -3,7 +3,6 @@ package com.ukayukay.backend.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +17,6 @@ import com.ukayukay.backend.service.ShippingAddressService;
 
 @RestController
 @RequestMapping("/api/addresses")
-@CrossOrigin(origins = "*")
 public class ShippingAddressController {
 
     private final ShippingAddressService shippingAddressService;
@@ -28,12 +26,8 @@ public class ShippingAddressController {
     }
 
     @PostMapping("/user/{userId}")
-    public ResponseEntity<?> addAddress(@PathVariable Integer userId, @RequestBody ShippingAddress address) {
-        try {
-            return ResponseEntity.ok(shippingAddressService.addAddress(userId, address));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<ShippingAddress> addAddress(@PathVariable Integer userId, @RequestBody ShippingAddress address) {
+        return ResponseEntity.ok(shippingAddressService.addAddress(userId, address));
     }
 
     @GetMapping("/user/{userId}")
@@ -42,21 +36,14 @@ public class ShippingAddressController {
     }
 
     @PutMapping("/{addressId}")
-    public ResponseEntity<?> updateAddress(@PathVariable Integer addressId, @RequestBody ShippingAddress updatedAddress) {
-        try {
-            return ResponseEntity.ok(shippingAddressService.updateAddress(addressId, updatedAddress));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<ShippingAddress> updateAddress(@PathVariable Integer addressId, @RequestBody ShippingAddress updatedAddress) {
+        return ResponseEntity.ok(shippingAddressService.updateAddress(addressId, updatedAddress));
     }
 
     @DeleteMapping("/{addressId}")
-    public ResponseEntity<?> deleteAddress(@PathVariable Integer addressId) {
-        try {
-            shippingAddressService.deleteAddress(addressId);
-            return ResponseEntity.ok("Address deleted successfully.");
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<String> deleteAddress(@PathVariable Integer addressId) {
+        shippingAddressService.deleteAddress(addressId);
+        return ResponseEntity.ok("Address deleted successfully.");
     }
 }
+

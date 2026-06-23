@@ -1,7 +1,6 @@
 package com.ukayukay.backend.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,7 +13,6 @@ import com.ukayukay.backend.service.ProfileService;
 
 @RestController
 @RequestMapping("/api/profile")
-@CrossOrigin(origins = "*")
 public class ProfileController {
 
     private final ProfileService profileService;
@@ -24,20 +22,13 @@ public class ProfileController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<?> getProfile(@PathVariable Integer userId) {
-        try {
-            return ResponseEntity.ok(profileService.getUserProfile(userId));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<User> getProfile(@PathVariable Integer userId) {
+        return ResponseEntity.ok(profileService.getUserProfile(userId));
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity<?> updateProfile(@PathVariable Integer userId, @RequestBody User userUpdates) {
-        try {
-            return ResponseEntity.ok(profileService.updateUserProfile(userId, userUpdates));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<User> updateProfile(@PathVariable Integer userId, @RequestBody User userUpdates) {
+        return ResponseEntity.ok(profileService.updateUserProfile(userId, userUpdates));
     }
 }
+

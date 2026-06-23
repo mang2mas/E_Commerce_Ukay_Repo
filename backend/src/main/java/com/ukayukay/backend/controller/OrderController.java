@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +19,6 @@ import com.ukayukay.backend.service.OrderService;
 
 @RestController
 @RequestMapping("/api/orders")
-@CrossOrigin(origins = "*")
 public class OrderController {
 
     private final OrderService orderService;
@@ -30,15 +28,10 @@ public class OrderController {
     }
 
     @PostMapping("/checkout/{userId}")
-    public ResponseEntity<?> placeOrder(@PathVariable Integer userId, @RequestBody Map<String, String> request) {
-        try {
-            String address = request.get("shippingAddress");
-            String payment = request.get("paymentMethod");
-            Order completedOrder = orderService.checkout(userId, address, payment);
-            return ResponseEntity.ok(completedOrder);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Order> placeOrder(@PathVariable Integer userId, @RequestBody Map<String, String> request) {
+        String address = request.get("shippingAddress");
+        String payment = request.get("paymentMethod");
+        return ResponseEntity.ok(orderService.checkout(userId, address, payment));
     }
 
     @GetMapping("/customer/{userId}")
