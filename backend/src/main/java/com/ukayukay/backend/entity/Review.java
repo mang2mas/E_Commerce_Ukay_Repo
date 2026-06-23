@@ -1,5 +1,7 @@
 package com.ukayukay.backend.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,7 +13,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reviews")
@@ -45,6 +46,9 @@ public class Review {
 
     @Column(name = "status", length = 20)
     private String status = "PENDING"; // PENDING, APPROVED, REJECTED
+
+    @Column(name = "item_reviewed", columnDefinition = "TEXT")
+    private String itemReviewed;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

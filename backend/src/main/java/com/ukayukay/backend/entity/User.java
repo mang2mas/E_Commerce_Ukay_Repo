@@ -1,6 +1,7 @@
 package com.ukayukay.backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -56,6 +57,8 @@ public class User {
     @Column(name = "id_number", length = 50)
     private String idNumber; // For storing Senior Citizen ID or PWD ID number
 
+    @Column(name = "is_pwd_senior")
+    private Boolean isPwdSenior = false; // PWD (Person with Disability) or Senior Citizen
 
     public enum VerificationStatus {
         PENDING, APPROVED, REJECTED

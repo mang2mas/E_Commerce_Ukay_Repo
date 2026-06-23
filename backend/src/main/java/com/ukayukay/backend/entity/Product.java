@@ -1,6 +1,7 @@
 package com.ukayukay.backend.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,6 +50,15 @@ public class Product {
 
     @Column(name = "status", nullable = false, length = 20)
     private String status = "AVAILABLE"; 
+
+    @Column(name = "shipment_date")
+    private LocalDate shipmentDate;
+
+    @Column(name = "date_added")
+    private LocalDate dateAdded;
+
+    @Column(name = "style", length = 50)
+    private String style;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "seller_id")
