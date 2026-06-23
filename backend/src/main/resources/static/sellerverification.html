@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seller Verification</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/sellerverification.css" />
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand-logo">UKY</div>
+            <nav class="sidebar-nav" aria-label="Main navigation">
+                <button class="nav-item active" aria-label="Home"></button>
+                <button class="nav-item" aria-label="Orders"></button>
+                <button class="nav-item" aria-label="Messages"></button>
+            </nav>
+        </aside>
+
+        <main class="page-content">
+            <header class="topbar">
+                <div class="topbar-title">
+                    <span>Seller Verification</span>
+                </div>
+                <div class="topbar-search">
+                    <span class="search-icon">🔍</span>
+                    <input type="search" placeholder="Search" aria-label="Search sellers" />
+                </div>
+                <div class="topbar-user">
+                    <div class="user-avatar"></div>
+                    <span class="user-name">Admin</span>
+                </div>
+            </header>
+
+            <section class="content-header">
+                <div>
+                    <h1 class="page-title">Seller Verification</h1>
+                    <p class="page-description">Review pending seller requests and approve or reject verification applications.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="filter-button" type="button">
+                        <span class="filter-icon">⚙️</span>
+                        Filter
+                    </button>
+                    <button class="menu-button" type="button" aria-label="More options">⋮</button>
+                </div>
+            </section>
+
+            <section class="tabs-row" role="tablist" aria-label="Verification status tabs">
+                <button class="tab active" role="tab">Pending (5)</button>
+                <button class="tab" role="tab">Approved (67)</button>
+                <button class="tab" role="tab">Rejected (67)</button>
+            </section>
+
+            <section class="verification-table">
+                <div class="table-headings">
+                    <span class="heading-checkbox"></span>
+                    <span>Seller</span>
+                    <span>Shop name</span>
+                    <span>Date Submitted</span>
+                    <span>Status</span>
+                </div>
+
+                <article class="table-row">
+                    <label class="row-checkbox">
+                        <input type="checkbox" />
+                        <span class="checkbox-faux"></span>
+                    </label>
+                    <div class="seller-cell">
+                        <div class="seller-avatar"><img src="images/checkoutImages/placeholder.png" alt="Seller avatar" /></div>
+                        <div class="seller-meta">
+                            <strong>Jenmarc Ronquillo</strong>
+                            <span>jenmarcronquillo@gmail.com</span>
+                        </div>
+                    </div>
+                    <div class="shop-name">THRIFTTOBUSAN</div>
+                    <div class="date-submitted">May 26, 2026 • 10:30 AM</div>
+                    <span class="status-pill">Pending</span>
+                </article>
+
+                <article class="table-row">
+                    <label class="row-checkbox">
+                        <input type="checkbox" />
+                        <span class="checkbox-faux"></span>
+                    </label>
+                    <div class="seller-cell">
+                        <div class="seller-avatar"><img src="images/checkoutImages/placeholder.png" alt="Seller avatar" /></div>
+                        <div class="seller-meta">
+                            <strong>Joshua Abalo</strong>
+                            <span>joshuaabalo@gmail.com</span>
+                        </div>
+                    </div>
+                    <div class="shop-name">BADTHRIFT</div>
+                    <div class="date-submitted">June 26, 2026 • 10:30 AM</div>
+                    <span class="status-pill">Pending</span>
+                </article>
+
+                <article class="table-row">
+                    <label class="row-checkbox">
+                        <input type="checkbox" />
+                        <span class="checkbox-faux"></span>
+                    </label>
+                    <div class="seller-cell">
+                        <div class="seller-avatar"><img src="images/checkoutImages/placeholder.png" alt="Seller avatar" /></div>
+                        <div class="seller-meta">
+                            <strong>Sean Kurvie Buerano</strong>
+                            <span>seanbuerano@gmail.com</span>
+                        </div>
+                    </div>
+                    <div class="shop-name">THRIFTKOLANG</div>
+                    <div class="date-submitted">July 26, 2026 • 10:30 AM</div>
+                    <span class="status-pill">Pending</span>
+                </article>
+
+                <article class="table-row">
+                    <label class="row-checkbox">
+                        <input type="checkbox" />
+                        <span class="checkbox-faux"></span>
+                    </label>
+                    <div class="seller-cell">
+                        <div class="seller-avatar"><img src="images/checkoutImages/placeholder.png" alt="Seller avatar" /></div>
+                        <div class="seller-meta">
+                            <strong>Alleah Mae Sumile</strong>
+                            <span>sumilealleah@gmail.com</span>
+                        </div>
+                    </div>
+                    <div class="shop-name">THRIFTTOJERUSALEM</div>
+                    <div class="date-submitted">August 26, 2026 • 10:30 AM</div>
+                    <span class="status-pill">Pending</span>
+                </article>
+
+                <article class="table-row">
+                    <label class="row-checkbox">
+                        <input type="checkbox" />
+                        <span class="checkbox-faux"></span>
+                    </label>
+                    <div class="seller-cell">
+                        <div class="seller-avatar"><img src="images/checkoutImages/placeholder.png" alt="Seller avatar" /></div>
+                        <div class="seller-meta">
+                            <strong>Tomas Josh Flordeliza</strong>
+                            <span>mang2mas@gmail.com</span>
+                        </div>
+                    </div>
+                    <div class="shop-name">TOKYOTHRIFT</div>
+                    <div class="date-submitted">September 26, 2026 • 10:30 AM</div>
+                    <span class="status-pill">Pending</span>
+                </article>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

@@ -46,7 +46,7 @@
         </div>
         
         <div class="admin-wrapper">
-            <a href="#" class="admin-link">Admin</a>
+            <a href="./sellerverification.html" id="adminLink" class="admin-link" onclick="window.location.href='./sellerverification.html'; return false;">Admin</a>
         </div>
     </div>
 
@@ -66,6 +66,11 @@
             sessionStorage.setItem('currentUserRole', 'buyer');
 
             window.location.href = nextUrl;
+        });
+
+        document.getElementById('adminLink').addEventListener('click', function(event) {
+            event.preventDefault();
+            window.location.href = 'sellerverification.html';
         });
     </script>
 
