@@ -12,7 +12,7 @@ import com.ukayukay.backend.entity.AuditLog;
 import com.ukayukay.backend.service.AuditLogService;
 
 @RestController
-@RequestMapping("/api/audit")
+@RequestMapping("/api/admin/audit-logs")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminAuditController {
 

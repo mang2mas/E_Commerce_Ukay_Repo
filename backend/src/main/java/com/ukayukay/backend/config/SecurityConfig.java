@@ -49,6 +49,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            // CSRF is disabled because this is a stateless REST API authenticated via
+            // JWT ****** (not browser-based session cookies). There is no
+            // session state server-side so cross-site request forgery cannot be exploited.
             .csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -65,7 +68,6 @@ public class SecurityConfig {
                         "/ItemDescription.html", "/css/**", "/js/**", "/images/**").permitAll()
                 // Admin-only endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/audit/**").hasRole("ADMIN")
                 .requestMatchers("/api/moderation/**").hasRole("ADMIN")
                 // Seller endpoints
                 .requestMatchers("/api/seller/**").hasAnyRole("SELLER", "ADMIN")
