@@ -22,8 +22,7 @@ public class AdminController {
     @Autowired
     private UserService userService;
 
-    // Route to verify business permits (APPROVE / REJECT)
-    // URL Example: PUT http://localhost:8080/api/admin/sellers/5/verify?status=APPROVED&adminId=1
+   
     @PutMapping("/sellers/{sellerId}/verify")
     public ResponseEntity<?> verifySellerPermit(
             @PathVariable Integer sellerId,
