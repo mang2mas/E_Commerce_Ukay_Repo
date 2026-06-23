@@ -70,6 +70,18 @@ document.addEventListener("DOMContentLoaded", () => {
         button.addEventListener("click", () => {
             toggleButtons.forEach(btn => btn.classList.remove("active"));
             button.classList.add("active");
+
+            // If user selected SELL, enforce authentication and send to registration
+            if (button.dataset.view === 'sell') {
+                const target = './sellerregistration.html';
+                if (!currentUserId) {
+                    // Not authenticated -> send to login with next param
+                    window.location.href = `./login.html?next=${encodeURIComponent(target)}`;
+                    return;
+                }
+                // Authenticated -> go to seller registration
+                window.location.href = target;
+            }
         });
     });
 
