@@ -3,7 +3,6 @@ package com.ukayukay.backend.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +17,6 @@ import com.ukayukay.backend.service.PaymentService;
 
 @RestController
 @RequestMapping("/api/payments")
-@CrossOrigin(origins = "*")
 public class PaymentController {
 
     private final PaymentService paymentService;
@@ -28,21 +26,13 @@ public class PaymentController {
     }
 
     @PostMapping("/order/{orderId}")
-    public ResponseEntity<?> processPayment(@PathVariable Integer orderId, @RequestBody Payment payment) {
-        try {
-            return ResponseEntity.ok(paymentService.processPayment(orderId, payment));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Payment> processPayment(@PathVariable Integer orderId, @RequestBody Payment payment) {
+        return ResponseEntity.ok(paymentService.processPayment(orderId, payment));
     }
 
     @PutMapping("/{paymentId}/status")
-    public ResponseEntity<?> updatePaymentStatus(@PathVariable Integer paymentId, @RequestParam String status) {
-        try {
-            return ResponseEntity.ok(paymentService.updatePaymentStatus(paymentId, status));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Payment> updatePaymentStatus(@PathVariable Integer paymentId, @RequestParam String status) {
+        return ResponseEntity.ok(paymentService.updatePaymentStatus(paymentId, status));
     }
 
     @GetMapping("/order/{orderId}")
@@ -50,3 +40,4 @@ public class PaymentController {
         return ResponseEntity.ok(paymentService.getPaymentsByOrder(orderId));
     }
 }
+

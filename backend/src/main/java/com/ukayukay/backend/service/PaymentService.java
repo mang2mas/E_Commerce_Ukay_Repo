@@ -45,9 +45,25 @@ public class PaymentService {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new RuntimeException("Payment not found with ID: " + paymentId));
 
-        payment.setStatus(status.toUpperCase());
+        String current = payment.getStatus();
+        String next = status.toUpperCase();
+        validatePaymentTransition(current, next);
+
+        payment.setStatus(next);
         payment.setUpdatedAt(LocalDateTime.now());
         return paymentRepository.save(payment);
+    }
+
+    private void validatePaymentTransition(String current, String next) {
+        boolean valid = switch (current) {
+            case "PENDING" -> "SUCCESS".equals(next) || "FAILED".equals(next);
+            case "SUCCESS" -> "REFUNDED".equals(next);
+            default -> false;
+        };
+        if (!valid) {
+            throw new IllegalStateException(
+                String.format("Invalid payment status transition: %s → %s", current, next));
+        }
     }
 
     public List<Payment> getPaymentsByOrder(Integer orderId) {

@@ -3,7 +3,6 @@ package com.ukayukay.backend.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +15,6 @@ import com.ukayukay.backend.service.ReviewService;
 
 @RestController
 @RequestMapping("/api/reviews")
-@CrossOrigin(origins = "*")
 public class ReviewController {
 
     private final ReviewService reviewService;
@@ -46,36 +44,14 @@ public class ReviewController {
         private Integer rating;
         private String comment;
 
-        public Integer getBuyerId() {
-            return buyerId;
-        }
-
-        public void setBuyerId(Integer buyerId) {
-            this.buyerId = buyerId;
-        }
-
-        public Integer getProductId() {
-            return productId;
-        }
-
-        public void setProductId(Integer productId) {
-            this.productId = productId;
-        }
-
-        public Integer getRating() {
-            return rating;
-        }
-
-        public void setRating(Integer rating) {
-            this.rating = rating;
-        }
-
-        public String getComment() {
-            return comment;
-        }
-
-        public void setComment(String comment) {
-            this.comment = comment;
-        }
+        public Integer getBuyerId() { return buyerId; }
+        public void setBuyerId(Integer buyerId) { this.buyerId = buyerId; }
+        public Integer getProductId() { return productId; }
+        public void setProductId(Integer productId) { this.productId = productId; }
+        public Integer getRating() { return rating; }
+        public void setRating(Integer rating) { this.rating = rating; }
+        public String getComment() { return comment; }
+        public void setComment(String comment) { this.comment = comment; }
     }
 }
+

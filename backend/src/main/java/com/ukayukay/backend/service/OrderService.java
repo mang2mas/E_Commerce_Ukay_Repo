@@ -95,8 +95,27 @@ public class OrderService {
     public Order updateOrderStatus(Integer orderId, String newStatus) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException(AppConstants.ORDER_NOT_FOUND));
-        order.setOrderStatus(newStatus.toUpperCase());
+
+        String current = order.getOrderStatus();
+        String next = newStatus.toUpperCase();
+        validateOrderTransition(current, next);
+
+        order.setOrderStatus(next);
         return orderRepository.save(order);
+    }
+
+    private void validateOrderTransition(String current, String next) {
+        boolean valid = switch (current) {
+            case "PENDING" -> "SHIPPED".equals(next) || "CANCELLED".equals(next);
+            case "SHIPPED" -> "DELIVERED".equals(next) || "RETURN_REQUESTED".equals(next);
+            case "DELIVERED" -> "RETURN_REQUESTED".equals(next);
+            case "RETURN_REQUESTED" -> "RETURNED".equals(next) || "DELIVERED".equals(next);
+            default -> false;
+        };
+        if (!valid) {
+            throw new IllegalStateException(
+                String.format("Invalid order status transition: %s → %s", current, next));
+        }
     }
 
     private BigDecimal calculateBaseAmount(List<Cart> cartItems) {
