@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 public interface ModerationQueueRepository extends JpaRepository<ModerationQueue, Integer> {
 
     List<ModerationQueue> findByStatusOrderByFlaggedAtAsc(String status);

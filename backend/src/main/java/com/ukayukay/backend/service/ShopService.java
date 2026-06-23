@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import com.ukayukay.backend.dto.ShopDashboardDTO;
 import com.ukayukay.backend.entity.OrderItem;
-import com.ukayukay.backend.entity.Product;
 import com.ukayukay.backend.entity.Shop;
 import com.ukayukay.backend.entity.ShopRating;
 import com.ukayukay.backend.entity.User;
@@ -96,7 +95,8 @@ public class ShopService {
 
         ratingPayload.setSeller(seller);
         ratingPayload.setBuyer(buyer);
-        ratingPayload.setRating(ratingPayload.getRating() == null ? 0 : ratingPayload.getRating());
+        Integer rating = ratingPayload.getRating();
+        ratingPayload.setRating(rating == null ? 0 : rating);
 
         ShopRating savedRating = shopRatingRepository.save(ratingPayload);
         updateShopRatingMetrics(shop);
@@ -143,7 +143,7 @@ public class ShopService {
         for (ShopRating rating : ratings) {
             total = total.add(BigDecimal.valueOf(rating.getRating()));
         }
-        return total.divide(BigDecimal.valueOf(ratings.size()), 2, BigDecimal.ROUND_HALF_UP);
+        return total.divide(BigDecimal.valueOf(ratings.size()), 2, java.math.RoundingMode.HALF_UP);
     }
 
     private void updateShopRatingMetrics(Shop shop) {

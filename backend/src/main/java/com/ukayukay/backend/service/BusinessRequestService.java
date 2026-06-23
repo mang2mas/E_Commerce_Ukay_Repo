@@ -15,14 +15,14 @@ public class BusinessRequestService {
 
     private final BusinessRequestRepository businessRequestRepository;
     private final UserRepository userRepository;
-
-    @Autowired
-    private AuditLogService auditLogService;
+    private final AuditLogService auditLogService;
 
     public BusinessRequestService(BusinessRequestRepository businessRequestRepository,
-                                   UserRepository userRepository) {
+                                   UserRepository userRepository,
+                                   AuditLogService auditLogService) {
         this.businessRequestRepository = businessRequestRepository;
         this.userRepository = userRepository;
+        this.auditLogService = auditLogService;
     }
 
     public BusinessRequest submitRequest(Integer userId, String businessName, String businessDescription,

@@ -13,14 +13,17 @@ import com.ukayukay.backend.repository.UserRepository;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final BusinessRequestRepository businessRequestRepository;
+    private final AuditLogService auditLogService; // Inject this to track admin actions
 
-    @Autowired
-    private BusinessRequestRepository businessRequestRepository;
-
-    @Autowired
-    private AuditLogService auditLogService; // Inject this to track admin actions
+    public UserService(UserRepository userRepository,
+                       BusinessRequestRepository businessRequestRepository,
+                       AuditLogService auditLogService) {
+        this.userRepository = userRepository;
+        this.businessRequestRepository = businessRequestRepository;
+        this.auditLogService = auditLogService;
+    }
 
     // 1. Function to Approve or Reject Business Permits
     public User verifySeller(Integer sellerId, User.VerificationStatus status, Integer adminId) {

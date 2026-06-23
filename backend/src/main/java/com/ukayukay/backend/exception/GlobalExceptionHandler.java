@@ -30,11 +30,11 @@ public class GlobalExceptionHandler {
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining("; "));
         ErrorResponse error = new ErrorResponse(
-                HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                HttpStatus.BAD_REQUEST.value(),
                 "Validation Failed",
                 details
         );
-        return ResponseEntity.unprocessableEntity().body(error);
+        return ResponseEntity.badRequest().body(error);
     }
 
     @ExceptionHandler(AccessDeniedException.class)

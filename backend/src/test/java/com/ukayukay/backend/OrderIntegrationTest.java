@@ -1,8 +1,6 @@
 package com.ukayukay.backend;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ukayukay.backend.dto.RegisterRequest;
-import com.ukayukay.backend.entity.Product;
 import com.ukayukay.backend.entity.User;
 import com.ukayukay.backend.repository.UserRepository;
 import com.ukayukay.backend.security.JwtUtil;
@@ -16,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.math.BigDecimal;
 import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

@@ -1,6 +1,5 @@
 package com.ukayukay.backend.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 
 import com.ukayukay.backend.entity.User;
@@ -9,8 +8,11 @@ import com.ukayukay.backend.repository.UserRepository;
 // @Component - Disabled: Using real database instead of demo data
 public class DemoDataLoader implements CommandLineRunner {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public DemoDataLoader(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public void run(String... args) {
