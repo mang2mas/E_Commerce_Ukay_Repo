@@ -155,9 +155,15 @@ input::placeholder {
 }
 
 .admin-link {
+    display: inline-block;
+    padding: 8px 8px;
     font-size: 11px;
     color: var(--link-orange);
     text-decoration: underline;
+    cursor: pointer;
+    position: relative;
+    z-index: 20;
+    pointer-events: auto;
 }
 
 /* Swapped to a 100% stable, un-blocked Wikipedia mirror vector URL */
