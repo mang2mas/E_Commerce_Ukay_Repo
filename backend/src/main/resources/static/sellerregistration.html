@@ -39,5 +39,15 @@
       </div>
     </section>
   </main>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const registerBtn = document.getElementById('registration-title');
+      if (registerBtn) {
+        registerBtn.addEventListener('click', function() {
+          window.location.href = '/css/SellerRegistration.html';
+        });
+      }
+    });
+  </script>
 </body>
 </html>
