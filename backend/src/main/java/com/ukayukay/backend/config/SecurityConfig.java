@@ -66,7 +66,8 @@ public class SecurityConfig {
                 // Static resources
                 .requestMatchers("/", "/index.html", "/login.html", "/REGISTRATION.html",
                         "/sellerregistration.html", "/sellerverification.html", "/checkout.html",
-                        "/ItemDescription.html", "/css/**", "/js/**", "/images/**").permitAll()
+                        "/discoverypage.html", "/customerviewall.html", "/ItemDescription.html",
+                        "/css/**", "/js/**", "/images/**").permitAll()
                 // Admin-only endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/moderation/**").hasRole("ADMIN")
