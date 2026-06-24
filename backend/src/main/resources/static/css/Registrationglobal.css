@@ -1,0 +1,38 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Inter, Arial, sans-serif;
+  background: #faf9ee;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+
+  /* Colors */
+  --color-beige: #faf9ee;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-gray: #666666;
+  --color-border: #d8d8d8;
+  --color-tab: #f5f5f5;
+  --color-yellow: #fbce60;
+
+  /* Radius */
+  --radius-sm: 4px;
+
+  /* Shadow */
+  --shadow-card: 0 2px 15px rgba(0, 0, 0, 0.08);
+
+  /* Font Sizes */
+  --fs-title: 32px;
+  --fs-subtitle: 16px;
+  --fs-label: 16px;
+  --fs-input: 15px;
+  --fs-button: 18px;
+
+  /* Widths */
+  --container-width: 1450px;
+}

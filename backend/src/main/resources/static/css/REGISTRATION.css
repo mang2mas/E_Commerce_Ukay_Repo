@@ -1,0 +1,219 @@
+.shop-registration-portal-2 {
+  min-height: 100vh;
+  background: var(--color-beige);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* HEADER */
+
+.header-seller {
+  width: 100%;
+  height: 60px;
+  background: #4b4b4b;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-seller2 {
+  width: 100%;
+  max-width: 1920px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 40px;
+}
+
+.untitled-design-3-removebg-p-icon2 {
+  height: 45px;
+  width: auto;
+}
+
+.rectangle-parent3 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.buy2,
+.sell2 {
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* MAIN CARD */
+
+.frame9 {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+
+  margin-top: 50px;
+}
+
+.frame10 {
+  width: var(--container-width);
+  background: white;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+
+  overflow: hidden;
+  position: relative;
+}
+
+/* LOGO SECTION */
+
+.logo-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 50px; /* Space above the logo */
+  background: white;
+}
+
+.form-logo {
+  height: 100px; /* You can adjust this height as needed */
+  width: auto;
+  object-fit: contain;
+}
+
+/* FORM */
+
+.form-body {
+  padding: 40px 120px 60px; /* Reduced top padding to balance logo */
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 25px;
+}
+
+.form-title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 600;
+  text-align: center; /* Center aligning the title looks better with a centered logo */
+}
+
+.form-subtitle {
+  margin: 0 0 30px;
+  color: #777;
+  text-align: center;
+}
+
+/* ROWS */
+
+.form-row {
+  display: grid;
+
+  grid-template-columns: 200px 1fr;
+
+  gap: 20px;
+
+  align-items: center;
+}
+
+.form-row label {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.form-row input,
+.form-row select,
+.form-row textarea {
+  width: 100%;
+
+  border: 1px solid var(--color-border);
+
+  background: white;
+
+  padding: 12px 15px;
+
+  font-size: 15px;
+
+  outline: none;
+}
+
+.form-row textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* SENIOR NOTICE */
+
+.senior-notice {
+  display: flex;
+
+  gap: 15px;
+
+  align-items: center;
+
+  background: #f8f8f8;
+
+  border: 1px solid #e3e3e3;
+
+  padding: 20px;
+}
+
+.notice-icon {
+  font-size: 30px;
+}
+
+/* BUTTON */
+
+.next-container {
+  width: var(--container-width);
+
+  display: flex;
+  justify-content: flex-end;
+
+  margin-top: 25px;
+  margin-bottom: 50px;
+}
+
+.frame-2367variant12 {
+  width: 130px;
+  height: 45px;
+
+  border: none;
+
+  background: var(--color-yellow);
+
+  cursor: pointer;
+
+  font-weight: 600;
+  font-size: 18px;
+
+  transition: 0.2s;
+}
+
+.frame-2367variant12:hover {
+  transform: translateY(-1px);
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1500px) {
+  .frame10,
+  .next-container {
+    width: 95%;
+  }
+}
+
+@media (max-width: 900px) {
+  .form-body {
+    padding: 30px 40px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+
+    <link rel="stylesheet" href="css/Registrationglobal.css">
+    <link rel="stylesheet" href="css/REGISTRATION.css">
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    >
+</head>
+<body>
+
+<main class="frame9">
+  <section class="frame10">
+
+    <div class="logo-container">
+      <img src="images/LOGO.png" alt="Logo" class="form-logo">
+    </div>
+
+    <div class="form-body">
+
+      <h2 class="form-title">Create your account</h2>
+
+      <p class="form-subtitle">
+        Please fill in the details below to register.
+      </p>
+
+      <div class="form-row">
+        <label>Full Name</label>
+        <input
+          type="text"
+          placeholder="Enter your full name"
+        />
+      </div>
+
+      <div class="form-row">
+        <label>Email Address</label>
+        <input
+          type="email"
+          placeholder="Enter your email address"
+        />
+      </div>
+
+      <div class="form-row">
+        <label>Password</label>
+        <input
+          type="password"
+          placeholder="Enter your password"
+        />
+      </div>
+
+      <div class="form-row">
+        <label>Confirm Password</label>
+        <input
+          type="password"
+          placeholder="Confirm your password"
+        />
+      </div>
+
+      <div class="form-row">
+        <label>Contact Number</label>
+        <input
+          type="text"
+          placeholder="Enter your contact number"
+        />
+      </div>
+
+      <div class="form-row">
+        <label>Address</label>
+        <textarea
+          placeholder="Enter your complete address"
+        ></textarea>
+      </div>
+
+      <div class="form-row">
+        <label>Account Type</label>
+
+        <select id="accountType">
+          <option value="">Select account type</option>
+          <option value="Regular">Regular User</option>
+          <option value="Senior">Senior Citizen</option>
+          <option value="PWD">PWD</option>
+        </select>
+      </div>
+
+      <div
+        id="seniorNotice"
+        class="senior-notice"
+        style="display:none;"
+      >
+        <div class="notice-icon">👤</div>
+
+        <div>
+          If you are registering as a Senior Citizen
+          or PWD, please upload a valid Senior Citizen ID
+          or PWD ID.
+        </div>
+      </div>
+
+      <div
+        id="idUploadSection"
+        class="form-row"
+        style="display:none;"
+      >
+        <label>ID Upload</label>
+
+        <input
+          type="file"
+          accept="image/*,.pdf"
+        />
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<div class="next-container">
+  <button class="frame-2367variant12">
+    NEXT
+  </button>
+</div>
+
+<script>
+const accountType =
+  document.getElementById("accountType");
+
+const idUploadSection =
+  document.getElementById("idUploadSection");
+
+const seniorNotice =
+  document.getElementById("seniorNotice");
+
+accountType.addEventListener("change", () => {
+
+  const value = accountType.value;
+
+  if (
+    value === "Senior" ||
+    value === "PWD"
+  ) {
+    idUploadSection.style.display = "grid";
+    seniorNotice.style.display = "flex";
+  } else {
+    idUploadSection.style.display = "none";
+    seniorNotice.style.display = "none";
+  }
+
+});
+</script>
+
+</body>
+</html>

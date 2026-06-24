@@ -64,7 +64,8 @@ public class SecurityConfig {
                 .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
                 // Static resources
-                .requestMatchers("/", "/index.html", "/login.html", "/checkout.html",
+                .requestMatchers("/", "/index.html", "/login.html", "/REGISTRATION.html",
+                        "/sellerregistration.html", "/sellerverification.html", "/checkout.html",
                         "/ItemDescription.html", "/css/**", "/js/**", "/images/**").permitAll()
                 // Admin-only endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
