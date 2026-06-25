@@ -65,9 +65,10 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/**").permitAll()
                 // Static resources
                 .requestMatchers("/", "/index.html", "/login.html", "/REGISTRATION.html",
-                        "/sellerregistration.html", "/sellerverification.html", "/checkout.html",
-                        "/discoverypage.html", "/customerviewall.html", "/ItemDescription.html",
-                        "/css/**", "/js/**", "/images/**").permitAll()
+                    "/sellerregistration.html", "/sellerverification.html", "/checkout.html",
+                    "/discoverypage.html", "/customerviewall.html", "/ItemDescription.html",
+                    "/shoppingcart.html",
+                    "/css/**", "/js/**", "/images/**").permitAll()
                 // Admin-only endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/moderation/**").hasRole("ADMIN")

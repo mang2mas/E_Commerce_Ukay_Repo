@@ -31,6 +31,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
+            // If the cart button was clicked and the user is authenticated, go to shopping cart
+            const cartClick = event.target.closest('.cart-trigger');
+            if (cartClick) {
+                event.preventDefault();
+                event.stopPropagation();
+                window.location.href = './shoppingcart.html';
+                return;
+            }
+
             if (addCartBtn) {
                 event.preventDefault();
                 event.stopPropagation();
