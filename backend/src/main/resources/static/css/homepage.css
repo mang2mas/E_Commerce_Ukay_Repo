@@ -68,13 +68,19 @@ body {
     padding: 0 5%;
     background-color: transparent; 
     border-bottom: none; 
-    position: absolute; 
+    position: fixed; /* Changed from absolute */
     top: 0;
     left: 0;
     width: 100%;
     z-index: 1000;
     height: 90px;
     box-sizing: border-box;
+    transition: background-color 0.3s ease, backdrop-filter 0.3s ease; /* Smooth slide-in effect */
+}
+
+.navbar.scrolled {
+    background-color: rgba(0, 0, 0, 0.397); /* Transparent black background */
+    backdrop-filter: blur(5px); /* Optional blur to make it look clean */
 }
 
 .nav-left {
@@ -703,4 +709,73 @@ body {
     font-size: 11px;
     color: #666666;
     margin: 0;
+}
+
+/* ==========================================================================
+   LOGIN MODAL POPUP
+   ========================================================================== */
+.modal-overlay {
+    display: none; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); 
+    z-index: 9999; 
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(3px);
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-content {
+    position: relative;
+    background-color: #faf9ee; 
+    width: 90%;
+    max-width: 375px; 
+    padding: 30px 25px; 
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    text-align: center;
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+}
+
+/* Modal Form Styles */
+.modal-content h2 { font-size: 13px; font-weight: 400; margin-bottom: 20px; }
+.modal-content h2 strong { font-weight: 700; }
+.modal-content .form-group { text-align: left; margin-bottom: 12px; }
+.modal-content label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 4px; }
+.modal-content input { width: 100%; padding: 10px 12px; border: 1px solid #e0e0e0; font-size: 13px; box-sizing: border-box; }
+.modal-content .forgot-password-link { display: block; text-align: right; font-size: 11px; text-decoration: underline; margin-top: -6px; margin-bottom: 20px; color: #000; }
+.modal-content .btn-login { width: 100%; padding: 11px; background-color: #fbce60; border: none; font-size: 13px; font-weight: 700; cursor: pointer; }
+.modal-content .divider { font-size: 11px; font-weight: 700; color: #b5b5ad; margin: 12px 0; }
+.modal-content .btn-oauth { width: 100%; padding: 9px; background-color: #ffffff; border: 1px solid #e0e0e0; font-size: 12px; font-weight: 700; cursor: pointer; margin-bottom: 8px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+.modal-content .signup-prompt { font-size: 12px; margin-top: 20px; }
+.modal-content .signup-prompt a { color: #f47a55; text-decoration: underline; }
+.modal-content .admin-link { font-size: 11px; color: #f47a55; text-decoration: underline; }
+
+/* Solid background for pages without a dark hero image */
+.navbar.solid-bg {
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
+    z-index: 9999;
+}
+
+.navbar.solid-bg .icon-btn,
+.navbar.solid-bg .login-status {
+    color: #ffffff;
 }

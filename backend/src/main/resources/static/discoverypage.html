@@ -4,11 +4,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="initial-scale=1, width=device-width" />
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pu1ck6x+V1lEIUkfPzE/7ZRDJqM4Xi/TX+eozZE6xXT9uH4l9TD1u4l88mY1znxUesD6pFztc7WGYhLh7XgDkg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="/css/discoveryglobal.css" />
-    <link rel="stylesheet" href="/css/discoverypage.css" />
+    <link rel="stylesheet" href="/css/homepage.css">
+    <link rel="stylesheet" href="/css/discoverypage.css">
+    <link rel="stylesheet" href="/css/discoveryglobal.css">
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;600;700&display=swap"
@@ -19,346 +21,303 @@
     />
   </head>
   <body>
-    <div class="customer-view-all">
-      <div class="customer-view-all-child"></div>
-      <div class="header">
-        <header class="header2">
-          <div class="header-left">
-            <div class="brand-circle">
-              <img class="brand-logo" alt="UKAY" src="/images/LOGO.png" />
+    <!-- ==========================================================================
+     CONFLICT-FREE NAVBAR
+     ========================================================================== -->
+<header class="navbar" style="background-color: rgba(36, 36, 36, 0.50); backdrop-filter: blur(8px); position: fixed; top: 0; left: 0; width: 100%; z-index: 9999;">    <div class="nav-left">
+        <button class="icon-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+        <img src="/images/logo.png" alt="Ukay Ukay" class="brand-logo" style="height: 36px; width: auto;">
+    </div>
+    <div class="nav-right">
+        <div class="toggle-container">
+            <button class="toggle-btn active" data-view="buy">BUY</button>
+            <button class="toggle-btn" id="sellToggle" data-view="sell">SELL</button>
+        </div>
+        <button class="icon-btn"><i class="fa-solid fa-house"></i></button>
+        <button class="icon-btn profile-trigger"><i class="fa-regular fa-user"></i></button>
+        <button class="icon-btn cart-trigger"><i class="fa-solid fa-bag-shopping"></i></button>
+        <span class="login-status" id="loginStatus" style="color: #000000;">Logged in</span>
+    </div>
+</header>      
+      <div class="frame-parent" style="margin-top: 90px;">
+  <div class="frame">
+    <div class="frame-child"></div>
+    <div class="frame-child"></div>
+  </div>
+  <div class="shipping-fast-1-1-parent">
+    <i class="fa-solid fa-truck-fast search-stat-icon" aria-hidden="true"></i>
+    <div class="fast-shipping">FAST SHIPPING</div>
+  </div>
+  <div class="frame-inner"></div>
+  <div class="box-return-1-parent">
+    <i class="fa-solid fa-box-open search-stat-icon" aria-hidden="true"></i>
+    <div class="fast-shipping">7-DAY RETURNS</div>
+  </div>
+  <div class="frame-inner"></div>
+  <div class="shield-check-1-parent">
+    <i class="fa-solid fa-shield-halved search-stat-icon" aria-hidden="true"></i>
+    <div class="fast-shipping">SECURE CHECKOUTS</div>
+  </div>
+  <div class="frame-inner"></div>
+  <div class="sparkles-1-parent">
+    <i class="fa-solid fa-star search-stat-icon" aria-hidden="true"></i>
+    <div class="new-drops-weekly">NEW DROPS WEEKLY</div>
+  </div>
+</div>
+
+<section class="hero-search-section">
+  <h1 class="discover">DISCOVER</h1>
+  <div class="search-bar">
+    <div class="search-bar-child"></div>
+    <div class="frame2">
+      <input class="search" placeholder="Search" type="text" />
+      <i class="fa-solid fa-magnifying-glass search-icon" aria-hidden="true"></i>
+      <i class="fa-solid fa-sliders search-icon" aria-hidden="true"></i>
+    </div>
+  </div>
+  <div class="search-meta-row">
+    <div class="tags-1-1-parent">
+      <i class="fa-solid fa-tags search-stat-icon" aria-hidden="true"></i>
+      <div class="listings">
+        <b>1,267</b>
+        <span> Listings</span>
+      </div>
+    </div>
+    <div class="people-group-1-parent">
+      <i class="fa-solid fa-users search-stat-icon" aria-hidden="true"></i>
+      <div class="fast-shipping">
+        <b>67 </b>
+        <span>sellers</span>
+      </div>
+    </div>
+    <div class="auto-update-1-parent">
+      <i class="fa-solid fa-clock search-stat-icon" aria-hidden="true"></i>
+      <div class="fast-shipping">Updated 5 mins ago</div>
+    </div>
+  </div>
+</section>
+      <section class="section-container">
+        <div class="section-header">
+            <h2>SHOP BY CATEGORY</h2>
+            <a href="#" class="view-all">VIEW ALL ➔</a>
+        </div>
+        <div class="category-grid">
+            <div class="category-card"><img src="/images/tops.jpg" alt="Tops"><span>TOPS</span></div>
+            <div class="category-card"><img src="/images/bottoms.jpg" alt="Bottoms"><span>BOTTOMS</span></div>
+            <div class="category-card"><img src="/images/outerwear.jpg" alt="Outerwear"><span>OUTERWEAR</span></div>
+            <div class="category-card"><img src="/images/bags.jpg" alt="Bags"><span>BAGS</span></div>
+            <div class="category-card"><img src="/images/accessories.jpg" alt="Accesories"><span>ACCESORIES</span></div>
+            <div class="category-card"><img src="/images/shirts.jpg" alt="Shirts"><span>SHIRTS</span></div>
+            <div class="category-card"><img src="/images/sale.jpg" alt="Sale"><span>SALE</span></div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         5. NEW ARRIVALS (Exact 14-Item Masonry Layout Grid Framework)
+         ========================================================================== -->
+<section class="section-container">
+        
+        <div class="masonry-grid">
+            
+            <div class="masonry-column">
+                <div class="masonry-item item-short">
+                    <img src="/images/item1.jpg" alt="Orange Plaid Short Sleeve">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">ORANGE PLAID SHORT SLEEVE</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱350.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="masonry-item item-medium">
+                    <img src="/images/item2.jpg" alt="Asymmetric Dark Plaid Blouse">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">ASYMMETRIC DARK PLAID BLOUSE</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱390.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="masonry-item item-tall">
+                    <img src="/images/item3.jpg" alt="Green Flannel Layered Set">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">GREEN FLANNEL LAYERED SET</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱550.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="header-center"></div>
-          <div class="header-right">
-            <div class="pill-group">
-              <button class="pill active" type="button">BUY</button>
-              <button class="pill" type="button">SELL</button>
+
+            <div class="masonry-column">
+                <div class="masonry-item item-tall">
+                    <img src="/images/item4.jpg" alt="Beige Traditional Short Sleeve">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">BEIGE TRADITIONAL SHORT SLEEVE</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱420.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="masonry-item item-medium">
+                    <img src="/images/item5.jpg" alt="Vintage Brown Plaid Shirt">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">VINTAGE BROWN PLAID SHIRT</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱380.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="masonry-item item-tall">
+                    <img src="/images/item6.jpg" alt="Pinstripe Corset Waist Blouse">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">PINSTRIPE CORSET WAIST BLOUSE</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱450.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <button class="icon-button" type="button" aria-label="Home">
-              <img class="home-icon" alt="Home" src="/images/checkoutImages/home-1@2x.png" />
-            </button>
-            <button class="icon-button" type="button" aria-label="Profile">
-              <img class="user-icon" alt="User" src="/images/checkoutImages/user-1-1@2x.png" />
-            </button>
-            <button class="icon-button" type="button" aria-label="Cart">
-              <img class="cart-icon" alt="Cart" src="/images/checkoutImages/shopping-cart-1-1@2x.png" />
-            </button>
-          </div>
-        </header>
-      </div>
-      <div class="frame-parent">
-        <div class="frame">
-          <div class="frame-child"></div>
-          <div class="frame-child"></div>
-        </div>
-        <div class="shipping-fast-1-1-parent">
-          <i class="fa-solid fa-truck-fast search-stat-icon" aria-hidden="true"></i>
-          <div class="fast-shipping">FAST SHIPPING</div>
-        </div>
-        <div class="frame-inner"></div>
-        <div class="box-return-1-parent">
-          <i class="fa-solid fa-box-open search-stat-icon" aria-hidden="true"></i>
-          <div class="fast-shipping">7-DAY RETURNS</div>
-        </div>
-        <div class="frame-inner"></div>
-        <div class="shield-check-1-parent">
-          <i class="fa-solid fa-shield-halved search-stat-icon" aria-hidden="true"></i>
-          <div class="fast-shipping">SECURE CHECKOUTS</div>
-        </div>
-        <div class="frame-inner"></div>
-        <div class="sparkles-1-parent">
-          <i class="fa-solid fa-star search-stat-icon" aria-hidden="true"></i>
-          <div class="new-drops-weekly">NEW DROPS WEEKLY</div>
-        </div>
-      </div>
-      <section class="hero-search-section">
-        <h1 class="discover">DISCOVER</h1>
-        <div class="search-bar">
-          <div class="search-bar-child"></div>
-          <div class="frame2">
-            <input class="search" placeholder="Search" type="text" />
-            <i class="fa-solid fa-magnifying-glass search-icon" aria-hidden="true"></i>
-            <i class="fa-solid fa-sliders search-icon" aria-hidden="true"></i>
-          </div>
-        </div>
-        <div class="search-meta-row">
-          <div class="tags-1-1-parent">
-            <i class="fa-solid fa-tags search-stat-icon" aria-hidden="true"></i>
-            <div class="listings">
-              <b>1,267</b>
-              <span> Listings</span>
+
+            <div class="masonry-column">
+                <div class="masonry-item item-short">
+                    <img src="/images/item7.jpg" alt="Retro Striped Long Sleeve">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">RETRO STRIPED LONG SLEEVE</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱380.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="masonry-item item-tall">
+                    <img src="/images/item8.jpg" alt="Wide-Leg Pleated Trousers">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">WIDE-LEG PLEATED TROUSERS</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱590.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="masonry-item item-medium">
+                    <img src="/images/item9.jpg" alt="Y2K Coquette Lace Layered Dress">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">Y2K COQUETTE LAYERED DRESS</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱499.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="people-group-1-parent">
-            <i class="fa-solid fa-users search-stat-icon" aria-hidden="true"></i>
-            <div class="fast-shipping">
-              <b>67 </b>
-              <span>sellers</span>
+
+            <div class="masonry-column">
+                <div class="masonry-item item-tall">
+                    <img src="/images/item10.jpg" alt="Yellow Patterned Top with Baggy Jeans">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">COQUETTE TOP & DENIM SET</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱650.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="masonry-item item-short">
+                    <img src="/images/item11.jpg" alt="Military Buckled Jacket">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">MILITARY BUCKLED JACKET</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱480.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="masonry-item item-medium">
+                    <img src="/images/item12.jpg" alt="Red Ribbon Detail White Shirt">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">RED RIBBON DETAIL WHITE SHIRT</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱410.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="auto-update-1-parent">
-            <i class="fa-solid fa-clock search-stat-icon" aria-hidden="true"></i>
-            <div class="fast-shipping">Updated 5 mins ago</div>
-          </div>
+
+            <div class="masonry-column">
+                <div class="masonry-item item-tall">
+                    <img src="/images/item13.jpg" alt="Red Gingham Ribbon Shirt">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">RED GINGHAM RIBBON SHIRT</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱390.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="masonry-item item-tall">
+                    <img src="/images/item14.jpg" alt="Asymmetric Slanted Grey Top">
+                    <div class="item-hover-overlay">
+                        <div class="overlay-top">
+                            <div class="item-title-badge">ASYMMETRIC SLANTED GREY TOP</div>
+                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        </div>
+                        <div class="overlay-bottom">
+                            <div class="item-price-tag">₱430.00 <span>PHP</span></div>
+                            <button class="btn-add-cart-action">ADD TO CART</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-      </section>
-      <div class="curated-vintage-pieces">
-        Curated vintage pieces from independent sellers.
-      </div>
-      <div class="customer-view-all-inner">
-        <div class="frame-child3"></div>
-      </div>
-      <div class="category-header-row">
-        <div class="category-header-row2">
-          <div class="category">
-            <b class="category2">CATEGORY</b>
-          </div>
-          <button class="frame3">
-            <i class="fa-solid fa-filter search-icon" aria-hidden="true"></i>
-            <div class="filter">Filter</div>
-          </button>
-        </div>
-      </div>
-      <section class="categories">
-        <div class="categories2">
-          <b class="tops">TOPS</b>
-          <b class="bottoms">BOTTOMS</b>
-          <b class="outerwear">OUTERWEAR</b>
-          <b class="bags">BAGS</b>
-          <b class="accesories">ACCESORIES</b>
-          <b class="shirts">SHIRTS</b>
-          <b class="sale">SALE</b>
-          <img
-            class="categories-child"
-            loading="lazy"
-            alt="Tops"
-            src="/images/tops.jpg"
-          />
-
-          <img
-            class="categories-item"
-            loading="lazy"
-            alt="Bottoms"
-            src="/images/bottoms.jpg"
-          />
-
-          <img
-            class="categories-inner"
-            loading="lazy"
-            alt="Outerwear"
-            src="/images/outerwear.jpg"
-          />
-
-          <img
-            class="rectangle-icon"
-            loading="lazy"
-            alt="Bags"
-            src="/images/bags.jpg"
-          />
-
-          <img
-            class="categories-child2"
-            loading="lazy"
-            alt="Accessories"
-            src="/images/accessories.jpg"
-          />
-
-          <img
-            class="categories-child3"
-            alt="Shirts"
-            src="/images/shirts.jpg"
-          />
-
-          <img
-            class="categories-child4"
-            alt="Sale"
-            src="/images/sale.jpg"
-          />
-        </div>
-      </section>
-      <main class="masonry-grid">
-        <div class="masonry-col-1">
-          <div class="image-21">
-            <img
-              class="image-21-icon"
-              loading="lazy"
-              alt="Vintage Shirt"
-              src="/images/item1.jpg"
-            />
-          </div>
-          <img
-            class="image-22-icon"
-            loading="lazy"
-            alt="Vintage Dress"
-            src="/images/item2.jpg"
-          />
-
-          <section class="masonry-col-1-inner">
-            <img
-              class="frame-child4"
-              loading="lazy"
-              alt="Vintage Jacket"
-              src="/images/item3.jpg"
-            />
-          </section>
-          <img
-            class="masonry-col-1-child"
-            loading="lazy"
-            alt="Vintage Skirt"
-            src="/images/item4.jpg"
-          />
-
-          <div class="rectangle-div">
-            <img
-              class="frame-child5"
-              loading="lazy"
-              alt="Vintage Top"
-              src="/images/item5.jpg"
-            />
-          </div>
-        </div>
-        <div class="masonry-col-2">
-          <img
-            class="image-23-icon"
-            loading="lazy"
-            alt="Denim Jeans"
-            src="/images/item6.jpg"
-          />
-
-          <img
-            class="image-24-icon"
-            loading="lazy"
-            alt="Leather Jacket"
-            src="/images/item7.jpg"
-          />
-
-          <section class="masonry-col-2-inner">
-            <img
-              class="frame-child6"
-              loading="lazy"
-              alt="Streetwear"
-              src="/images/item8.jpg"
-            />
-          </section>
-          <div class="masonry-col-2-child">
-            <img
-              class="frame-child7"
-              loading="lazy"
-              alt="Graphic Tee"
-              src="/images/item9.jpg"
-            />
-          </div>
-          <img
-            class="masonry-col-2-item"
-            loading="lazy"
-            alt="Vintage Coat"
-            src="/images/item10.jpg"
-          />
-        </div>
-        <div class="masonry-col-3">
-          <img
-            class="image-25-icon"
-            loading="lazy"
-            alt="Retro Dress"
-            src="/images/item11.jpg"
-          />
-
-          <section class="masonry-col-3-inner">
-            <img
-              class="frame-child8"
-              loading="lazy"
-              alt="Minimal Outfit"
-              src="/images/item12.jpg"
-            />
-          </section>
-          <div class="masonry-col-3-child">
-            <img
-              class="frame-child9"
-              loading="lazy"
-              alt="Vintage Jacket"
-              src="/images/item13.jpg"
-            />
-          </div>
-          <div class="masonry-col-3-inner2">
-            <img
-              class="frame-child10"
-              loading="lazy"
-              alt="Festival Top"
-              src="/images/item14.jpg"
-            />
-          </div>
-          <img
-            class="masonry-col-1-child"
-            loading="lazy"
-            alt="Retro Shirt"
-            src="/images/item1.jpg"
-          />
-        </div>
-        <div class="masonry-col-4">
-          <img
-            class="image-26-icon"
-            loading="lazy"
-            alt="Vintage Blazer"
-            src="/images/item11.jpg"
-          />
-
-          <div class="masonry-col-4-inner">
-            <img
-              class="frame-child11"
-              loading="lazy"
-              alt="Denim Jacket"
-              src="/images/item12.jpg"
-            />
-          </div>
-          <section class="masonry-col-4-child">
-            <img
-              class="frame-child12"
-              loading="lazy"
-              alt="Classic Shirt"
-              src="/images/item13.jpg"
-            />
-          </section>
-          <div class="masonry-col-4-inner2">
-            <img
-              class="frame-child13"
-              loading="lazy"
-              alt="Casual Top"
-              src="/images/item14.jpg"
-            />
-          </div>
-          <div class="masonry-col-4-inner3">
-            <img
-              class="frame-child14"
-              loading="lazy"
-              alt="Patterned Shirt"
-              src="/images/item10.jpg"
-            />
-          </div>
-        </div>
-        <section class="masonry-col-5">
-          <img
-            class="image-27-icon"
-            loading="lazy"
-            alt="Styled Outfit"
-            src="/images/item5.jpg"
-          />
-
-          <div class="masonry-col-5-inner">
-            <img
-              class="frame-child15"
-              loading="lazy"
-              alt="Denim Top"
-              src="/images/item6.jpg"
-            />
-          </div>
-          <img
-            class="masonry-col-5-child"
-            loading="lazy"
-            alt="Graphic Tee"
-            src="/images/item7.jpg"
-          />
-        </section>
-      </main>
+    </section>
       <section class="instagram-section">
         <div class="instagram-header-row">
           <h3 class="real-fits-real">REAL FITS, REAL PEOPLE.</h3>

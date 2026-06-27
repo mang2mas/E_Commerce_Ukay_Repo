@@ -12,26 +12,27 @@ document.addEventListener("DOMContentLoaded", () => {
         const checkoutBtn = event.target.closest('.btn-checkout');
         const protectedTarget = event.target.closest('.profile-trigger, .cart-trigger, .shop-trigger, .category-card, .view-all, .btn-primary, .btn-outline, .btn-add-cart-action, .btn-checkout');
         const anchor = event.target.closest('a');
-        const isAuthenticated = Boolean(currentUserId);
+        
+        // Check session storage directly to be safe
+        const isAuthenticated = Boolean(sessionStorage.getItem("currentUserId"));
 
         if (itemCard || protectedTarget) {
             if (!isAuthenticated) {
                 event.preventDefault();
                 event.stopPropagation();
 
-                console.log("🔒 Access Denied: Hard redirecting user session to authentication page...");
+                const nextUrl = anchor?.href || (itemCard ? './ItemDescription.html' : checkoutBtn ? './checkout.html' : window.location.href);
+                sessionStorage.setItem('pendingRedirect', nextUrl);
 
-                const nextUrl = anchor?.href || (itemCard
-                    ? './ItemDescription.html'
-                    : checkoutBtn
-                        ? './checkout.html'
-                        : window.location.href);
-
-                window.location.href = `./login.html?next=${encodeURIComponent(nextUrl)}`;
+                const modal = document.getElementById('loginModalOverlay');
+                if (modal) {
+                    modal.classList.add('active');
+                } else {
+                    console.error("Modal HTML is missing from index.html");
+                }
                 return;
             }
 
-            // If the cart button was clicked and the user is authenticated, go to shopping cart
             const cartClick = event.target.closest('.cart-trigger');
             if (cartClick) {
                 event.preventDefault();
@@ -62,7 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     }, true);
-
     function refreshLoginStatusIndicator() {
         const statusLabel = document.getElementById('loginStatus');
         if (!statusLabel) return;
@@ -70,6 +70,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     refreshLoginStatusIndicator();
+
+    const navbar = document.querySelector(".navbar");
+    if (navbar) {
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add("scrolled");
+            } else {
+                navbar.classList.remove("scrolled");
+            }
+        });
+    }
 
     // ==========================================================================
     // 1. NAVBAR TOGGLE STATES
@@ -585,4 +596,42 @@ function setLoggedIn(user){
 
     $('#loadSellerDetailsBtn').on('click', loadSellerDetails);
 
+
+    // ==========================================================================
+// MODAL LOGIN HANDLERS
+// ==========================================================================
+const loginModal = document.getElementById('loginModalOverlay');
+const closeModalBtn = document.getElementById('closeModalBtn');
+const modalLoginForm = document.getElementById('modalLoginForm');
+
+if (closeModalBtn && loginModal) {
+    closeModalBtn.addEventListener('click', () => {
+        loginModal.classList.remove('active');
+    });
+    
+    // Close if they click the dark background outside the card
+    loginModal.addEventListener('click', (e) => {
+        if (e.target === loginModal) {
+            loginModal.classList.remove('active');
+        }
+    });
+}
+
+if (modalLoginForm) {
+    modalLoginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const emailValue = document.getElementById('modalEmail').value.trim();
+        const loginUserId = emailValue || 'guest-user';
+
+        // Log the user in
+        sessionStorage.setItem('currentUserId', loginUserId);
+        sessionStorage.setItem('currentUserRole', 'buyer');
+
+        // Find out where they were trying to go, then send them there
+        const redirectUrl = sessionStorage.getItem('pendingRedirect') || window.location.href;
+        sessionStorage.removeItem('pendingRedirect');
+        
+        window.location.href = redirectUrl;
+    });
+}
 });
