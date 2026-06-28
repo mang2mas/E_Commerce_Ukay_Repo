@@ -1,6 +1,28 @@
 let currentUserId = sessionStorage.getItem("currentUserId") || null;
 let currentUserRole = sessionStorage.getItem("currentUserRole") || null;
 
+function getProductContext(target) {
+    const card = target?.closest('.masonry-item');
+    const button = target?.closest('.btn-add-cart-action');
+    const selectedProduct = sessionStorage.getItem('selectedProduct');
+    let parsedProduct = null;
+
+    if (selectedProduct) {
+        try {
+            parsedProduct = JSON.parse(selectedProduct);
+        } catch (error) {
+            console.warn('Unable to parse selectedProduct data', error);
+        }
+    }
+
+    const productId = card?.dataset.productId || button?.dataset.productId || parsedProduct?.productId || new URLSearchParams(window.location.search).get('productId');
+    const productName = card?.querySelector('.item-title-badge')?.textContent?.trim() || button?.dataset.productName || parsedProduct?.productName || 'item';
+    const price = card?.querySelector('.item-price-tag')?.textContent?.trim() || parsedProduct?.price;
+    const imageUrl = card?.querySelector('img')?.src || parsedProduct?.imageUrl;
+
+    return { productId, productName, price, imageUrl };
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     
 // ==========================================================================
@@ -10,7 +32,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const itemCard = event.target.closest('.masonry-item');
         const addCartBtn = event.target.closest('.btn-add-cart-action');
         const checkoutBtn = event.target.closest('.btn-checkout');
-        const protectedTarget = event.target.closest('.profile-trigger, .cart-trigger, .shop-trigger, .category-card, .view-all, .btn-primary, .btn-outline, .btn-add-cart-action, .btn-checkout');
+        const cartClick = event.target.closest('.cart-trigger');
+        const profileClick = event.target.closest('.profile-trigger');
+        const homeClick = event.target.closest('.home-trigger');
+        const protectedTarget = event.target.closest('.profile-trigger, .cart-trigger, .home-trigger, .shop-trigger, .category-card, .view-all, .btn-primary, .btn-outline, .btn-add-cart-action, .btn-checkout');
         const anchor = event.target.closest('a');
         
         // Check session storage directly to be safe
@@ -28,12 +53,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (modal) {
                     modal.classList.add('active');
                 } else {
-                    console.error("Modal HTML is missing from index.html");
+                    window.location.href = './login.html';
                 }
                 return;
             }
 
-            const cartClick = event.target.closest('.cart-trigger');
             if (cartClick) {
                 event.preventDefault();
                 event.stopPropagation();
@@ -41,17 +65,63 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
+            if (profileClick) {
+                event.preventDefault();
+                event.stopPropagation();
+                window.location.href = './ordermanagement.html';
+                return;
+            }
+
+            if (homeClick) {
+                event.preventDefault();
+                event.stopPropagation();
+                window.location.href = './index.html';
+                return;
+            }
+
             if (addCartBtn) {
                 event.preventDefault();
                 event.stopPropagation();
-                alert('Item added to cart.');
+                const { productId, productName } = getProductContext(addCartBtn);
+
+                if (!productId) {
+                    alert('Unable to determine product to add to cart.');
+                    return;
+                }
+
+                fetch(`/api/cart/add?userId=${currentUserId}&productId=${productId}`, {
+                    method: 'POST'
+                })
+                    .then(response => {
+                        if (!response.ok) return response.text().then(text => { throw new Error(text || 'Add to cart failed.'); });
+                        return response.json();
+                    })
+                    .then(() => {
+                        alert(`Added ${productName || 'item'} to cart.`);
+                    })
+                    .catch(error => {
+                        alert(error.message || 'Unable to add item to cart.');
+                    });
                 return;
             }
 
             if (itemCard) {
                 event.preventDefault();
                 event.stopPropagation();
-                window.location.href = './ItemDescription.html';
+                const { productId, productName, price, imageUrl } = getProductContext(itemCard);
+
+                if (!productId) {
+                    return;
+                }
+
+                const selectedProduct = {
+                    productId,
+                    productName,
+                    price,
+                    imageUrl
+                };
+                sessionStorage.setItem('selectedProduct', JSON.stringify(selectedProduct));
+                window.location.href = `./ItemDescription.html?productId=${encodeURIComponent(productId)}`;
                 return;
             }
 
