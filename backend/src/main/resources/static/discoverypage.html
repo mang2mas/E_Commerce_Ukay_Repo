@@ -33,7 +33,7 @@
             <button class="toggle-btn active" data-view="buy">BUY</button>
             <button class="toggle-btn" id="sellToggle" data-view="sell">SELL</button>
         </div>
-        <button class="icon-btn"><i class="fa-solid fa-house"></i></button>
+        <button class="icon-btn home-trigger"><i class="fa-solid fa-house"></i></button>
         <button class="icon-btn profile-trigger"><i class="fa-regular fa-user"></i></button>
         <button class="icon-btn cart-trigger"><i class="fa-solid fa-bag-shopping"></i></button>
         <span class="login-status" id="loginStatus" style="color: #000000;">Logged in</span>
@@ -120,7 +120,7 @@
         <div class="masonry-grid">
             
             <div class="masonry-column">
-                <div class="masonry-item item-short">
+                <div class="masonry-item item-short" data-product-id="1">
                     <img src="/images/item1.jpg" alt="Orange Plaid Short Sleeve">
                     <div class="item-hover-overlay">
                         <div class="overlay-top">
@@ -133,7 +133,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="masonry-item item-medium">
+                <div class="masonry-item item-medium" data-product-id="2">
                     <img src="/images/item2.jpg" alt="Asymmetric Dark Plaid Blouse">
                     <div class="item-hover-overlay">
                         <div class="overlay-top">
@@ -146,7 +146,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="masonry-item item-tall">
+                <div class="masonry-item item-tall" data-product-id="3">
                     <img src="/images/item3.jpg" alt="Green Flannel Layered Set">
                     <div class="item-hover-overlay">
                         <div class="overlay-top">
@@ -162,7 +162,7 @@
             </div>
 
             <div class="masonry-column">
-                <div class="masonry-item item-tall">
+                <div class="masonry-item item-tall" data-product-id="4">
                     <img src="/images/item4.jpg" alt="Beige Traditional Short Sleeve">
                     <div class="item-hover-overlay">
                         <div class="overlay-top">
@@ -175,7 +175,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="masonry-item item-medium">
+                <div class="masonry-item item-medium" data-product-id="5">
                     <img src="/images/item5.jpg" alt="Vintage Brown Plaid Shirt">
                     <div class="item-hover-overlay">
                         <div class="overlay-top">
@@ -188,7 +188,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="masonry-item item-tall">
+                <div class="masonry-item item-tall" data-product-id="6">
                     <img src="/images/item6.jpg" alt="Pinstripe Corset Waist Blouse">
                     <div class="item-hover-overlay">
                         <div class="overlay-top">
@@ -204,7 +204,7 @@
             </div>
 
             <div class="masonry-column">
-                <div class="masonry-item item-short">
+                <div class="masonry-item item-short" data-product-id="7">
                     <img src="/images/item7.jpg" alt="Retro Striped Long Sleeve">
                     <div class="item-hover-overlay">
                         <div class="overlay-top">
@@ -217,7 +217,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="masonry-item item-tall">
+                <div class="masonry-item item-tall" data-product-id="8">
                     <img src="/images/item8.jpg" alt="Wide-Leg Pleated Trousers">
                     <div class="item-hover-overlay">
                         <div class="overlay-top">
@@ -230,7 +230,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="masonry-item item-medium">
+                <div class="masonry-item item-medium" data-product-id="9">
                     <img src="/images/item9.jpg" alt="Y2K Coquette Lace Layered Dress">
                     <div class="item-hover-overlay">
                         <div class="overlay-top">
@@ -246,7 +246,7 @@
             </div>
 
             <div class="masonry-column">
-                <div class="masonry-item item-tall">
+                <div class="masonry-item item-tall" data-product-id="10">
                     <img src="/images/item10.jpg" alt="Yellow Patterned Top with Baggy Jeans">
                     <div class="item-hover-overlay">
                         <div class="overlay-top">
@@ -259,7 +259,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="masonry-item item-short">
+                <div class="masonry-item item-short" data-product-id="11">
                     <img src="/images/item11.jpg" alt="Military Buckled Jacket">
                     <div class="item-hover-overlay">
                         <div class="overlay-top">
@@ -272,7 +272,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="masonry-item item-medium">
+                <div class="masonry-item item-medium" data-product-id="12">
                     <img src="/images/item12.jpg" alt="Red Ribbon Detail White Shirt">
                     <div class="item-hover-overlay">
                         <div class="overlay-top">
@@ -288,20 +288,20 @@
             </div>
 
             <div class="masonry-column">
-                <div class="masonry-item item-tall">
-                    <img src="/images/item13.jpg" alt="Red Gingham Ribbon Shirt">
+                <div class="masonry-item item-short" data-product-id="13">
+                    <img src="/images/item13.jpg" alt="Grey Oversized Button Up Shirt">
                     <div class="item-hover-overlay">
                         <div class="overlay-top">
-                            <div class="item-title-badge">RED GINGHAM RIBBON SHIRT</div>
+                            <div class="item-title-badge">GREY OVERSIZED BUTTON UP SHIRT</div>
                             <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
                         </div>
                         <div class="overlay-bottom">
-                            <div class="item-price-tag">₱390.00 <span>PHP</span></div>
+                            <div class="item-price-tag">₱410.00 <span>PHP</span></div>
                             <button class="btn-add-cart-action">ADD TO CART</button>
                         </div>
                     </div>
                 </div>
-                <div class="masonry-item item-tall">
+                <div class="masonry-item item-medium" data-product-id="14">
                     <img src="/images/item14.jpg" alt="Asymmetric Slanted Grey Top">
                     <div class="item-hover-overlay">
                         <div class="overlay-top">
@@ -418,6 +418,8 @@
           // Please sync "CUSTOMER - HOME PAGE" to the project
         });
       }
-      </script>
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/app.js"></script>
   </body>
 </html>

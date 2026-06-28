@@ -20,6 +20,8 @@ public class RegisterRequest {
     private String fullName;
 
     private String contactNo;
+    private Boolean isPwdSenior;
+    private String idNumber;
 
     private User.UserRole role;
 
@@ -31,6 +33,10 @@ public class RegisterRequest {
     public void setFullName(String fullName) { this.fullName = fullName; }
     public String getContactNo() { return contactNo; }
     public void setContactNo(String contactNo) { this.contactNo = contactNo; }
+    public Boolean getIsPwdSenior() { return isPwdSenior; }
+    public void setIsPwdSenior(Boolean isPwdSenior) { this.isPwdSenior = isPwdSenior; }
+    public String getIdNumber() { return idNumber; }
+    public void setIdNumber(String idNumber) { this.idNumber = idNumber; }
     public User.UserRole getRole() { return role; }
     public void setRole(User.UserRole role) { this.role = role; }
 }
