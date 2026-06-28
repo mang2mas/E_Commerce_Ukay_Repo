@@ -51,6 +51,8 @@ public class AuthService {
         newUser.setFullName(request.getFullName());
         newUser.setContactNo(request.getContactNo());
         newUser.setRole(request.getRole() == null ? User.UserRole.buyer : request.getRole());
+        newUser.setIsPwdSenior(Boolean.TRUE.equals(request.getIsPwdSenior()));
+        newUser.setIdNumber(request.getIdNumber());
 
         return userRepository.save(newUser);
     }

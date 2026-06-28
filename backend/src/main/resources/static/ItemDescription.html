@@ -20,9 +20,9 @@
     <div class="header-right">
       <button class="btn-sell">SELL</button>
       <div class="nav-icons">
-        <button class="icon-btn" aria-label="Home"><i class="fa-solid fa-house"></i></button>
-        <button class="icon-btn" aria-label="Profile"><i class="fa-regular fa-user"></i></button>
-        <button class="icon-btn" aria-label="Cart"><i class="fa-solid fa-shopping-cart"></i></button>
+        <button class="icon-btn home-trigger" aria-label="Home"><i class="fa-solid fa-house"></i></button>
+        <button class="icon-btn profile-trigger" aria-label="Profile"><i class="fa-regular fa-user"></i></button>
+        <button class="icon-btn cart-trigger" aria-label="Cart"><i class="fa-solid fa-shopping-cart"></i></button>
       </div>
     </div>
   </header>
@@ -140,7 +140,7 @@
         </section>
 
         <div class="action-buttons">
-          <button class="btn-add-cart">
+          <button class="btn-add-cart btn-add-cart-action">
             <span>ADD TO CART</span>
             <i class="fa-solid fa-cart-shopping"></i>
           </button>
@@ -174,5 +174,31 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const stored = sessionStorage.getItem('selectedProduct');
+      if (!stored) return;
+
+      try {
+        const product = JSON.parse(stored);
+        if (product.imageUrl) document.querySelector('.main-image img').src = product.imageUrl;
+        if (product.productName) document.querySelector('.product-title').textContent = product.productName;
+        if (product.price) document.querySelector('.price').textContent = product.price.replace('PHP', '').trim();
+        if (product.price) document.querySelector('.currency').textContent = 'PHP';
+        const productName = product.productName || 'Item';
+        const descriptionParagraph = document.querySelector('.description p');
+        if (descriptionParagraph) descriptionParagraph.textContent = `Details for ${productName} are shown here. Add this item to your cart or contact the seller for more information.`;
+        const productId = product.productId;
+        if (productId) {
+          const addCartButton = document.querySelector('.btn-add-cart-action');
+          if (addCartButton) {
+            addCartButton.dataset.productId = productId;
+          }
+        }
+      } catch (e) {
+        console.warn('Unable to parse selectedProduct data', e);
+      }
+    });
+  </script>
 </body>
 </html>

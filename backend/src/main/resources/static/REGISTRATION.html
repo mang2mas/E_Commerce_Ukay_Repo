@@ -31,54 +31,60 @@
       </p>
 
       <div class="form-row">
-        <label>Full Name</label>
+        <label for="fullNameInput">Full Name</label>
         <input
+          id="fullNameInput"
           type="text"
           placeholder="Enter your full name"
         />
       </div>
 
       <div class="form-row">
-        <label>Email Address</label>
+        <label for="emailInput">Email Address</label>
         <input
+          id="emailInput"
           type="email"
           placeholder="Enter your email address"
         />
       </div>
 
       <div class="form-row">
-        <label>Password</label>
+        <label for="passwordInput">Password</label>
         <input
+          id="passwordInput"
           type="password"
           placeholder="Enter your password"
         />
       </div>
 
       <div class="form-row">
-        <label>Confirm Password</label>
+        <label for="confirmPasswordInput">Confirm Password</label>
         <input
+          id="confirmPasswordInput"
           type="password"
           placeholder="Confirm your password"
         />
       </div>
 
       <div class="form-row">
-        <label>Contact Number</label>
+        <label for="contactNoInput">Contact Number</label>
         <input
+          id="contactNoInput"
           type="text"
           placeholder="Enter your contact number"
         />
       </div>
 
       <div class="form-row">
-        <label>Address</label>
+        <label for="addressInput">Address</label>
         <textarea
+          id="addressInput"
           placeholder="Enter your complete address"
         ></textarea>
       </div>
 
       <div class="form-row">
-        <label>Account Type</label>
+        <label for="accountType">Account Type</label>
 
         <select id="accountType">
           <option value="">Select account type</option>
@@ -107,9 +113,10 @@
         class="form-row"
         style="display:none;"
       >
-        <label>ID Upload</label>
+        <label for="idUploadInput">ID Upload</label>
 
         <input
+          id="idUploadInput"
           type="file"
           accept="image/*,.pdf"
         />
@@ -124,36 +131,78 @@
 </main>
 
 <div class="next-container">
-  <button class="frame-2367variant12">
+  <button type="button" id="registerNextBtn" class="frame-2367variant12">
     NEXT
   </button>
 </div>
 
 <script>
-const accountType =
-  document.getElementById("accountType");
-
-const idUploadSection =
-  document.getElementById("idUploadSection");
-
-const seniorNotice =
-  document.getElementById("seniorNotice");
+const accountType = document.getElementById("accountType");
+const idUploadSection = document.getElementById("idUploadSection");
+const seniorNotice = document.getElementById("seniorNotice");
+const idUploadInput = document.getElementById("idUploadInput");
+const registerNextBtn = document.getElementById("registerNextBtn");
 
 accountType.addEventListener("change", () => {
-
   const value = accountType.value;
 
-  if (
-    value === "Senior" ||
-    value === "PWD"
-  ) {
+  if (value === "Senior" || value === "PWD") {
     idUploadSection.style.display = "grid";
     seniorNotice.style.display = "flex";
   } else {
     idUploadSection.style.display = "none";
     seniorNotice.style.display = "none";
   }
+});
 
+registerNextBtn.addEventListener("click", async () => {
+  const fullName = document.getElementById("fullNameInput").value.trim();
+  const email = document.getElementById("emailInput").value.trim();
+  const password = document.getElementById("passwordInput").value;
+  const confirmPassword = document.getElementById("confirmPasswordInput").value;
+  const contactNo = document.getElementById("contactNoInput").value.trim();
+  const accountTypeValue = accountType.value;
+  const idNumber = idUploadInput.files.length > 0 ? idUploadInput.files[0].name : null;
+
+  if (!fullName || !email || !password || !confirmPassword || !contactNo) {
+    alert("Please complete all required fields before continuing.");
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    alert("Passwords do not match.");
+    return;
+  }
+
+  const payload = {
+    fullName,
+    email,
+    password,
+    contactNo,
+    role: "buyer",
+    isPwdSenior: accountTypeValue === "Senior" || accountTypeValue === "PWD",
+    idNumber: idNumber
+  };
+
+  try {
+    const response = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(error || "Registration failed. Please try again.");
+    }
+
+    alert("Registration successful. Redirecting to login...");
+    window.location.href = "./login.html";
+  } catch (err) {
+    alert(err.message || "Unable to complete registration.");
+  }
 });
 </script>
 
