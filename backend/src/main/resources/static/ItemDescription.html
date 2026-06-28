@@ -176,27 +176,43 @@
   <script src="/js/app.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      const params = new URLSearchParams(window.location.search);
+      const productIdFromUrl = params.get('productId');
       const stored = sessionStorage.getItem('selectedProduct');
-      if (!stored) return;
+      let product = null;
 
-      try {
-        const product = JSON.parse(stored);
-        if (product.imageUrl) document.querySelector('.main-image img').src = product.imageUrl;
-        if (product.productName) document.querySelector('.product-title').textContent = product.productName;
-        if (product.price) document.querySelector('.price').textContent = product.price.replace('PHP', '').trim();
-        if (product.price) document.querySelector('.currency').textContent = 'PHP';
-        const productName = product.productName || 'Item';
-        const descriptionParagraph = document.querySelector('.description p');
-        if (descriptionParagraph) descriptionParagraph.textContent = `Details for ${productName} are shown here. Add this item to your cart or contact the seller for more information.`;
-        const productId = product.productId;
-        if (productId) {
-          const addCartButton = document.querySelector('.btn-add-cart-action');
-          if (addCartButton) {
-            addCartButton.dataset.productId = productId;
-          }
+      if (stored) {
+        try {
+          product = JSON.parse(stored);
+        } catch (e) {
+          console.warn('Unable to parse selectedProduct data', e);
         }
-      } catch (e) {
-        console.warn('Unable to parse selectedProduct data', e);
+      }
+
+      if (!product && productIdFromUrl) {
+        product = { productId: productIdFromUrl, productName: 'Selected item' };
+      }
+
+      if (!product) return;
+
+      if (product.imageUrl) document.querySelector('.main-image img').src = product.imageUrl;
+      if (product.productName) document.querySelector('.product-title').textContent = product.productName;
+      if (product.price) {
+        document.querySelector('.price').textContent = product.price.replace('PHP', '').trim();
+        document.querySelector('.currency').textContent = 'PHP';
+      }
+
+      const productName = product.productName || 'Item';
+      const descriptionParagraph = document.querySelector('.description p');
+      if (descriptionParagraph) {
+        descriptionParagraph.textContent = `Details for ${productName} are shown here. Add this item to your cart or contact the seller for more information.`;
+      }
+
+      const productId = product.productId || productIdFromUrl;
+      const addCartButton = document.querySelector('.btn-add-cart-action');
+      if (productId && addCartButton) {
+        addCartButton.dataset.productId = productId;
+        addCartButton.dataset.productName = productName;
       }
     });
   </script>

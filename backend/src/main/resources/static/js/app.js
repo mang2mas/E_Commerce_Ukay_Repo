@@ -1,6 +1,28 @@
 let currentUserId = sessionStorage.getItem("currentUserId") || null;
 let currentUserRole = sessionStorage.getItem("currentUserRole") || null;
 
+function getProductContext(target) {
+    const card = target?.closest('.masonry-item');
+    const button = target?.closest('.btn-add-cart-action');
+    const selectedProduct = sessionStorage.getItem('selectedProduct');
+    let parsedProduct = null;
+
+    if (selectedProduct) {
+        try {
+            parsedProduct = JSON.parse(selectedProduct);
+        } catch (error) {
+            console.warn('Unable to parse selectedProduct data', error);
+        }
+    }
+
+    const productId = card?.dataset.productId || button?.dataset.productId || parsedProduct?.productId || new URLSearchParams(window.location.search).get('productId');
+    const productName = card?.querySelector('.item-title-badge')?.textContent?.trim() || button?.dataset.productName || parsedProduct?.productName || 'item';
+    const price = card?.querySelector('.item-price-tag')?.textContent?.trim() || parsedProduct?.price;
+    const imageUrl = card?.querySelector('img')?.src || parsedProduct?.imageUrl;
+
+    return { productId, productName, price, imageUrl };
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     
 // ==========================================================================
@@ -60,9 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (addCartBtn) {
                 event.preventDefault();
                 event.stopPropagation();
-                const closestCard = addCartBtn.closest('.masonry-item');
-                const productId = closestCard?.dataset.productId;
-                const productName = closestCard?.querySelector('.item-title-badge')?.textContent?.trim();
+                const { productId, productName } = getProductContext(addCartBtn);
 
                 if (!productId) {
                     alert('Unable to determine product to add to cart.');
@@ -88,10 +108,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (itemCard) {
                 event.preventDefault();
                 event.stopPropagation();
-                const productId = itemCard.dataset.productId;
-                const productName = itemCard.querySelector('.item-title-badge')?.textContent?.trim();
-                const price = itemCard.querySelector('.item-price-tag')?.textContent?.trim();
-                const imageUrl = itemCard.querySelector('img')?.src;
+                const { productId, productName, price, imageUrl } = getProductContext(itemCard);
+
+                if (!productId) {
+                    return;
+                }
 
                 const selectedProduct = {
                     productId,
