@@ -52,20 +52,21 @@
 
 .frame9 {
   width: 100%;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
-
-  margin-top: 50px;
+  align-items: center;
+  padding: 32px 16px;
 }
 
 .frame10 {
-  width: var(--container-width);
+  width: min(100%, clamp(520px, 90vw, 900px));
   background: white;
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-card);
-
   overflow: hidden;
   position: relative;
+  margin: 0 auto;
 }
 
 /* LOGO SECTION */
@@ -142,6 +143,56 @@
   outline: none;
 }
 
+.input-with-icon {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.validation-icon {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: #ef4444;
+  color: white;
+  border-radius: 50%;
+  font-weight: 700;
+  cursor: default;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
+.validation-icon.active {
+  display: inline-flex;
+}
+
+.validation-icon::before {
+  content: '×';
+  font-size: 16px;
+}
+
+.password-strength-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.password-strength-bar {
+  width: 0%;
+  height: 8px;
+  border-radius: 999px;
+  background-color: #d1d5db;
+  transition: width 0.2s ease, background-color 0.2s ease;
+}
+
+.password-strength-label {
+  font-size: 13px;
+  color: #4b5563;
+}
+
 .form-row textarea {
   min-height: 120px;
   resize: vertical;
@@ -170,13 +221,11 @@
 /* BUTTON */
 
 .next-container {
-  width: var(--container-width);
-
   display: flex;
   justify-content: flex-end;
-
+  padding-top: 20px;
   margin-top: 25px;
-  margin-bottom: 50px;
+  margin-bottom: 30px;
 }
 
 .frame-2367variant12 {
@@ -197,6 +246,40 @@
 
 .frame-2367variant12:hover {
   transform: translateY(-1px);
+}
+
+.success-popup {
+  position: fixed;
+  inset: 0;
+  display: none;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 999;
+}
+
+.success-popup.visible {
+  display: grid;
+}
+
+.success-popup-content {
+  background: white;
+  border-radius: 16px;
+  padding: 28px 30px;
+  width: min(100%, 420px);
+  text-align: center;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+}
+
+.success-popup-content h3 {
+  margin: 0 0 12px;
+  font-size: 22px;
+  color: #111827;
+}
+
+.success-popup-content p {
+  margin: 0;
+  font-size: 15px;
+  color: #4b5563;
 }
 
 /* RESPONSIVE */

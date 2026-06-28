@@ -51,6 +51,17 @@ public class AuthService {
         newUser.setFullName(request.getFullName());
         newUser.setContactNo(request.getContactNo());
         newUser.setRole(request.getRole() == null ? User.UserRole.buyer : request.getRole());
+        newUser.setDiscountType("NONE");
+        newUser.setIsPwdSenior(false);
+
+        String accountType = request.getAccountType();
+        if ("Senior".equalsIgnoreCase(accountType)) {
+            newUser.setDiscountType("SENIOR");
+            newUser.setIsPwdSenior(true);
+        } else if ("PWD".equalsIgnoreCase(accountType)) {
+            newUser.setDiscountType("PWD");
+            newUser.setIsPwdSenior(true);
+        }
 
         return userRepository.save(newUser);
     }

@@ -1,10 +1,13 @@
 package com.ukayukay.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ukayukay.backend.entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RegisterRequest {
 
     @NotBlank(message = "Email is required")
@@ -19,7 +22,10 @@ public class RegisterRequest {
     @Size(max = 100, message = "Full name must not exceed 100 characters")
     private String fullName;
 
+    @Pattern(regexp = "^09\\d{9}$", message = "Contact number must be 11 digits and start with 09")
     private String contactNo;
+
+    private String accountType;
 
     private User.UserRole role;
 
@@ -31,6 +37,8 @@ public class RegisterRequest {
     public void setFullName(String fullName) { this.fullName = fullName; }
     public String getContactNo() { return contactNo; }
     public void setContactNo(String contactNo) { this.contactNo = contactNo; }
+    public String getAccountType() { return accountType; }
+    public void setAccountType(String accountType) { this.accountType = accountType; }
     public User.UserRole getRole() { return role; }
     public void setRole(User.UserRole role) { this.role = role; }
 }

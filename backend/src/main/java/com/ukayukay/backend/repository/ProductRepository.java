@@ -19,6 +19,12 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     Long countBySeller_UserId(Integer sellerId);
 
+    List<Product> findTop9ByCategoryAndStatusAndProductIdNotIn(String category, String status, List<Integer> excludedProductIds);
+
+    List<Product> findTop9BySeller_UserIdAndStatusAndProductIdNotIn(Integer sellerId, String status, List<Integer> excludedProductIds);
+
+    List<Product> findTop12ByStatusOrderByDateAddedDesc(String status);
+
     @Query("SELECT p FROM Product p WHERE p.status = :status " +
            "AND (:category IS NULL OR p.category = :category) " +
            "AND (:size IS NULL OR p.size = :size) " +

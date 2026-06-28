@@ -70,6 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     refreshLoginStatusIndicator();
+    loadProducts();
 
     const navbar = document.querySelector(".navbar");
     if (navbar) {
@@ -216,7 +217,65 @@ function setLoggedIn(user){
         });
     }
 
-    function loadProducts() { console.log("Catalog dynamic reload triggered"); }
+    function loadProducts() {
+        const container = $('#newArrivalsContainer');
+        if (!container.length) {
+            console.warn('New arrivals container not found');
+            return;
+        }
+
+        const userId = currentUserId ? Number(currentUserId) : null;
+        container.html('<div class="recommended-loading">Loading new arrivals…</div>');
+
+        const query = userId ? `?userId=${userId}` : '';
+        $.get(`/api/products/recommended${query}`)
+            .done(function(products) {
+                renderRecommendedProducts(products);
+            })
+            .fail(function(xhr) {
+                console.error('Failed to load recommended products:', xhr.responseText);
+                container.html('<div class="recommended-loading">Unable to load recommendations.</div>');
+            });
+    }
+
+    function renderRecommendedProducts(products) {
+        const container = $('#newArrivalsContainer');
+        container.empty();
+
+        if (!products || products.length === 0) {
+            container.html('<div class="recommended-loading">No recommended items available right now.</div>');
+            return;
+        }
+
+        // Simple CSS-column masonry: append cards directly — columns handled by CSS
+        container.empty();
+        const toShow = products.slice(0, 30);
+        toShow.forEach(product => {
+            const productId = product.productId || product.id;
+            const $card = $('<div>').addClass('recommended-card').data('product', product);
+            const imageUrl = product.imagePath || '/images/item1.jpg';
+            const name = product.itemName || 'Untitled item';
+            const price = product.price != null ? '₱' + product.price : 'Price unavailable';
+            const category = product.category || 'Vintage';
+
+            $card.append(`<div class="recommended-image"><img src="${imageUrl}" alt="${name}"></div>`);
+            $card.append(`<div class="recommended-details"><span class="recommended-label">${name}</span></div>`);
+            const $actions = $('<div>').addClass('recommended-actions');
+            $actions.append($('<button>').addClass('recommended-price-pill').text(price).prop('disabled', true));
+            $actions.append($('<button>').addClass('btn-add-cart-action').text('ADD TO CART').click(function(event) {
+                event.preventDefault();
+                alert('Item added to cart.');
+            }));
+            $actions.append($('<button>').addClass('btn-view-item').text('VIEW').click(function(event) {
+                event.preventDefault();
+                window.location.href = `./ItemDescription.html?productId=${productId}`;
+            }));
+            $card.append($actions);
+
+            container.append($card);
+        });
+    }
+
     function renderCart() { console.log("Cart render baseline updated"); }
 
     function loadOrders(){

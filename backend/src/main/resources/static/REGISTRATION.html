@@ -15,7 +15,7 @@
 </head>
 <body>
 
-<main class="frame9">
+<form id="registrationForm" class="frame9">
   <section class="frame10">
 
     <div class="logo-container">
@@ -31,56 +31,135 @@
       </p>
 
       <div class="form-row">
-        <label>Full Name</label>
-        <input
-          type="text"
-          placeholder="Enter your full name"
-        />
+        <label for="firstName">First Name</label>
+        <div class="input-with-icon">
+          <input
+            id="firstName"
+            name="firstName"
+            type="text"
+            placeholder="Enter your first name"
+            required
+          />
+          <button type="button" class="validation-icon" id="firstNameError" hidden aria-hidden="true" title=""></button>
+        </div>
       </div>
 
       <div class="form-row">
-        <label>Email Address</label>
-        <input
-          type="email"
-          placeholder="Enter your email address"
-        />
+        <label for="middleName">Middle Name</label>
+        <div class="input-with-icon">
+          <input
+            id="middleName"
+            name="middleName"
+            type="text"
+            placeholder="Optional middle name"
+          />
+          <button type="button" class="validation-icon" id="middleNameError" hidden aria-hidden="true" title=""></button>
+        </div>
       </div>
 
       <div class="form-row">
-        <label>Password</label>
-        <input
-          type="password"
-          placeholder="Enter your password"
-        />
+        <label for="lastName">Last Name</label>
+        <div class="input-with-icon">
+          <input
+            id="lastName"
+            name="lastName"
+            type="text"
+            placeholder="Enter your last name"
+            required
+          />
+          <button type="button" class="validation-icon" id="lastNameError" hidden aria-hidden="true" title=""></button>
+        </div>
       </div>
 
       <div class="form-row">
-        <label>Confirm Password</label>
-        <input
-          type="password"
-          placeholder="Confirm your password"
-        />
+        <label for="suffix">Suffix</label>
+        <div class="input-with-icon">
+          <input
+            id="suffix"
+            name="suffix"
+            type="text"
+            placeholder="Optional suffix (e.g. Jr., III)"
+          />
+          <button type="button" class="validation-icon" id="suffixError" hidden aria-hidden="true" title=""></button>
+        </div>
       </div>
 
       <div class="form-row">
-        <label>Contact Number</label>
-        <input
-          type="text"
-          placeholder="Enter your contact number"
-        />
+        <label for="email">Email Address</label>
+        <div class="input-with-icon">
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="Enter your email address"
+            required
+          />
+          <button type="button" class="validation-icon" id="emailError" hidden aria-hidden="true" title=""></button>
+        </div>
       </div>
 
       <div class="form-row">
-        <label>Address</label>
+        <label for="password">Password</label>
+        <div class="input-with-icon">
+          <input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Enter your password"
+            required
+          />
+          <button type="button" class="validation-icon" id="passwordError" hidden aria-hidden="true" title=""></button>
+        </div>
+      </div>
+
+      <div class="password-strength-row">
+        <div class="password-strength-bar" id="passwordStrengthBar"></div>
+        <div class="password-strength-label" id="passwordStrengthLabel">Enter a password</div>
+      </div>
+
+      <div class="form-row">
+        <label for="confirmPassword">Confirm Password</label>
+        <div class="input-with-icon">
+          <input
+            id="confirmPassword"
+            name="confirmPassword"
+            type="password"
+            placeholder="Confirm your password"
+            required
+          />
+          <button type="button" class="validation-icon" id="confirmPasswordError" hidden aria-hidden="true" title=""></button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="contactNumber">Contact Number</label>
+        <div class="input-with-icon">
+          <input
+            id="contactNumber"
+            name="contactNumber"
+            type="tel"
+            inputmode="numeric"
+            pattern="^09\d{9}$"
+            placeholder="Enter your contact number"
+            maxlength="11"
+            required
+          />
+          <button type="button" class="validation-icon" id="contactNumberError" hidden aria-hidden="true" title=""></button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="address">Address</label>
         <textarea
+          id="address"
+          name="address"
           placeholder="Enter your complete address"
         ></textarea>
       </div>
 
       <div class="form-row">
-        <label>Account Type</label>
-
-        <select id="accountType">
+        <label for="accountType">Account Type</label>
+        <select id="accountType" name="accountType">
           <option value="">Select account type</option>
           <option value="Regular">Regular User</option>
           <option value="Senior">Senior Citizen</option>
@@ -107,54 +186,281 @@
         class="form-row"
         style="display:none;"
       >
-        <label>ID Upload</label>
+        <label for="idUpload">ID Upload</label>
 
         <input
+          id="idUpload"
+          name="idUpload"
           type="file"
           accept="image/*,.pdf"
         />
       </div>
 
-      <div class="signup-prompt" style="text-align:center; margin-top:24px; font-size:14px;">
+      <div id="successPopup" class="success-popup" hidden>
+        <div class="success-popup-content">
+          <h3>Registration Successful</h3>
+          <p>Your account was created. Redirecting to login...</p>
+        </div>
+      </div>
+
+      <div id="registerStatus" class="signup-prompt" style="text-align:center; margin-top:24px; font-size:14px; color:#c0392b;"></div>
+
+      <div class="signup-prompt" style="text-align:center; margin-top:16px; font-size:14px; color:#333;">
         Already have an account? <a href="./login.html">Log in</a>
+      </div>
+
+      <div class="next-container">
+        <button type="submit" class="frame-2367variant12">
+          NEXT
+        </button>
       </div>
 
     </div>
   </section>
-</main>
-
-<div class="next-container">
-  <button class="frame-2367variant12">
-    NEXT
-  </button>
-</div>
+</form>
 
 <script>
-const accountType =
-  document.getElementById("accountType");
+const accountType = document.getElementById("accountType");
+const idUploadSection = document.getElementById("idUploadSection");
+const seniorNotice = document.getElementById("seniorNotice");
+const registrationForm = document.getElementById("registrationForm");
+const passwordInput = document.getElementById("password");
+const passwordStrengthBar = document.getElementById("passwordStrengthBar");
+const passwordStrengthLabel = document.getElementById("passwordStrengthLabel");
+let formSubmitted = false;
 
-const idUploadSection =
-  document.getElementById("idUploadSection");
-
-const seniorNotice =
-  document.getElementById("seniorNotice");
-
-accountType.addEventListener("change", () => {
-
-  const value = accountType.value;
-
-  if (
-    value === "Senior" ||
-    value === "PWD"
-  ) {
-    idUploadSection.style.display = "grid";
-    seniorNotice.style.display = "flex";
+function showValidationError(fieldId, message) {
+  const button = document.getElementById(fieldId + "Error");
+  if (!button) return;
+  button.title = message;
+  if (message && formSubmitted) {
+    button.classList.add('active');
+    button.hidden = false;
   } else {
-    idUploadSection.style.display = "none";
-    seniorNotice.style.display = "none";
+    button.classList.remove('active');
+    button.hidden = true;
+  }
+}
+
+function clearValidationErrors() {
+  [
+    'firstName', 'middleName', 'lastName', 'suffix', 'email',
+    'password', 'confirmPassword', 'contactNumber'
+  ].forEach(field => showValidationError(field, ''));
+}
+
+function validateField(fieldId) {
+  const value = document.getElementById(fieldId).value.trim();
+  switch (fieldId) {
+    case 'firstName':
+      showValidationError(fieldId, value ? '' : 'First name is required');
+      break;
+    case 'lastName':
+      showValidationError(fieldId, value ? '' : 'Last name is required');
+      break;
+    case 'email':
+      showValidationError(fieldId, /^\S+@\S+\.\S+$/.test(value) ? '' : 'Enter a valid email address');
+      break;
+    case 'password':
+      showValidationError(fieldId, value && isPasswordAcceptable(value) ? '' : 'Password must be medium or strong');
+      break;
+    case 'confirmPassword':
+      showValidationError(fieldId, value === document.getElementById('password').value ? '' : 'Passwords do not match');
+      break;
+    case 'contactNumber':
+      showValidationError(fieldId, /^09\d{9}$/.test(value) ? '' : 'Contact number must be 11 digits and start with 09');
+      break;
+    default:
+      break;
+  }
+}
+
+function setPasswordStrength(password) {
+  const result = getPasswordStrength(password);
+  passwordStrengthBar.style.width = result.width;
+  passwordStrengthBar.style.backgroundColor = result.color;
+  passwordStrengthLabel.textContent = result.label;
+}
+
+function getPasswordStrength(password) {
+  if (!password) {
+    return { label: 'Enter a password', width: '0%', color: '#d1d5db' };
   }
 
+  let score = 0;
+  if (password.length >= 8) score += 1;
+  if (password.length >= 10) score += 1;
+  if (/[a-z]/.test(password)) score += 1;
+  if (/[A-Z]/.test(password)) score += 1;
+  if (/[0-9]/.test(password)) score += 1;
+  if (/[^A-Za-z0-9]/.test(password)) score += 1;
+
+  if (score >= 5) {
+    return { label: 'Strong password', width: '100%', color: '#22c55e' };
+  }
+  if (score >= 3) {
+    return { label: 'Medium password', width: '65%', color: '#f59e0b' };
+  }
+
+  return { label: 'Weak password', width: '30%', color: '#ef4444' };
+}
+
+function isPasswordAcceptable(password) {
+  const strength = getPasswordStrength(password);
+  return strength.label === 'Medium password' || strength.label === 'Strong password';
+}
+
+function combineFullName() {
+  const first = document.getElementById('firstName').value.trim();
+  const middle = document.getElementById('middleName').value.trim();
+  const last = document.getElementById('lastName').value.trim();
+  const suffix = document.getElementById('suffix').value.trim();
+  return [first, middle, last, suffix].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
+}
+
+function validateForm() {
+  clearValidationErrors();
+  let valid = true;
+
+  const firstName = document.getElementById('firstName').value.trim();
+  const lastName = document.getElementById('lastName').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+  const contactNumber = document.getElementById('contactNumber').value.trim();
+  const accountTypeValue = accountType.value;
+
+  if (!firstName) {
+    showValidationError('firstName', 'First name is required');
+    valid = false;
+  }
+
+  if (!lastName) {
+    showValidationError('lastName', 'Last name is required');
+    valid = false;
+  }
+
+  if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+    showValidationError('email', 'Enter a valid email address');
+    valid = false;
+  }
+
+  if (!password) {
+    showValidationError('password', 'Password is required');
+    valid = false;
+  } else if (!isPasswordAcceptable(password)) {
+    showValidationError('password', 'Password must be medium or strong');
+    valid = false;
+  }
+
+  if (confirmPassword !== password) {
+    showValidationError('confirmPassword', 'Passwords do not match');
+    valid = false;
+  }
+
+  if (!/^09\d{9}$/.test(contactNumber)) {
+    showValidationError('contactNumber', 'Contact number must be 11 digits and start with 09');
+    valid = false;
+  }
+
+  if (accountTypeValue === 'Senior' || accountTypeValue === 'PWD') {
+    idUploadSection.style.display = 'grid';
+    seniorNotice.style.display = 'flex';
+  } else {
+    idUploadSection.style.display = 'none';
+    seniorNotice.style.display = 'none';
+  }
+
+  return valid;
+}
+
+passwordInput.addEventListener('input', () => {
+  setPasswordStrength(passwordInput.value);
 });
+
+const contactNumberInput = document.getElementById('contactNumber');
+contactNumberInput.addEventListener('input', () => {
+  contactNumberInput.value = contactNumberInput.value.replace(/[^0-9]/g, '').slice(0, 11);
+});
+
+accountType.addEventListener('change', () => {
+  if (accountType.value === 'Senior' || accountType.value === 'PWD') {
+    idUploadSection.style.display = 'grid';
+    seniorNotice.style.display = 'flex';
+  } else {
+    idUploadSection.style.display = 'none';
+    seniorNotice.style.display = 'none';
+  }
+});
+
+const validationFields = ['firstName', 'lastName', 'email', 'password', 'confirmPassword', 'contactNumber'];
+validationFields.forEach((fieldId) => {
+  const input = document.getElementById(fieldId);
+  if (!input) return;
+  input.addEventListener('input', () => {
+    if (formSubmitted) {
+      validateField(fieldId);
+    }
+  });
+});
+
+registrationForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  formSubmitted = true;
+
+  if (!validateForm()) {
+    document.getElementById('registerStatus').textContent = 'Please fix highlighted fields before continuing.';
+    return;
+  }
+
+  const payload = {
+    firstName: document.getElementById('firstName').value.trim(),
+    middleName: document.getElementById('middleName').value.trim(),
+    lastName: document.getElementById('lastName').value.trim(),
+    suffix: document.getElementById('suffix').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    password: document.getElementById('password').value,
+    confirmPassword: document.getElementById('confirmPassword').value,
+    contactNo: document.getElementById('contactNumber').value.trim(),
+    accountType: document.getElementById('accountType').value,
+    fullName: combineFullName()
+  };
+
+  document.getElementById('registerStatus').textContent = 'Registering...';
+
+  try {
+    const response = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      document.getElementById('registerStatus').textContent = 'Registration failed: ' + errorText;
+      return;
+    }
+
+    document.getElementById('registerStatus').textContent = '';
+    registrationForm.reset();
+    setPasswordStrength('');
+    showSuccessPopup();
+  } catch (error) {
+    document.getElementById('registerStatus').textContent = 'Registration failed: ' + error.message;
+  }
+});
+
+function showSuccessPopup() {
+  const popup = document.getElementById('successPopup');
+  if (!popup) return;
+  popup.hidden = false;
+  popup.classList.add('visible');
+  setTimeout(() => {
+    window.location.href = './login.html';
+  }, 2000);
+}
 </script>
 
 </body>

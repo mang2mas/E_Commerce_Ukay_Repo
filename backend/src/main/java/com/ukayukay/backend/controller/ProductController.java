@@ -40,6 +40,13 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
+    @GetMapping("/recommended")
+    public List<Product> getRecommendedProducts(@RequestParam(required = false) Integer userId,
+                                                @RequestParam(required = false, defaultValue = "30") int limit) {
+        // Default limit set to 30 for FYP/home feed
+        return productService.getRecommendedProducts(userId, limit);
+    }
+
     @GetMapping("/seller/{sellerId}")
     public ResponseEntity<List<Product>> getProductsBySeller(@PathVariable Integer sellerId) {
         return ResponseEntity.ok(productService.getProductsBySeller(sellerId));

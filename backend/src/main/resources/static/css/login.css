@@ -95,54 +95,37 @@ input::placeholder {
 
 .btn-login {
     width: 100%;
-    padding: 11px; /* Tighter button tracker */
+    padding: 12px;
     background-color: var(--primary-yellow);
     border: none;
-    font-size: 13px;
+    border-radius: 4px;
+    font-size: 14px;
     font-weight: 700;
     letter-spacing: 0.05em;
     color: var(--text-black);
     cursor: pointer;
-    margin-bottom: 2px;
+    margin-top: 10px;
 }
 
-.divider {
-    font-size: 11px;
-    font-weight: 700;
-    color: #b5b5ad;
-    text-transform: uppercase;
-    margin: 12px 0;
-}
-
-.btn-oauth {
-    width: 100%;
-    padding: 9px;
-    background-color: #ffffff;
-    border: 1px solid var(--border-gray);
+.message {
+    margin-top: 16px;
     font-size: 12px;
-    font-weight: 700;
-    color: var(--text-black);
-    cursor: pointer;
-    margin-bottom: 8px;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
+    text-align: center;
+    min-height: 18px;
 }
 
-/* Crisp PNG icon styling boundaries */
-.oauth-vector {
-    width: 15px;
-    height: 15px;
-    object-fit: contain;
-    display: inline-block;
+.message.error {
+    color: #c0392b;
+}
+
+.message.info {
+    color: #34495e;
 }
 
 .signup-prompt {
     font-size: 12px;
     color: var(--text-black);
-    margin-top: 20px;
+    margin-top: 18px;
 }
 
 .signup-prompt a {
@@ -151,40 +134,14 @@ input::placeholder {
 }
 
 .admin-wrapper {
-    margin-top: 6px;
+    margin-top: 12px;
 }
 
 .admin-link {
     display: inline-block;
-    padding: 8px 8px;
+    padding: 7px 10px;
     font-size: 11px;
     color: var(--link-orange);
     text-decoration: underline;
     cursor: pointer;
-    position: relative;
-    z-index: 20;
-    pointer-events: auto;
-}
-
-/* Swapped to a 100% stable, un-blocked Wikipedia mirror vector URL */
-.btn-google::before {
-    content: "";
-    width: 16px;
-    height: 16px;
-    display: inline-block;
-    background-image: url("https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg");
-    background-size: contain;
-    background-repeat: no-repeat;
-    margin-right: 10px;
-}
-
-.btn-apple::before {
-    content: "";
-    width: 16px;
-    height: 16px;
-    display: inline-block;
-    background-image: url("https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg");
-    background-size: contain;
-    background-repeat: no-repeat;
-    margin-right: 10px;
 }
