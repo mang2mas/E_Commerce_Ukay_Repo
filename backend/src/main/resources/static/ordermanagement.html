@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Purchases</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            background-color: white;
+            padding-top: 90px; /* Space for the navbar */
+        }
+
+        /* Layout Container */
+        .layout {
+            display: flex;
+            min-height: calc(100vh - 90px);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: #faf9ee;
+            padding: 40px 20px;
+            border-right: 1px solid #e5e5e5;
+            box-sizing: border-box;
+        }
+
+        .profile-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .profile-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            margin: 0 auto 15px;
+            background: white;
+        }
+
+        .profile-name {
+            font-weight: 700;
+            font-size: 16px;
+            margin: 0 0 5px;
+        }
+
+        .profile-username {
+            font-size: 12px;
+            color: #666;
+            margin: 0 0 15px;
+        }
+
+        .btn-edit-profile {
+            background: white;
+            border: 1px solid #ccc;
+            padding: 8px 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 20px;
+        }
+
+        .sidebar-menu a {
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .sidebar-menu a.active {
+            color: #000;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 40px 50px;
+            background: white;
+        }
+
+        .page-title {
+            font-size: 28px;
+            margin: 0 0 5px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin: 0 0 30px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e5e5e5;
+            margin-bottom: 30px;
+        }
+
+        .tab {
+            padding: 15px 30px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            text-align: center;
+            flex: 1;
+        }
+
+        .tab.active {
+            background-color: #fff9e6;
+            border-bottom: 2px solid #fbce60;
+        }
+
+        /* Order Cards */
+        .order-card {
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e5e5e5;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .order-status {
+            color: #f47a55;
+        }
+
+        .order-body {
+            display: flex;
+            padding: 0;
+        }
+
+        /* Left Side: Product Details */
+        .product-details {
+            flex: 1;
+            display: flex;
+            padding: 20px;
+            gap: 20px;
+            border-right: 1px solid #e5e5e5;
+        }
+
+        .product-img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            background: #f5f5f5;
+        }
+
+        .product-info h3 {
+            margin: 0 0 5px;
+            font-size: 14px;
+        }
+
+        .product-info p {
+            font-size: 12px;
+            color: #666;
+            margin: 0 0 5px;
+        }
+
+        .product-price {
+            color: #f47a55;
+            font-weight: 700;
+            margin-top: 15px;
+        }
+
+        /* Right Side: Tracking Details */
+        .tracking-details {
+            flex: 1.2;
+            padding: 20px;
+        }
+
+        .tracking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+
+        .tracking-text {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .tracking-number {
+            font-weight: normal;
+        }
+
+        .copy-btn {
+            color: #f47a55;
+            text-decoration: underline;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid #ccc;
+            padding: 6px 15px;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        /* Timeline Progress Bar */
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: #e5e5e5;
+            z-index: 1;
+        }
+
+        /* Adjust this width percentage to fill the line. 33% = Packed, 66% = Shipped, 100% = Completed */
+        .timeline-progress {
+            position: absolute;
+            top: 15px;
+            left: 10%;
+            width: 33%; 
+            height: 2px;
+            background: #fbce60;
+            z-index: 2;
+        }
+
+        .step {
+            text-align: center;
+            z-index: 3;
+            background: white;
+            width: 25%;
+        }
+
+        .step-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e5e5e5;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 10px;
+            font-size: 14px;
+        }
+
+        .step.active .step-icon {
+            background: #fbce60;
+            color: black;
+        }
+
+        .step-label {
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .status-message {
+            background-color: #faf9ee;
+            padding: 10px 15px;
+            font-size: 12px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- UNIFORM NAVBAR (Opacity 0.50, Logged in Black) -->
+    <header class="navbar" style="background-color: rgba(36, 36, 36, 0.50); backdrop-filter: blur(8px); position: fixed; top: 0; left: 0; width: 100%; height: 90px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 9999;">
+        <div class="nav-left" style="display: flex; align-items: center; gap: 30px;">
+            <button style="background:none; border:none; color:white; font-size:20px; cursor:pointer;"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <img src="/images/logo.png" style="height: 36px; width: auto;" alt="Logo">
+        </div>
+        <div class="nav-right" style="display: flex; align-items: center; gap: 24px;">
+            <div class="toggle-container" style="display: flex; background-color: rgba(255,255,255,0.2); padding: 3px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.3); margin-right: 12px;">
+                <button class="toggle-btn" style="background-color: #ffffff; color: #000000; border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">BUY</button>
+                <button class="toggle-btn" style="background: none; color: rgba(255,255,255,0.7); border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">SELL</button>
+            </div>
+            <button style="color:white; background:none; border:none; font-size:20px; cursor:pointer;"><i class="fa-solid fa-house"></i></button>
+            <button style="color:white; background:none; border:none; font-size:20px; cursor:pointer;"><i class="fa-regular fa-user"></i></button>
+            <button style="color:white; background:none; border:none; font-size:20px; cursor:pointer;"><i class="fa-solid fa-bag-shopping"></i></button>
+            <span style="color: #000000; font-size: 14px;">Logged in</span>
+        </div>
+    </header>
+
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="profile-section">
+                <div class="profile-img">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <h2 class="profile-name">Aleyami Sumile</h2>
+                <p class="profile-username">@yami123</p>
+                <button class="btn-edit-profile">Edit Profile</button>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active"><i class="fa-solid fa-bag-shopping"></i> My Purchases</a></li>
+                <li><a href="#"><i class="fa-solid fa-cart-shopping"></i> My Cart</a></li>
+                <li><a href="#"><i class="fa-solid fa-bell"></i> Notifications</a></li>
+                <li><a href="#"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <h1 class="page-title">My Purchases</h1>
+            <p class="page-subtitle">Track and manage your orders</p>
+
+            <div class="tabs">
+    <div class="tab active">PENDING</div>
+    <div class="tab">PACKED</div>
+    <div class="tab">SHIPPED</div>
+    <div class="tab">DELIVERED / COMPLETED</div>
+</div>
+
+            <!-- ORDER CARD 1 -->
+            <div class="order-card">
+                <div class="order-header">
+                    <span>Order ID: #UKY12345</span>
+                    <span class="order-status">To Ship</span>
+                </div>
+                
+                <div class="order-body">
+                    <div class="product-details">
+                        <img src="/images/item1.jpg" alt="Item" class="product-img">
+                        <div class="product-info">
+                            <h3>VINTAGE PLAID BUTTON DOWN</h3>
+                            <p>Size: L · Condition: 10/10</p>
+                            <p>Sold by <b>@archivefinds</b></p>
+                            <div class="product-price">₱499.00</div>
+                        </div>
+                    </div>
+                    
+                    <div class="tracking-details">
+                        <div class="tracking-header">
+                            <div class="tracking-text">
+                                Tracking Number <br>
+                                <span class="tracking-number">UKYPH123123123123</span> <span class="copy-btn">Copy</span>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn-outline">View Shop</button>
+                                <button class="btn-outline">Contact Seller</button>
+                            </div>
+                        </div>
+
+                        <!-- TIMELINE -->
+                        <div class="timeline">
+                            <div class="timeline-progress"></div>
+                            
+                            <div class="step active">
+                                <div class="step-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+                                <div class="step-label">PENDING</div>
+                            </div>
+                            <div class="step active">
+                                <div class="step-icon"><i class="fa-solid fa-box-open"></i></div>
+                                <div class="step-label">PACKED</div>
+                            </div>
+                            <div class="step">
+                                <div class="step-icon"><i class="fa-solid fa-truck"></i></div>
+                                <div class="step-label">SHIPPED</div>
+                            </div>
+                            <div class="step">
+                                <div class="step-icon"><i class="fa-solid fa-check"></i></div>
+                                <div class="step-label">DELIVERED / COMPLETED</div>
+                            </div>
+                        </div>
+
+                        <div class="status-message">
+                            Your seller is preparing your order.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add more order cards here by copying the div class="order-card" block -->
+
+        </main>
+    </div>
+
+</body>
+</html>
