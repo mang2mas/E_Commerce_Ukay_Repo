@@ -1,401 +1,179 @@
+
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="initial-scale=1, width=device-width" />
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product - Ukay Ukay</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles */
+        body { font-family: 'Inter', sans-serif; margin: 0; padding-top: 110px; background-color: #faf9ee; color: #333; }
+        * { box-sizing: border-box; }
+        
+        .layout-container { max-width: 1200px; margin: 0 auto; display: flex; gap: 40px; padding: 20px; align-items: start; }
+        
+        /* Left Column: Image Upload Preview */
+        .upload-section { flex: 1; background: white; padding: 25px; border-radius: 6px; border: 1px solid #e5e5e5; }
+        .upload-box { border: 2px dashed #ccc; border-radius: 6px; height: 300px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #fdfdfd; cursor: pointer; color: #666; margin-bottom: 20px; }
+        .upload-box:hover { border-color: #fbce60; background: #fff9e6; }
+        .upload-box i { font-size: 40px; margin-bottom: 10px; color: #999; }
+        .preview-tags { display: flex; flex-wrap: wrap; gap: 10px; }
+        .tag { background: #f5f5f5; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
 
-    <link rel="stylesheet" href="/css/globals.css" />
-    <link rel="stylesheet" href="/css/addproduct.css" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap"
-    />
-  </head>
-  <body>
-    <div class="add-product">
-      <div class="main-content-area">
-        <section class="component-27">
-          <div class="component-27-child"></div>
-          <div class="frame-parent">
-            <div class="tags-2-parent">
-              <img class="tags-2-icon" alt="" />
+        /* Right Column: Form */
+        .form-section { flex: 2; background: white; padding: 40px; border-radius: 6px; border: 1px solid #e5e5e5; }
+        .form-section h3 { margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 18px; }
+        
+        .form-row { display: flex; gap: 20px; margin-bottom: 20px; }
+        .form-group { flex: 1; display: flex; flex-direction: column; }
+        .form-group label { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+        .form-group input[type="text"], .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-family: 'Inter', sans-serif; font-size: 14px; outline: none; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #fbce60; }
+        
+        /* Selection Pills (Categories, Sizes, Condition) */
+        .pill-group { display: flex; flex-wrap: wrap; gap: 10px; }
+        .pill-label { display: block; position: relative; cursor: pointer; }
+        .pill-label input { position: absolute; opacity: 0; cursor: pointer; }
+        .pill-text { display: block; padding: 8px 16px; background: #f5f5f5; border: 1px solid #e5e5e5; border-radius: 20px; font-size: 13px; transition: all 0.2s; }
+        .pill-label input:checked ~ .pill-text { background: #fbce60; border-color: #f7b92c; font-weight: 600; }
 
-              <div class="baggy-pants">Baggy Pants</div>
-            </div>
-            <div class="tags-2-parent">
-              <div class="wallet-1">
-                <img class="vector-icon" alt="" />
-              </div>
-              <div class="baggy-pants">290 PHP</div>
-            </div>
-            <div class="tags-2-parent">
-              <img class="vector-icon2" alt="" />
+        /* Color Selection */
+        .color-group { display: flex; flex-wrap: wrap; gap: 12px; }
+        .color-swatch { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #ddd; cursor: pointer; display: inline-block; }
+        .color-swatch.active { border: 2px solid #333; transform: scale(1.1); }
+        .bg-black { background: #000; } .bg-white { background: #fff; } .bg-red { background: #ff4d4d; } .bg-orange { background: #ffa64d; }
+        .bg-yellow { background: #ffd24d; } .bg-green { background: #4dff4d; } .bg-blue { background: #4d4dff; } .bg-purple { background: #b34dff; }
+        .bg-pink { background: #ff4da6; } .bg-brown { background: #8b4513; } .bg-gray { background: #808080; }
 
-              <div class="baggy-pants">Bottom</div>
-              <div class="category-1"></div>
-            </div>
-            <div class="tags-2-parent">
-              <img class="vector-icon3" alt="" />
+        /* Action Row */
+        /* Action Row */
+.action-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; }
+.btn-submit { background: #fbce60; border: none; padding: 12px 40px; font-weight: 700; font-size: 14px; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
 
-              <div class="baggy-pants">L</div>
-            </div>
-          </div>
-          <div class="upload-1-parent">
-            <img
-              class="upload-1-icon"
-              loading="lazy"
-              alt=""
-              src="./public/upload-1.svg"
-            />
-
-            <div class="upload-photo-here">Upload Photo Here</div>
-          </div>
-        </section>
-        <div class="right-form-column">
-          <section class="frame">
-            <div class="frame2">
-              <h3 class="basic-product-information">
-                Basic Product Information
-              </h3>
-              <div class="fields-row-1">
-                <div class="product-name-field">
-                  <div class="product-name">Product Name</div>
-                  <input class="product-name-field-child" type="text" />
-                </div>
-                <div class="price-field">
-                  <div class="price">Price</div>
-                  <input class="price-field-child" type="text" />
-                </div>
-              </div>
-              <div class="brand-name-field">
-                <div class="brand-name-field2">
-                  <div class="brand-name-field3">
-                    <div class="brand-name">Brand Name</div>
-                    <input class="brand-name-field-child" type="text" />
-                  </div>
-                </div>
-              </div>
-              <div class="description-categories-row">
-                <div class="product-description-field">
-                  <div class="product-name">Product Description</div>
-                  <div class="product-description-field-child"></div>
-                </div>
-                <div class="categories-field">
-                  <div class="product-name">Categories</div>
-                  <div class="single-select-component">
-                    <div class="radio-button-option">
-                      <input class="radio-button" type="radio" />
-
-                      <div class="radio-button-option2">Tops</div>
-                    </div>
-                    <div class="radio-button-option">
-                      <input class="radio-button" type="radio" />
-
-                      <div class="radio-button-option2">Bottoms</div>
-                    </div>
-                    <div class="radio-button-option">
-                      <input class="radio-button" type="radio" />
-
-                      <div class="radio-button-option2">Outerwear</div>
-                    </div>
-                    <div class="radio-button-option">
-                      <input class="radio-button" type="radio" />
-
-                      <div class="radio-button-option2">Bags</div>
-                    </div>
-                    <div class="radio-button-option">
-                      <input class="radio-button" type="radio" />
-
-                      <div class="radio-button-option2">Accessories</div>
-                    </div>
-                    <div class="radio-button-option11">
-                      <div class="radio-button6">
-                        <div class="radio-button-child"></div>
-                      </div>
-                      <div class="radio-button-option2">
-                        Radio button option
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-          <section class="frame3">
-            <div class="frame4">
-              <h3 class="product-details">Product Details</h3>
-              <div class="column-headers-row">
-                <div class="color">Color</div>
-                <div class="size">Size</div>
-                <div class="price">Dimensions</div>
-              </div>
-              <div class="product-details-columns">
-                <div class="color-options-left">
-                  <div class="color-options-left-inner">
-                    <div class="component-1-parent">
-                      <div class="component-1">
-                        <img class="vector-icon4" alt="" />
-                      </div>
-                      <div class="black">Black</div>
-                    </div>
-                  </div>
-                  <div class="component-17">
-                    <div class="component-172">
-                      <div class="white">White</div>
-                      <div class="component-7">
-                        <img class="vector-icon4" alt="" />
-                      </div>
-                    </div>
-                  </div>
-                  <div class="component-18">
-                    <div class="component-172">
-                      <div class="red">Red</div>
-                      <div class="component-8">
-                        <img class="vector-icon4" alt="" />
-                      </div>
-                    </div>
-                  </div>
-                  <div class="component-19">
-                    <div class="orange">Orange</div>
-                    <div class="component-9">
-                      <img class="vector-icon4" alt="" />
-                    </div>
-                  </div>
-                  <div class="component-20">
-                    <div class="yellow">Yellow</div>
-                    <div class="component-10">
-                      <img class="vector-icon4" alt="" />
-                    </div>
-                  </div>
-                  <div class="component-21">
-                    <div class="green">Green</div>
-                    <div class="component-11">
-                      <img class="vector-icon4" alt="" />
-                    </div>
-                  </div>
-                </div>
-                <div class="color-options-right">
-                  <div class="component-22">
-                    <div class="blue">Blue</div>
-                    <div class="component-12">
-                      <img class="vector-icon4" alt="" />
-                    </div>
-                  </div>
-                  <div class="component-19">
-                    <div class="purple">Purple</div>
-                    <div class="component-13">
-                      <img class="vector-icon4" alt="" />
-                    </div>
-                  </div>
-                  <div class="component-24">
-                    <div class="pink">Pink</div>
-                    <div class="component-14">
-                      <img class="vector-icon4" alt="" />
-                    </div>
-                  </div>
-                  <div class="component-19">
-                    <div class="brown">Brown</div>
-                    <div class="component-15">
-                      <img class="vector-icon4" alt="" />
-                    </div>
-                  </div>
-                  <div class="component-26">
-                    <div class="gray">Gray</div>
-                    <div class="component-16">
-                      <img class="vector-icon4" alt="" />
-                    </div>
-                  </div>
-                </div>
-                <div class="single-select-component2">
-                  <div class="radio-button-option13">
-                    <input class="radio-button" type="radio" />
-
-                    <div class="radio-button-option2">XS</div>
-                  </div>
-                  <div class="radio-button-option13">
-                    <input class="radio-button" type="radio" />
-
-                    <div class="radio-button-option2">S</div>
-                  </div>
-                  <div class="radio-button-option13">
-                    <input class="radio-button" type="radio" />
-
-                    <div class="radio-button-option2">M</div>
-                  </div>
-                  <div class="radio-button-option13">
-                    <input class="radio-button" type="radio" />
-
-                    <div class="radio-button-option2">L</div>
-                  </div>
-                  <div class="radio-button-option13">
-                    <input class="radio-button" type="radio" />
-
-                    <div class="radio-button-option2">XL</div>
-                  </div>
-                  <div class="radio-button-option11">
-                    <div class="radio-button6">
-                      <div class="radio-button-child"></div>
-                    </div>
-                    <div class="radio-button-option2">Radio button option</div>
-                  </div>
-                </div>
-                <div class="dimensions-column">
-                  <div class="pit-to-pit-row">
-                    <div class="pit-to-pit">Pit to pit:</div>
-                    <input class="pit-to-pit-row-child" type="text" />
-                  </div>
-                  <div class="length-row">
-                    <div class="length">Length:</div>
-                    <input class="pit-to-pit-row-child" type="text" />
-                  </div>
-                  <div class="shoulder-row">
-                    <div class="length">Shoulder:</div>
-                    <input class="shoulder-row-child" type="text" />
-                  </div>
-                  <div class="sleeve-row">
-                    <div class="sleeve">Sleeve:</div>
-                    <input class="sleeve-row-child" type="text" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-          <section class="frame5">
-            <h3 class="product-details">Condition Section</h3>
-            <div class="condition-fields-row">
-              <div class="condition-rating-field">
-                <div class="product-name">Condition Rating</div>
-                <div class="single-select-component3">
-                  <div class="radio-button-option">
-                    <input class="radio-button" type="radio" />
-
-                    <div class="radio-button-option2">Like New</div>
-                  </div>
-                  <div class="radio-button-option">
-                    <input class="radio-button" type="radio" />
-
-                    <div class="radio-button-option2">Excellent</div>
-                  </div>
-                  <div class="radio-button-option">
-                    <input class="radio-button" type="radio" />
-
-                    <div class="radio-button-option2">Good</div>
-                  </div>
-                  <div class="radio-button-option">
-                    <input class="radio-button" type="radio" />
-
-                    <div class="radio-button-option2">Fair</div>
-                  </div>
-                  <div class="radio-button-option33">
-                    <div class="radio-button17">
-                      <div class="radio-button-child"></div>
-                    </div>
-                    <div class="radio-button-option34">Accessories</div>
-                  </div>
-                  <div class="radio-button-option11">
-                    <div class="radio-button6">
-                      <div class="radio-button-child"></div>
-                    </div>
-                    <div class="radio-button-option2">Radio button option</div>
-                  </div>
-                </div>
-              </div>
-              <div class="flaw-notes-field">
-                <div class="product-name">Flaw Notes</div>
-                <div class="flaw-notes-field-child"></div>
-              </div>
-            </div>
-          </section>
-          <div class="form-actions-row">
-            <div class="frame-group">
-              <div class="status-parent">
-                <div class="baggy-pants">Status</div>
-                <img
-                  class="angle-small-down-2-1"
-                  alt=""
-                  src="./public/angle-small-down-2-1.svg"
-                />
-              </div>
-              <div class="items">
-                <div class="tops">Tops</div>
-                <div class="tops">Bottoms</div>
-                <div class="tops">Outerwear</div>
-                <div class="tops">Bags</div>
-                <div class="tops">Accessories</div>
-                <div class="tops">Shirts</div>
-              </div>
-            </div>
-            <button class="form-actions-row-inner">
-              <div class="add-item-wrapper">
-                <b class="add-item">ADD ITEM</b>
-              </div>
-            </button>
-          </div>
+    <header class="navbar" style="background-color: rgba(36, 36, 36, 0.50); backdrop-filter: blur(8px); position: fixed; top: 0; left: 0; width: 100%; height: 90px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 9999;">
+        <div class="nav-left" style="display: flex; align-items: center; gap: 30px;">
+            <button style="background:none; border:none; color:white; font-size:20px; cursor:pointer;"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <img src="/images/logo.png" style="height: 36px; width: auto;" alt="Ukay Ukay">
         </div>
-      </div>
-      <header class="add-product-child"></header>
-      <main class="top-bar-with-sidebar">
-        <div class="header-seller">
-          <img class="home-1-icon" alt="" src="./public/home-1@2x.png" />
-
-          <button class="rectangle-parent">
-            <img class="group-child" alt="" src="./public/Rectangle-286.svg" />
-
-            <img class="group-item" alt="" src="./public/Rectangle-286.svg" />
-
-            <div class="sell">SELL</div>
-            <div class="buy-wrapper">
-              <div class="buy">BUY</div>
+        <div class="nav-right" style="display: flex; align-items: center; gap: 24px;">
+            <div class="toggle-container" style="display: flex; background-color: rgba(255,255,255,0.2); padding: 3px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.3); margin-right: 12px;">
+                <button class="toggle-btn" style="background-color: #ffffff; color: #000000; border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">BUY</button>
+                <button class="toggle-btn" style="background: none; color: rgba(255,255,255,0.7); border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">SELL</button>
             </div>
-          </button>
-          <img class="header-seller-child" alt="" />
-
-          <img
-            class="untitled-design-3-removebg-p-icon"
-            loading="lazy"
-            alt=""
-            src="./public/Untitled-design-3-removebg-preview-1@2x.png"
-          />
-
-          <div class="header-seller-item"></div>
+            <a href="homepage.html" style="color:white; text-decoration:none; font-size:20px; cursor:pointer;"><i class="fa-solid fa-house"></i></a>
+            <a href="ordermanagement.html" style="color:white; text-decoration:none; font-size:20px; cursor:pointer;"><i class="fa-regular fa-user"></i></a>
+            <a href="shoppingcart.html" style="color:white; text-decoration:none; font-size:20px; cursor:pointer;"><i class="fa-solid fa-bag-shopping"></i></a>
+            <span style="color: #000000; font-size: 14px;">Logged in</span>
         </div>
-        <section class="component-6">
-          <div class="icons-nav">
-            <div class="vector-container">
-              <img
-                class="inventory-alt-1-icon"
-                alt=""
-                src="./public/Vector.svg"
-              />
+    </header>
 
-              <div class="home">Home</div>
+    <main class="layout-container">
+        <aside class="upload-section">
+            <div class="upload-box">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <div>Upload Photo Here</div>
             </div>
-            <div class="vector-container">
-              <img
-                class="inventory-alt-1-icon"
-                loading="lazy"
-                alt=""
-                src="./public/inventory-alt-1.svg"
-              />
+            <div class="preview-tags">
+                <span class="tag"><i class="fa-solid fa-tag"></i> Baggy Pants</span>
+                <span class="tag"><i class="fa-solid fa-peso-sign"></i> 290</span>
+                <span class="tag"><i class="fa-solid fa-layer-group"></i> Bottom</span>
+                <span class="tag"><i class="fa-solid fa-ruler"></i> L</span>
+            </div>
+        </aside>
 
-              <div class="home">Inventory</div>
+        <section class="form-section">
+            
+            <h3>Basic Product Information</h3>
+            <div class="form-row">
+                <div class="form-group" style="flex: 2;">
+                    <label>Product Name</label>
+                    <input type="text" placeholder="e.g. Vintage Plaid Button Down">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Price (PHP)</label>
+                    <input type="text" placeholder="0.00">
+                </div>
             </div>
-            <div class="vector-container">
-              <img
-                class="inventory-alt-1-icon"
-                alt=""
-                src="./public/Vector1.svg"
-              />
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Brand Name</label>
+                <input type="text" placeholder="e.g. Levi's, Unbranded">
+            </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Product Description</label>
+                <textarea rows="4" placeholder="Describe the item..."></textarea>
+            </div>
+            <div class="form-group" style="margin-bottom: 40px;">
+                <label>Category</label>
+                <div class="pill-group">
+                    <label class="pill-label"><input type="radio" name="category" checked><span class="pill-text">Tops</span></label>
+                    <label class="pill-label"><input type="radio" name="category"><span class="pill-text">Bottoms</span></label>
+                    <label class="pill-label"><input type="radio" name="category"><span class="pill-text">Outerwear</span></label>
+                    <label class="pill-label"><input type="radio" name="category"><span class="pill-text">Bags</span></label>
+                    <label class="pill-label"><input type="radio" name="category"><span class="pill-text">Accessories</span></label>
+                </div>
+            </div>
 
-              <div class="home">Analytics</div>
+            <h3>Product Details</h3>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Color</label>
+                <div class="color-group">
+                    <span class="color-swatch bg-black active"></span>
+                    <span class="color-swatch bg-white"></span>
+                    <span class="color-swatch bg-red"></span>
+                    <span class="color-swatch bg-orange"></span>
+                    <span class="color-swatch bg-yellow"></span>
+                    <span class="color-swatch bg-green"></span>
+                    <span class="color-swatch bg-blue"></span>
+                    <span class="color-swatch bg-purple"></span>
+                    <span class="color-swatch bg-pink"></span>
+                    <span class="color-swatch bg-brown"></span>
+                    <span class="color-swatch bg-gray"></span>
+                </div>
             </div>
-          </div>
+            <div class="form-group" style="margin-bottom: 40px;">
+                <label>Size</label>
+                <div class="pill-group">
+                    <label class="pill-label"><input type="radio" name="size"><span class="pill-text">XS</span></label>
+                    <label class="pill-label"><input type="radio" name="size"><span class="pill-text">S</span></label>
+                    <label class="pill-label"><input type="radio" name="size" checked><span class="pill-text">M</span></label>
+                    <label class="pill-label"><input type="radio" name="size"><span class="pill-text">L</span></label>
+                    <label class="pill-label"><input type="radio" name="size"><span class="pill-text">XL</span></label>
+                </div>
+            </div>
+
+            <h3>Condition Section</h3>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Condition Rating</label>
+                <div class="pill-group">
+                    <label class="pill-label"><input type="radio" name="condition" checked><span class="pill-text">Like New</span></label>
+                    <label class="pill-label"><input type="radio" name="condition"><span class="pill-text">Excellent</span></label>
+                    <label class="pill-label"><input type="radio" name="condition"><span class="pill-text">Good</span></label>
+                    <label class="pill-label"><input type="radio" name="condition"><span class="pill-text">Fair</span></label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Flaw Notes</label>
+                <textarea rows="2" placeholder="List any stains, tears, or missing buttons..."></textarea>
+            </div>
+
+            <div class="action-row">
+                <div class="form-group" style="width: 200px;">
+                    <label>Status</label>
+                    <select>
+                        <option>Active / Published</option>
+                        <option>Draft</option>
+                    </select>
+                </div>
+                <button class="btn-submit">ADD ITEM</button>
+            </div>
+
         </section>
-      </main>
-    </div>
-  </body>
+    </main>
+
+</body>
 </html>

@@ -186,7 +186,7 @@ Every purchase supports a more eco-friendly future while helping you build a war
     </div>
 
     <div class="footer-action">
-        <button class="btn-submit" onclick="submitForm()">SUBMIT</button>
+        <button class="btn-submit" onclick="submitForm()">NEXT</button>
     </div>
 
     <script>
@@ -206,9 +206,9 @@ Every purchase supports a more eco-friendly future while helping you build a war
             const c3 = document.getElementById('check3').checked;
 
             if (c1 && c2 && c3) {
-                alert('Form successfully submitted!');
+                window.location.href = '/addproduct.html';
             } else {
-                alert('Please check all confirmation boxes before submitting.');
+                alert('Please check all confirmation boxes before continuing.');
             }
         }
     </script>
