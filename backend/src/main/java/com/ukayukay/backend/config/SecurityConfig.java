@@ -69,6 +69,8 @@ public class SecurityConfig {
                     "/discoverypage.html", "/customerviewall.html", "/ItemDescription.html",
                     "/shoppingcart.html", "/forgotpassword.html", "/contentmoderation.html", "/revenue.html",
                     "/addproduct.html", "/ordermanagement.html",
+                    "/addproduct.html", "/editproduct.html", "/productreview.html",
+                    "/sellerhomeprofile.html", "/customersellerprofile.html",
                     "/css/**", "/js/**", "/images/**").permitAll()
                 // Admin-only endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
