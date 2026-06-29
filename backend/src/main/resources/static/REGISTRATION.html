@@ -31,7 +31,6 @@
       </p>
 
       <div class="form-row">
-<<<<<<< HEAD
         <label for="firstName">First Name</label>
         <div class="input-with-icon">
           <input
@@ -154,68 +153,13 @@
         <textarea
           id="address"
           name="address"
-=======
-        <label for="fullNameInput">Full Name</label>
-        <input
-          id="fullNameInput"
-          type="text"
-          placeholder="Enter your full name"
-        />
-      </div>
-
-      <div class="form-row">
-        <label for="emailInput">Email Address</label>
-        <input
-          id="emailInput"
-          type="email"
-          placeholder="Enter your email address"
-        />
-      </div>
-
-      <div class="form-row">
-        <label for="passwordInput">Password</label>
-        <input
-          id="passwordInput"
-          type="password"
-          placeholder="Enter your password"
-        />
-      </div>
-
-      <div class="form-row">
-        <label for="confirmPasswordInput">Confirm Password</label>
-        <input
-          id="confirmPasswordInput"
-          type="password"
-          placeholder="Confirm your password"
-        />
-      </div>
-
-      <div class="form-row">
-        <label for="contactNoInput">Contact Number</label>
-        <input
-          id="contactNoInput"
-          type="text"
-          placeholder="Enter your contact number"
-        />
-      </div>
-
-      <div class="form-row">
-        <label for="addressInput">Address</label>
-        <textarea
-          id="addressInput"
->>>>>>> 44bde22999a56a54d247dbc6001ae69db94b0da1
           placeholder="Enter your complete address"
         ></textarea>
       </div>
 
       <div class="form-row">
         <label for="accountType">Account Type</label>
-<<<<<<< HEAD
         <select id="accountType" name="accountType">
-=======
-
-        <select id="accountType">
->>>>>>> 44bde22999a56a54d247dbc6001ae69db94b0da1
           <option value="">Select account type</option>
           <option value="Regular">Regular User</option>
           <option value="Senior">Senior Citizen</option>
@@ -242,18 +186,11 @@
         class="form-row"
         style="display:none;"
       >
-<<<<<<< HEAD
         <label for="idUpload">ID Upload</label>
 
         <input
           id="idUpload"
           name="idUpload"
-=======
-        <label for="idUploadInput">ID Upload</label>
-
-        <input
-          id="idUploadInput"
->>>>>>> 44bde22999a56a54d247dbc6001ae69db94b0da1
           type="file"
           accept="image/*,.pdf"
         />
@@ -280,23 +217,12 @@
 
     </div>
   </section>
-<<<<<<< HEAD
 </form>
-=======
-</main>
-
-<div class="next-container">
-  <button type="button" id="registerNextBtn" class="frame-2367variant12">
-    NEXT
-  </button>
-</div>
->>>>>>> 44bde22999a56a54d247dbc6001ae69db94b0da1
 
 <script>
 const accountType = document.getElementById("accountType");
 const idUploadSection = document.getElementById("idUploadSection");
 const seniorNotice = document.getElementById("seniorNotice");
-<<<<<<< HEAD
 const registrationForm = document.getElementById("registrationForm");
 const passwordInput = document.getElementById("password");
 const passwordStrengthBar = document.getElementById("passwordStrengthBar");
@@ -310,17 +236,6 @@ function showValidationError(fieldId, message) {
   if (message && formSubmitted) {
     button.classList.add('active');
     button.hidden = false;
-=======
-const idUploadInput = document.getElementById("idUploadInput");
-const registerNextBtn = document.getElementById("registerNextBtn");
-
-accountType.addEventListener("change", () => {
-  const value = accountType.value;
-
-  if (value === "Senior" || value === "PWD") {
-    idUploadSection.style.display = "grid";
-    seniorNotice.style.display = "flex";
->>>>>>> 44bde22999a56a54d247dbc6001ae69db94b0da1
   } else {
     button.classList.remove('active');
     button.hidden = true;
@@ -371,9 +286,7 @@ function getPasswordStrength(password) {
   if (!password) {
     return { label: 'Enter a password', width: '0%', color: '#d1d5db' };
   }
-});
 
-<<<<<<< HEAD
   let score = 0;
   if (password.length >= 8) score += 1;
   if (password.length >= 10) score += 1;
@@ -463,56 +376,6 @@ function validateForm() {
 
 passwordInput.addEventListener('input', () => {
   setPasswordStrength(passwordInput.value);
-=======
-registerNextBtn.addEventListener("click", async () => {
-  const fullName = document.getElementById("fullNameInput").value.trim();
-  const email = document.getElementById("emailInput").value.trim();
-  const password = document.getElementById("passwordInput").value;
-  const confirmPassword = document.getElementById("confirmPasswordInput").value;
-  const contactNo = document.getElementById("contactNoInput").value.trim();
-  const accountTypeValue = accountType.value;
-  const idNumber = idUploadInput.files.length > 0 ? idUploadInput.files[0].name : null;
-
-  if (!fullName || !email || !password || !confirmPassword || !contactNo) {
-    alert("Please complete all required fields before continuing.");
-    return;
-  }
-
-  if (password !== confirmPassword) {
-    alert("Passwords do not match.");
-    return;
-  }
-
-  const payload = {
-    fullName,
-    email,
-    password,
-    contactNo,
-    role: "buyer",
-    isPwdSenior: accountTypeValue === "Senior" || accountTypeValue === "PWD",
-    idNumber: idNumber
-  };
-
-  try {
-    const response = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(error || "Registration failed. Please try again.");
-    }
-
-    alert("Registration successful. Redirecting to login...");
-    window.location.href = "./login.html";
-  } catch (err) {
-    alert(err.message || "Unable to complete registration.");
-  }
->>>>>>> 44bde22999a56a54d247dbc6001ae69db94b0da1
 });
 
 const contactNumberInput = document.getElementById('contactNumber');

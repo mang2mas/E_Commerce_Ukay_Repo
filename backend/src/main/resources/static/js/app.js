@@ -52,6 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const modal = document.getElementById('loginModalOverlay');
                 if (modal) {
                     modal.classList.add('active');
+                    document.body.classList.add('modal-open');
                 } else {
                     window.location.href = './login.html';
                 }
@@ -166,8 +167,14 @@ document.addEventListener("DOMContentLoaded", () => {
             if (button.dataset.view === 'sell') {
                 const target = './sellerregistration.html';
                 if (!currentUserId) {
-                    // Not authenticated -> send to login with next param
-                    window.location.href = `./login.html?next=${encodeURIComponent(target)}`;
+                    sessionStorage.setItem('pendingRedirect', target);
+                    const modal = document.getElementById('loginModalOverlay');
+                    if (modal) {
+                        modal.classList.add('active');
+                        document.body.classList.add('modal-open');
+                    } else {
+                        window.location.href = `./login.html?next=${encodeURIComponent(target)}`;
+                    }
                     return;
                 }
                 // Authenticated -> go to seller registration
@@ -175,6 +182,20 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     });
+
+    const loginTrigger = document.querySelector('.login-trigger');
+    if (loginTrigger) {
+        loginTrigger.addEventListener('click', (event) => {
+            event.preventDefault();
+            const modal = document.getElementById('loginModalOverlay');
+            if (!modal) {
+                window.location.href = './login.html';
+                return;
+            }
+            modal.classList.add('active');
+            document.body.classList.add('modal-open');
+        });
+    }
 
     // ==========================================================================
     // 2. HERO CAROUSEL CONTROLLER
@@ -736,31 +757,69 @@ const modalLoginForm = document.getElementById('modalLoginForm');
 if (closeModalBtn && loginModal) {
     closeModalBtn.addEventListener('click', () => {
         loginModal.classList.remove('active');
+        document.body.classList.remove('modal-open');
     });
     
     // Close if they click the dark background outside the card
     loginModal.addEventListener('click', (e) => {
         if (e.target === loginModal) {
             loginModal.classList.remove('active');
+            document.body.classList.remove('modal-open');
         }
     });
 }
 
 if (modalLoginForm) {
-    modalLoginForm.addEventListener('submit', function(e) {
+    modalLoginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         const emailValue = document.getElementById('modalEmail').value.trim();
-        const loginUserId = emailValue || 'guest-user';
+        const passwordValue = document.getElementById('modalPassword').value;
 
-        // Log the user in
-        sessionStorage.setItem('currentUserId', loginUserId);
-        sessionStorage.setItem('currentUserRole', 'buyer');
+        if (!emailValue || !passwordValue) {
+            alert('Email and password are required.');
+            return;
+        }
 
-        // Find out where they were trying to go, then send them there
-        const redirectUrl = sessionStorage.getItem('pendingRedirect') || window.location.href;
-        sessionStorage.removeItem('pendingRedirect');
-        
-        window.location.href = redirectUrl;
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: emailValue, password: passwordValue })
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Login failed');
+            }
+
+            const data = await response.json();
+            sessionStorage.setItem('authToken', data.token);
+            sessionStorage.setItem('currentUserId', data.userId);
+            sessionStorage.setItem('currentUserRole', data.role);
+            sessionStorage.setItem('currentUserEmail', data.email);
+            sessionStorage.setItem('currentUserFullName', data.fullName);
+
+            const redirectUrl = sessionStorage.getItem('pendingRedirect') || window.location.href;
+            sessionStorage.removeItem('pendingRedirect');
+            window.location.href = redirectUrl;
+        } catch (error) {
+            alert('Login failed: ' + (error.message || 'Invalid credentials'));
+        }
+    });
+}
+
+function closeLoginModal() {
+    if (!loginModal) return;
+    loginModal.classList.remove('active');
+    document.body.classList.remove('modal-open');
+}
+
+// Remove modal open state if login modal is dismissed elsewhere
+if (loginModal) {
+    loginModal.addEventListener('transitionend', () => {
+        if (!loginModal.classList.contains('active')) {
+            document.body.classList.remove('modal-open');
+        }
     });
 }
 });
