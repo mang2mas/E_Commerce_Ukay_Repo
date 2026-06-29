@@ -179,6 +179,7 @@
         <button class="btn-submit" onclick="submitForm()">NEXT</button>
     </div>
 
+    <script src="../js/app.js"></script>
     <script>
         window.onload = function() {
             if(localStorage.getItem('shopName')) document.getElementById('rev-shopName').value = localStorage.getItem('shopName');
@@ -190,15 +191,66 @@
             if(localStorage.getItem('email')) document.getElementById('rev-email').textContent = localStorage.getItem('email');
         }
 
-        function submitForm() {
+        function buildAuthHeaders() {
+            const headers = { 'Content-Type': 'application/json' };
+            if (typeof getAuthHeaders === 'function') {
+                Object.assign(headers, getAuthHeaders());
+            } else {
+                const token = sessionStorage.getItem('authToken');
+                if (token) headers['Authorization'] = 'Bearer ' + token;
+            }
+            return headers;
+        }
+
+        async function submitForm() {
             const c1 = document.getElementById('check1').checked;
             const c2 = document.getElementById('check2').checked;
             const c3 = document.getElementById('check3').checked;
 
-            if (c1 && c2 && c3) {
-                window.location.href = '../sellerhomeprofile.html';
-            } else {
+            if (!c1 || !c2 || !c3) {
                 alert('Please check all confirmation boxes before continuing.');
+                return;
+            }
+
+            const currentUserId = sessionStorage.getItem('currentUserId');
+            if (!currentUserId) {
+                alert('You must be logged in to submit this form.');
+                window.location.href = '../login.html';
+                return;
+            }
+
+            const payload = {
+                userId: parseInt(currentUserId, 10),
+                businessName: localStorage.getItem('shopName') || '',
+                businessDescription: localStorage.getItem('shopDesc') || '',
+                businessPermit: '',
+                notes: `Address: ${localStorage.getItem('address') || ''}, City: ${localStorage.getItem('city') || ''}, Province: ${localStorage.getItem('province') || ''}, Email: ${localStorage.getItem('email') || ''}, Contact: ${localStorage.getItem('contact') || ''}`
+            };
+
+            try {
+                const response = await fetch('/api/seller/request', {
+                    method: 'POST',
+                    headers: buildAuthHeaders(),
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    let errorText = await response.text();
+                    throw new Error(errorText || 'Failed to submit seller request.');
+                }
+
+                localStorage.removeItem('shopName');
+                localStorage.removeItem('shopDesc');
+                localStorage.removeItem('address');
+                localStorage.removeItem('city');
+                localStorage.removeItem('province');
+                localStorage.removeItem('contact');
+                localStorage.removeItem('email');
+
+                window.location.href = '../sellerhomeprofile.html';
+            } catch (error) {
+                console.error('Seller request failed', error);
+                alert('Unable to submit seller request. Please try again.');
             }
         }
     </script>

@@ -3,9 +3,7 @@ package com.ukayukay.backend.service;
 
 import java.util.List;
 
-
 import org.springframework.stereotype.Service;
-
 
 import com.ukayukay.backend.entity.BusinessRequest;
 import com.ukayukay.backend.entity.User;
@@ -36,12 +34,6 @@ public class BusinessRequestService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException(
                     String.format("User not found with ID: %d", userId)));
-
-
-        if (!User.UserRole.seller.equals(user.getRole())) {
-            throw new RuntimeException("Only users with role 'seller' can submit business requests");
-        }
-
 
         BusinessRequest req = new BusinessRequest();
         req.setUser(user);
@@ -84,6 +76,10 @@ public class BusinessRequestService {
                     ? User.VerificationStatus.APPROVED
                     : User.VerificationStatus.REJECTED);
             user.setSellerApproved(newStatus == BusinessRequest.RequestStatus.APPROVED);
+            if (newStatus == BusinessRequest.RequestStatus.APPROVED
+                    && !User.UserRole.seller.equals(user.getRole())) {
+                user.setRole(User.UserRole.seller);
+            }
             userRepository.save(user);
         }
 
