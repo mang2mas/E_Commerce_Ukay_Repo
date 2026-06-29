@@ -67,7 +67,15 @@
 
       <div class="form-row">
         <label for="address">Address</label>
+<<<<<<< HEAD
         <textarea id="address" name="address" placeholder="Enter your complete address"></textarea>
+=======
+        <textarea
+          id="address"
+          name="address"
+          placeholder="Enter your complete address"
+        ></textarea>
+>>>>>>> origin/main
       </div>
 
       <div class="form-row">
@@ -85,9 +93,25 @@
         <div>If you are registering as a Senior Citizen or PWD, please upload a valid Senior Citizen ID or PWD ID.</div>
       </div>
 
+<<<<<<< HEAD
       <div id="idUploadSection" class="form-row" style="display:none;">
         <label for="idUpload">ID Upload</label>
         <input id="idUpload" name="idUpload" type="file" accept="image/*,.pdf">
+=======
+      <div
+        id="idUploadSection"
+        class="form-row"
+        style="display:none;"
+      >
+        <label for="idUpload">ID Upload</label>
+
+        <input
+          id="idUpload"
+          name="idUpload"
+          type="file"
+          accept="image/*,.pdf"
+        />
+>>>>>>> origin/main
       </div>
 
       <div id="successPopup" class="success-popup" hidden>
@@ -111,6 +135,7 @@
 </form>
 
 <script>
+<<<<<<< HEAD
 const accountType = document.getElementById('accountType');
 const idUploadSection = document.getElementById('idUploadSection');
 const seniorNotice = document.getElementById('seniorNotice');
@@ -131,6 +156,61 @@ function getPasswordStrength(password) {
   if (score >= 4) return { label: 'Strong password', width: '100%', color: '#22c55e' };
   if (score >= 3) return { label: 'Medium password', width: '65%', color: '#f59e0b' };
   return { label: 'Weak password', width: '30%', color: '#ef4444' };
+=======
+const accountType = document.getElementById("accountType");
+const idUploadSection = document.getElementById("idUploadSection");
+const seniorNotice = document.getElementById("seniorNotice");
+const registrationForm = document.getElementById("registrationForm");
+const passwordInput = document.getElementById("password");
+const passwordStrengthBar = document.getElementById("passwordStrengthBar");
+const passwordStrengthLabel = document.getElementById("passwordStrengthLabel");
+let formSubmitted = false;
+
+function showValidationError(fieldId, message) {
+  const button = document.getElementById(fieldId + "Error");
+  if (!button) return;
+  button.title = message;
+  if (message && formSubmitted) {
+    button.classList.add('active');
+    button.hidden = false;
+  } else {
+    button.classList.remove('active');
+    button.hidden = true;
+  }
+}
+
+function clearValidationErrors() {
+  [
+    'firstName', 'middleName', 'lastName', 'suffix', 'email',
+    'password', 'confirmPassword', 'contactNumber'
+  ].forEach(field => showValidationError(field, ''));
+}
+
+function validateField(fieldId) {
+  const value = document.getElementById(fieldId).value.trim();
+  switch (fieldId) {
+    case 'firstName':
+      showValidationError(fieldId, value ? '' : 'First name is required');
+      break;
+    case 'lastName':
+      showValidationError(fieldId, value ? '' : 'Last name is required');
+      break;
+    case 'email':
+      showValidationError(fieldId, /^\S+@\S+\.\S+$/.test(value) ? '' : 'Enter a valid email address');
+      break;
+    case 'password':
+      showValidationError(fieldId, value && isPasswordAcceptable(value) ? '' : 'Password must be medium or strong');
+      break;
+    case 'confirmPassword':
+      showValidationError(fieldId, value === document.getElementById('password').value ? '' : 'Passwords do not match');
+      break;
+    case 'contactNumber':
+      showValidationError(fieldId, /^09\d{9}$/.test(value) ? '' : 'Contact number must be 11 digits and start with 09');
+      break;
+    default:
+      break;
+  }
+>>>>>>> origin/main
 }
 
 function setPasswordStrength(password) {
@@ -140,6 +220,37 @@ function setPasswordStrength(password) {
   passwordStrengthLabel.textContent = result.label;
 }
 
+<<<<<<< HEAD
+=======
+function getPasswordStrength(password) {
+  if (!password) {
+    return { label: 'Enter a password', width: '0%', color: '#d1d5db' };
+  }
+
+  let score = 0;
+  if (password.length >= 8) score += 1;
+  if (password.length >= 10) score += 1;
+  if (/[a-z]/.test(password)) score += 1;
+  if (/[A-Z]/.test(password)) score += 1;
+  if (/[0-9]/.test(password)) score += 1;
+  if (/[^A-Za-z0-9]/.test(password)) score += 1;
+
+  if (score >= 5) {
+    return { label: 'Strong password', width: '100%', color: '#22c55e' };
+  }
+  if (score >= 3) {
+    return { label: 'Medium password', width: '65%', color: '#f59e0b' };
+  }
+
+  return { label: 'Weak password', width: '30%', color: '#ef4444' };
+}
+
+function isPasswordAcceptable(password) {
+  const strength = getPasswordStrength(password);
+  return strength.label === 'Medium password' || strength.label === 'Strong password';
+}
+
+>>>>>>> origin/main
 function combineFullName() {
   const first = document.getElementById('firstName').value.trim();
   const middle = document.getElementById('middleName').value.trim();
@@ -148,7 +259,69 @@ function combineFullName() {
   return [first, middle, last, suffix].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
 }
 
+<<<<<<< HEAD
 passwordInput.addEventListener('input', () => setPasswordStrength(passwordInput.value));
+=======
+function validateForm() {
+  clearValidationErrors();
+  let valid = true;
+
+  const firstName = document.getElementById('firstName').value.trim();
+  const lastName = document.getElementById('lastName').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+  const contactNumber = document.getElementById('contactNumber').value.trim();
+  const accountTypeValue = accountType.value;
+
+  if (!firstName) {
+    showValidationError('firstName', 'First name is required');
+    valid = false;
+  }
+
+  if (!lastName) {
+    showValidationError('lastName', 'Last name is required');
+    valid = false;
+  }
+
+  if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+    showValidationError('email', 'Enter a valid email address');
+    valid = false;
+  }
+
+  if (!password) {
+    showValidationError('password', 'Password is required');
+    valid = false;
+  } else if (!isPasswordAcceptable(password)) {
+    showValidationError('password', 'Password must be medium or strong');
+    valid = false;
+  }
+
+  if (confirmPassword !== password) {
+    showValidationError('confirmPassword', 'Passwords do not match');
+    valid = false;
+  }
+
+  if (!/^09\d{9}$/.test(contactNumber)) {
+    showValidationError('contactNumber', 'Contact number must be 11 digits and start with 09');
+    valid = false;
+  }
+
+  if (accountTypeValue === 'Senior' || accountTypeValue === 'PWD') {
+    idUploadSection.style.display = 'grid';
+    seniorNotice.style.display = 'flex';
+  } else {
+    idUploadSection.style.display = 'none';
+    seniorNotice.style.display = 'none';
+  }
+
+  return valid;
+}
+
+passwordInput.addEventListener('input', () => {
+  setPasswordStrength(passwordInput.value);
+});
+>>>>>>> origin/main
 
 const contactNumberInput = document.getElementById('contactNumber');
 contactNumberInput.addEventListener('input', () => {

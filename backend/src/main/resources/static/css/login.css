@@ -133,15 +133,3 @@ input::placeholder {
     text-decoration: underline;
 }
 
-.admin-wrapper {
-    margin-top: 12px;
-}
-
-.admin-link {
-    display: inline-block;
-    padding: 7px 10px;
-    font-size: 11px;
-    color: var(--link-orange);
-    text-decoration: underline;
-    cursor: pointer;
-}
