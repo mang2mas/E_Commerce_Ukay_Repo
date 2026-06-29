@@ -15,8 +15,14 @@
          1. STICKY NAVIGATION HEADER
          ========================================================================== -->
     <header class="navbar">
-        <div class="nav-left">
-            <button class="icon-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+        <div class="nav-left" style="position: relative; display: flex; align-items: center; gap: 30px;">
+            <div class="search-container" id="searchContainer">
+                <button class="icon-btn" id="searchToggleBtn" type="button">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+                <input type="text" id="searchInputField" class="search-input" placeholder="Search items...">
+            </div>
+            
             <img src="/images/logo.png" alt="Ukay Ukay" class="brand-logo">
         </div>
         <div class="nav-right">
@@ -261,6 +267,7 @@
         const sellToggle = document.getElementById('sellToggle');
         const loginModal = document.getElementById('loginModalOverlay');
 
+        // --- EXISTING LOGIN MODAL LOGIC ---
         function openLoginModal(nextUrl = './index.html') {
             if (loginModal) {
                 sessionStorage.setItem('pendingRedirect', nextUrl);
@@ -279,15 +286,47 @@
         if (sellToggle) {
             sellToggle.addEventListener('click', function (event) {
                 event.preventDefault();
+                // Check if user is logged in
                 const currentUserId = sessionStorage.getItem('currentUserId');
                 const targetUrl = './sellerregistration.html';
+                
                 if (!currentUserId) {
-                    return openLoginModal(targetUrl);
+                    // Redirect to login if not logged in
+                    openLoginModal(targetUrl);
+                } else {
+                    // Redirect to SellerRegistration.html
+                    window.location.href = targetUrl;
                 }
-                window.location.href = targetUrl;
+            });
+        }
+
+        // ==========================================
+        // NEW: EXPANDING SEARCH BAR LOGIC
+        // ==========================================
+        const searchToggleBtn = document.getElementById('searchToggleBtn');
+        const searchContainer = document.getElementById('searchContainer');
+        const searchInputField = document.getElementById('searchInputField');
+
+        if (searchToggleBtn && searchContainer) {
+            searchToggleBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                searchContainer.classList.toggle('active');
+                
+                // Focus the cursor inside the input when opened
+                if (searchContainer.classList.contains('active')) {
+                    searchInputField.focus();
+                }
+            });
+
+            // Close the search bar if the user clicks outside of it
+            document.addEventListener('click', function(e) {
+                if (!searchContainer.contains(e.target)) {
+                    searchContainer.classList.remove('active');
+                }
             });
         }
     });
+</script>
 </script>
 </body>
 </html>
