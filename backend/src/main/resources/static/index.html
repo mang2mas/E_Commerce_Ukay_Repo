@@ -24,8 +24,7 @@
                 <button class="toggle-btn active" data-view="buy">BUY</button>
                 <button class="toggle-btn" id="sellToggle" data-view="sell">SELL</button>
             </div>
-            <button class="icon-btn home-trigger" aria-label="Home"><i class="fa-solid fa-house"></i></button>
-            <button class="icon-btn login-trigger" aria-label="Log in"><i class="fa-solid fa-right-to-bracket"></i></button>
+            <button class="icon-btn"><i class="fa-solid fa-house"></i></button>
             <a href="./ordermanagement.html" class="icon-btn profile-trigger" aria-label="Order Management"><i class="fa-regular fa-user"></i></a>
             <button class="icon-btn cart-trigger"><i class="fa-solid fa-bag-shopping"></i></button>
             <span class="login-status" id="loginStatus">Not logged in</span>
@@ -234,7 +233,7 @@
 <!-- LOGIN MODAL OVERLAY -->
 <div id="loginModalOverlay" class="modal-overlay">
     <div class="login-wrapper modal-content">
-        <button type="button" id="closeModalBtn" class="close-modal" aria-label="Close login modal">&times;</button>
+        <button id="closeModalBtn" class="close-modal">&times;</button>
         <div class="logo-container">
             <img src="/images/LOGO.png" alt="Ukay Ukay Logo">
         </div>
@@ -246,15 +245,26 @@
                 <label for="modalEmail">EMAIL</label>
                 <input type="email" id="modalEmail" placeholder="Enter your email" required>
             </div>
-            <div class="form-group">
-                <label for="modalPassword">PASSWORD</label>
-                <input type="password" id="modalPassword" placeholder="Enter your password" required>
-            </div>
-            <button type="submit" class="btn-login">Log in</button>
-        </form>
+            
+            <div style="margin-bottom: 20px; text-align: left;">
+    <label style="display: block; font-weight: bold; font-size: 14px; margin-bottom: 5px;">PASSWORD</label>
+    <input type="password" placeholder="Enter your password" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
+    
+    <div style="text-align: right; margin-top: 5px; margin-bottom: 15px;">
+        <a href="forgotpassword.html" style="font-size: 12px; color: black; text-decoration: underline; cursor: pointer;">Forgot password?</a>
+    </div>
+</div>
 
+<button style="width: 100%; background-color: #fbce60; color: #000; border: none; padding: 12px; font-weight: bold; font-size: 14px; cursor: pointer; margin-bottom: 30px;">
+    LOG IN
+</button>
+        
         <div class="signup-prompt">
             Don't have an account? <a href="./REGISTRATION.html">Sign up</a>
+        </div>
+        
+        <div class="admin-wrapper">
+            <a href="./sellerverification.html" class="admin-link">Admin</a>
         </div>
     </div>
 </div>

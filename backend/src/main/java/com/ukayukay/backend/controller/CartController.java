@@ -41,10 +41,5 @@ public class CartController {
         return ResponseEntity.ok(AppConstants.ITEM_REMOVED_CART);
     }
 
-    @PutMapping("/{cartId}/quantity")
-    public ResponseEntity<Cart> updateQuantity(
-            @PathVariable Integer cartId,
-            @RequestParam Integer qty) {
-        return ResponseEntity.ok(cartService.updateQuantity(cartId, qty));
-    }
+    
 }
