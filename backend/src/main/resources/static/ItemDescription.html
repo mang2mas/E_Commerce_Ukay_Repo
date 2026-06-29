@@ -8,44 +8,39 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" defer></script>
 </head>
 <body>
-  <header style="background-color: rgba(36, 36, 36, 0.50); backdrop-filter: blur(8px); position: fixed; top: 0; left: 0; width: 100%; height: 90px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 9999;">
-    <div style="display: flex; align-items: center; gap: 30px;">
-        <button style="background:none; border:none; color:white; font-size:20px; cursor:pointer;"><i class="fa-solid fa-magnifying-glass"></i></button>
-        <img src="/images/logo.png" style="height: 36px; width: auto;" alt="Ukay Ukay">
+  <header class="navbar">
+    <div class="nav-left">
+      <button class="icon-btn" type="button"><i class="fa-solid fa-magnifying-glass"></i></button>
+      <a href="index.html"><img src="/images/logo.png" class="brand-logo" alt="Ukay Ukay"></a>
     </div>
-    
-    <div style="display: flex; align-items: center; gap: 24px; z-index: 10000;">
-        <!-- Buy/Sell Toggle -->
-        <div style="display: flex; background-color: rgba(255,255,255,0.2); padding: 3px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.3); margin-right: 12px; backdrop-filter: blur(8px);">
-            <button style="background-color: #ffffff; color: #000000; border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">BUY</button>
-            <button style="background: none; color: rgba(255,255,255,0.7); border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">SELL</button>
-        </div>
 
-        <!-- Icons -->
-        <a href="homepage.html" style="color:white; text-decoration:none; font-size:20px;"><i class="fa-solid fa-house"></i></a>
-        <a href="ordermanagement.html" style="color:white; text-decoration:none; font-size:20px;"><i class="fa-regular fa-user"></i></a>
-        <a href="shoppingcart.html" style="color:white; text-decoration:none; font-size:20px;"><i class="fa-solid fa-bag-shopping"></i></a>
-        
-        <!-- Logged in status text (updated to black) -->
-<span id="loginStatus" style="color: #000000; font-size: 12px; font-weight: 600; margin-left: 10px; padding: 4px 8px; border-radius: 4px;">Not logged in</span>
+    <div class="nav-right">
+      <div class="toggle-container">
+        <button class="toggle-btn active" data-view="buy" type="button">BUY</button>
+        <button class="toggle-btn" data-view="sell" type="button">SELL</button>
+      </div>
+      <a href="index.html" class="icon-btn home-trigger" aria-label="Home"><i class="fa-solid fa-house"></i></a>
+      <a href="ordermanagement.html" class="icon-btn profile-trigger" aria-label="Profile"><i class="fa-regular fa-user"></i></a>
+      <a href="shoppingcart.html" class="icon-btn cart-trigger" aria-label="Cart"><i class="fa-solid fa-bag-shopping"></i></a>
+      <span id="loginStatus" class="login-status">Not logged in</span>
     </div>
-</header>
+  </header>
 
   <div class="page-layout">
     <aside class="sidebar">
       <section class="product-image-section">
         <div class="main-image">
-          <img src="/images/item1.jpg" alt="Plaid Wrap Blouse" />
+          <img id="mainImage" src="/images/item1.jpg" alt="Product image" />
         </div>
       </section>
 
       <section class="seller-section">
-        <a class="seller-card-link" href="./customersellerprofile.html">
+        <a id="sellerLink" class="seller-card-link" href="./customersellerprofile.html">
           <div class="seller-card">
             <div class="seller-icon"><i class="fa-solid fa-user"></i></div>
             <div class="seller-info">
-              <div class="seller-name">Sold by <strong>@TIREDTHRIFT</strong></div>
-              <div class="seller-details">Joined 2026 · 5 items sold</div>
+              <div id="sellerName" class="seller-name">Sold by <strong>@TIREDTHRIFT</strong></div>
+              <div id="sellerDetails" class="seller-details">Trusted seller on Ukay.</div>
             </div>
           </div>
         </a>
@@ -56,11 +51,11 @@
     <main class="main-content">
       <section class="product-details-section">
         <div class="product-header-row">
-          <span class="brand">UNIQLO</span>
-          <h1 class="product-title">PLAID WRAP BLOUSE</h1>
+          <span id="productBrand" class="brand">Brand</span>
+          <h1 id="productTitle" class="product-title">Item Title</h1>
           <div class="price-block">
-            <span class="price">₱499.00</span>
-            <span class="currency">PHP</span>
+            <span id="productPrice" class="price">₱0.00</span>
+            <span id="productCurrency" class="currency">PHP</span>
           </div>
         </div>
 
@@ -68,9 +63,9 @@
           <div class="meta-row">
             <i class="fa-solid fa-scissors"></i>
             <div>
-              <span>Color: Red, Yellow Orange</span><br>
-              <span>Condition: 10/10</span><br>
-              <span>Issue: None</span>
+              <span id="productCategory">Category: —</span><br>
+              <span id="productCondition">Condition: —</span><br>
+              <span id="productSize">Size: —</span>
             </div>
           </div>
 
@@ -84,22 +79,22 @@
         </div>
 
         <section class="description">
-          <p>
-            Classic short sleeve button-down shirt featuring a warm-tone plaid pattern, a structured collar, and a convenient chest pocket. Great for a casual, retro look.
+          <p id="productDescription">
+            Loading item details from the catalog...
           </p>
           <ul>
-            <li>Size: M</li>
-            <li>Condition: Excellent Pre-owned</li>
-            <li>Material: Cotton Blend</li>
+            <li id="productDetailSize">Size: —</li>
+            <li id="productDetailCondition">Condition: —</li>
+            <li id="productDetailMaterial">Material: —</li>
           </ul>
         </section>
 
         <div class="action-buttons">
-          <button class="btn-add-cart btn-add-cart-action">
+          <button id="addToCartButton" class="btn-add-cart btn-add-cart-action" type="button">
             <span>ADD TO CART</span>
             <i class="fa-solid fa-cart-shopping"></i>
           </button>
-          <button class="btn-checkout">
+          <button id="checkoutButton" class="btn-checkout" type="button">
             <span>CHECKOUT</span>
             <i class="fa-solid fa-cart-shopping"></i>
           </button>
@@ -113,181 +108,112 @@
 
       <section class="recommendations-section">
         <h2>You might also like</h2>
-        
-        <div class="masonry-grid">
-            <div class="masonry-column">
-                <div class="masonry-item">
-                    <img src="/images/item2.jpg" alt="Vintage Top">
-                    <div class="item-hover-overlay">
-                        <div class="overlay-top">
-                            <div class="item-title-badge">VINTAGE TOP</div>
-                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                        </div>
-                        <div class="overlay-bottom">
-                            <div class="item-price-tag">₱390.00 <span>PHP</span></div>
-                            <button class="btn-add-cart-action">ADD TO CART</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="masonry-item">
-                    <img src="/images/item3.jpg" alt="Retro Blouse">
-                    <div class="item-hover-overlay">
-                        <div class="overlay-top">
-                            <div class="item-title-badge">RETRO BLOUSE</div>
-                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                        </div>
-                        <div class="overlay-bottom">
-                            <div class="item-price-tag">₱450.00 <span>PHP</span></div>
-                            <button class="btn-add-cart-action">ADD TO CART</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="masonry-item">
-                    <img src="/images/item4.jpg" alt="Classic Shirt">
-                    <div class="item-hover-overlay">
-                        <div class="overlay-top">
-                            <div class="item-title-badge">CLASSIC SHIRT</div>
-                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                        </div>
-                        <div class="overlay-bottom">
-                            <div class="item-price-tag">₱320.00 <span>PHP</span></div>
-                            <button class="btn-add-cart-action">ADD TO CART</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="masonry-column">
-                <div class="masonry-item">
-                    <img src="/images/item5.jpg" alt="Brown Jacket">
-                    <div class="item-hover-overlay">
-                        <div class="overlay-top">
-                            <div class="item-title-badge">BROWN JACKET</div>
-                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                        </div>
-                        <div class="overlay-bottom">
-                            <div class="item-price-tag">₱550.00 <span>PHP</span></div>
-                            <button class="btn-add-cart-action">ADD TO CART</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="masonry-item">
-                    <img src="/images/item6.jpg" alt="Denim Skirt">
-                    <div class="item-hover-overlay">
-                        <div class="overlay-top">
-                            <div class="item-title-badge">DENIM SKIRT</div>
-                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                        </div>
-                        <div class="overlay-bottom">
-                            <div class="item-price-tag">₱380.00 <span>PHP</span></div>
-                            <button class="btn-add-cart-action">ADD TO CART</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="masonry-item">
-                    <img src="/images/item7.jpg" alt="Striped Polo">
-                    <div class="item-hover-overlay">
-                        <div class="overlay-top">
-                            <div class="item-title-badge">STRIPED POLO</div>
-                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                        </div>
-                        <div class="overlay-bottom">
-                            <div class="item-price-tag">₱290.00 <span>PHP</span></div>
-                            <button class="btn-add-cart-action">ADD TO CART</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="masonry-column">
-                <div class="masonry-item">
-                    <img src="/images/item8.jpg" alt="Pleated Pants">
-                    <div class="item-hover-overlay">
-                        <div class="overlay-top">
-                            <div class="item-title-badge">PLEATED PANTS</div>
-                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                        </div>
-                        <div class="overlay-bottom">
-                            <div class="item-price-tag">₱490.00 <span>PHP</span></div>
-                            <button class="btn-add-cart-action">ADD TO CART</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="masonry-item">
-                    <img src="/images/item9.jpg" alt="Lace Dress">
-                    <div class="item-hover-overlay">
-                        <div class="overlay-top">
-                            <div class="item-title-badge">LACE DRESS</div>
-                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                        </div>
-                        <div class="overlay-bottom">
-                            <div class="item-price-tag">₱620.00 <span>PHP</span></div>
-                            <button class="btn-add-cart-action">ADD TO CART</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="masonry-item">
-                    <img src="/images/item10.jpg" alt="Coquette Top">
-                    <div class="item-hover-overlay">
-                        <div class="overlay-top">
-                            <div class="item-title-badge">COQUETTE TOP</div>
-                            <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                        </div>
-                        <div class="overlay-bottom">
-                            <div class="item-price-tag">₱410.00 <span>PHP</span></div>
-                            <button class="btn-add-cart-action">ADD TO CART</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+        <div id="itemRecommendationsContainer" class="masonry-grid"></div>
       </section>
     </main>
   </div>
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="/js/jquery-3.6.0.min.js"></script>
   <script src="/js/app.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const params = new URLSearchParams(window.location.search);
-      const productIdFromUrl = params.get('productId');
-      const stored = sessionStorage.getItem('selectedProduct');
-      let product = null;
+    function formatPrice(value) {
+      if (value == null || value === '') return 'Price unavailable';
+      const numberValue = Number(value);
+      return Number.isNaN(numberValue) ? String(value) : `₱${numberValue.toFixed(2)}`;
+    }
 
-      if (stored) {
-        try {
-          product = JSON.parse(stored);
-        } catch (e) {
-          console.warn('Unable to parse selectedProduct data', e);
-        }
-      }
-
-      if (!product && productIdFromUrl) {
-        product = { productId: productIdFromUrl, productName: 'Selected item' };
-      }
-
+    function updateProductDetails(product) {
       if (!product) return;
 
-      if (product.imageUrl) document.querySelector('.main-image img').src = product.imageUrl;
-      if (product.productName) document.querySelector('.product-title').textContent = product.productName;
-      if (product.price) {
-        document.querySelector('.price').textContent = product.price.replace('PHP', '').trim();
-        document.querySelector('.currency').textContent = 'PHP';
+      document.getElementById('mainImage').src = product.imagePath || '/images/item1.jpg';
+      document.getElementById('mainImage').alt = product.itemName || 'Product image';
+      document.getElementById('productTitle').textContent = product.itemName || 'Untitled product';
+      document.getElementById('productBrand').textContent = product.style || product.category || 'Fashion';
+      document.getElementById('productPrice').textContent = formatPrice(product.price);
+      document.getElementById('productCurrency').textContent = 'PHP';
+      document.getElementById('productCategory').textContent = `Category: ${product.category || 'N/A'}`;
+      document.getElementById('productCondition').textContent = `Condition: ${product.itemCondition || 'N/A'}`;
+      document.getElementById('productSize').textContent = `Size: ${product.size || 'N/A'}`;
+      document.getElementById('productDescription').textContent = product.description || 'No description available for this item.';
+      document.getElementById('productDetailSize').textContent = `Size: ${product.size || 'N/A'}`;
+      document.getElementById('productDetailCondition').textContent = `Condition: ${product.itemCondition || 'N/A'}`;
+      document.getElementById('productDetailMaterial').textContent = `Material: ${product.style || 'Mixed fabric'}`;
+
+      if (product.seller) {
+        const sellerLabel = product.seller.businessName || product.seller.fullName || 'Seller';
+        document.getElementById('sellerName').innerHTML = `Sold by <strong>@${sellerLabel}</strong>`;
+        document.getElementById('sellerDetails').textContent = product.seller.businessDescription || 'Trusted seller on Ukay.';
+        document.getElementById('sellerLink').href = `./customersellerprofile.html?sellerId=${encodeURIComponent(product.seller.userId || '')}`;
       }
 
-      const productName = product.productName || 'Item';
-      const descriptionParagraph = document.querySelector('.description p');
-      if (descriptionParagraph) {
-        descriptionParagraph.textContent = `Details for ${productName} are shown here. Add this item to your cart or contact the seller for more information.`;
+      const addToCartButton = document.getElementById('addToCartButton');
+      if (addToCartButton) {
+        addToCartButton.dataset.productId = product.productId;
+        addToCartButton.dataset.productName = product.itemName || 'item';
+      }
+    }
+
+    function showProductError(message) {
+      const description = document.getElementById('productDescription');
+      if (description) description.textContent = message;
+    }
+
+    function attachItemActions() {
+      const addToCartButton = document.getElementById('addToCartButton');
+      const checkoutButton = document.getElementById('checkoutButton');
+
+      if (addToCartButton) {
+        addToCartButton.addEventListener('click', function () {
+          const productId = this.dataset.productId;
+          const productName = this.dataset.productName || 'item';
+          const userId = sessionStorage.getItem('currentUserId');
+
+          if (!productId || !userId) {
+            return window.location.href = './login.html';
+          }
+
+          fetch(`/api/cart/add?userId=${encodeURIComponent(userId)}&productId=${encodeURIComponent(productId)}`, {
+            method: 'POST'
+          })
+            .then(response => {
+              if (!response.ok) return response.text().then(text => { throw new Error(text || 'Unable to add to cart'); });
+              alert(`Added ${productName} to cart.`);
+            })
+            .catch(error => alert(error.message || 'Unable to add product to cart.'));
+        });
       }
 
-      const productId = product.productId || productIdFromUrl;
-      const addCartButton = document.querySelector('.btn-add-cart-action');
-      if (productId && addCartButton) {
-        addCartButton.dataset.productId = productId;
-        addCartButton.dataset.productName = productName;
+      if (checkoutButton) {
+        checkoutButton.addEventListener('click', function () {
+          window.location.href = './checkout.html';
+        });
       }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const params = new URLSearchParams(window.location.search);
+      const productId = params.get('productId');
+      if (!productId) {
+        showProductError('Unable to load item details. No product selected.');
+        return;
+      }
+
+      fetch(`/api/products/${encodeURIComponent(productId)}`)
+        .then(response => {
+          if (!response.ok) return response.text().then(text => { throw new Error(text || 'Unable to load product details'); });
+          return response.json();
+        })
+        .then(product => {
+          updateProductDetails(product);
+          if (typeof loadYouMightAlsoLike === 'function') {
+            loadYouMightAlsoLike('#itemRecommendationsContainer', product.productId, product.category, product.style, product.seller?.userId, 6);
+          }
+          attachItemActions();
+        })
+        .catch(error => {
+          console.error('Product load error:', error);
+          showProductError('Unable to load item details from the catalog.');
+        });
     });
   </script>
 </body>
