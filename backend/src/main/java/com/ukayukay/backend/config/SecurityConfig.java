@@ -75,8 +75,15 @@ public class SecurityConfig {
                 // Admin-only endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/moderation/**").hasRole("ADMIN")
-                // Seller endpoints
+                // Any authenticated user can submit/view their own seller requests
+                // (buyers need this to apply for a seller account)
+                .requestMatchers(HttpMethod.POST, "/api/seller/request").authenticated()
+                .requestMatchers(HttpMethod.GET,  "/api/seller/requests").authenticated()
+                // Remaining seller endpoints (product management etc.) require seller/admin
                 .requestMatchers("/api/seller/**").hasAnyRole("SELLER", "ADMIN")
+                // Inventory and revenue dashboards require seller or admin
+                .requestMatchers("/api/inventory/**").hasAnyRole("SELLER", "ADMIN")
+                .requestMatchers("/api/revenue/**").hasAnyRole("SELLER", "ADMIN")
                 // All other endpoints require authentication
                 .anyRequest().authenticated()
             )

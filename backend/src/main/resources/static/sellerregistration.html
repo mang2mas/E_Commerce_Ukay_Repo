@@ -1,53 +1,441 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Shop Registration</title>
-  <link rel="stylesheet" href="css/globals.css" />
-  <link rel="stylesheet" href="css/sellerregistration.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seller Registration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(180deg, #f6f1e6 0%, #fbf8f1 100%);
+      color: #1f2937;
+      min-height: 100vh;
+    }
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 5%;
+      background: rgba(36, 36, 36, 0.78);
+      backdrop-filter: blur(10px);
+    }
+    .nav-left, .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .brand-logo { height: 38px; width: auto; display: block; }
+    .toggle-container {
+      display: inline-flex;
+      background: rgba(255,255,255,0.18);
+      padding: 4px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.24);
+    }
+    .toggle-btn {
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.8);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 8px 18px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    .toggle-btn.active {
+      background: #fbce60;
+      color: #111827;
+    }
+    .icon-link {
+      color: #fff;
+      text-decoration: none;
+      font-size: 18px;
+    }
+    .page {
+      max-width: 1080px;
+      margin: 40px auto;
+      padding: 0 24px 48px;
+    }
+    .hero-card, .status-card {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(17,24,39,0.08);
+      border-radius: 22px;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+    }
+    .hero-card {
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      min-height: 540px;
+    }
+    .hero-copy {
+      padding: 48px;
+      background: radial-gradient(circle at top left, rgba(251, 206, 96, 0.38), transparent 42%), linear-gradient(160deg, #fffaf0 0%, #fff 100%);
+    }
+    .eyebrow {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #92400e;
+      margin-bottom: 16px;
+    }
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(30px, 4vw, 46px);
+      line-height: 1.05;
+    }
+    .lead {
+      font-size: 15px;
+      line-height: 1.7;
+      color: #4b5563;
+      margin-bottom: 28px;
+      max-width: 540px;
+    }
+    .benefits {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .benefit {
+      background: rgba(255,255,255,0.86);
+      border: 1px solid rgba(17,24,39,0.08);
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+    }
+    .hero-panel {
+      padding: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #fff 0%, #f9f6ef 100%);
+    }
+    .request-form {
+      width: 100%;
+      max-width: 420px;
+      display: grid;
+      gap: 16px;
+    }
+    .request-form h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .request-form p {
+      margin: 0 0 8px;
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+    .field label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #374151;
+    }
+    .field input, .field textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      font: inherit;
+      background: #fff;
+    }
+    .field textarea { min-height: 110px; resize: vertical; }
+    .field input:focus, .field textarea:focus {
+      outline: 2px solid rgba(251, 206, 96, 0.6);
+      border-color: #f59e0b;
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 13px 18px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: #fbce60;
+      color: #111827;
+      flex: 1;
+    }
+    .btn-secondary {
+      background: #111827;
+      color: #fff;
+    }
+    .status-card {
+      margin-top: 24px;
+      padding: 22px 24px;
+      display: none;
+    }
+    .status-card.visible { display: block; }
+    .status-title {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+    .status-copy {
+      margin: 0;
+      color: #4b5563;
+      line-height: 1.6;
+    }
+    .status-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+    .inline-status {
+      min-height: 20px;
+      font-size: 13px;
+      color: #b91c1c;
+      font-weight: 600;
+    }
+    .inline-status.info { color: #1d4ed8; }
+    .inline-status.success { color: #047857; }
+    @media (max-width: 900px) {
+      .hero-card { grid-template-columns: 1fr; }
+      .hero-copy, .hero-panel { padding: 28px; }
+      .benefits { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-  <main class="SHOP-REGISTRATION" data-model-id="1:8076">
-    <div class="rectangle" aria-hidden="true"></div>
-    <div class="div" aria-hidden="true"></div>
-
-    <header class="header-seller">
-      <div class="header-left">
-        <a href="/index.html" aria-label="Go to homepage">
-          <img class="untitled-design" src="/images/LOGO.png" alt="UKY logo" />
-        </a>
+  <header class="navbar">
+    <div class="nav-left">
+      <a href="/index.html" aria-label="Go to homepage"><img src="/images/logo.png" alt="Ukay Ukay" class="brand-logo"></a>
+    </div>
+    <div class="nav-right">
+      <div class="toggle-container">
+        <button class="toggle-btn" type="button" onclick="window.location.href='/index.html'">BUY</button>
+        <button class="toggle-btn active" type="button">SELL</button>
       </div>
-      <div class="header-right">
-        <div class="toggle-container">
-          <button class="toggle-btn">BUY</button>
-          <button class="toggle-btn active">SELL</button>
+      <a href="/index.html" class="icon-link" aria-label="Home"><i class="fa-solid fa-house"></i></a>
+      <a href="/ordermanagement.html" class="icon-link" aria-label="Orders"><i class="fa-regular fa-user"></i></a>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="hero-card">
+      <div class="hero-copy">
+        <div class="eyebrow">Seller Onboarding</div>
+        <h1>Apply as a shop after login, then wait for approval before listing products.</h1>
+        <p class="lead">This keeps the buyer flow simple: everyone logs in first and lands on the homepage. Only users who explicitly choose to sell continue into shop registration and product upload.</p>
+        <div class="benefits">
+          <div class="benefit">Submit your shop details once.</div>
+          <div class="benefit">Admin reviews your seller request.</div>
+          <div class="benefit">Approved sellers can add products.</div>
+          <div class="benefit">Pending sellers stay in review status.</div>
         </div>
-        <a href="/index.html" class="home-link" aria-label="Home">
-          <svg class="home-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="currentColor" />
-          </svg>
-        </a>
       </div>
-    </header>
 
-    <section class="card" aria-labelledby="registration-title">
-      <div class="card-inner">
-        <img class="check-list" src="/images/LOGO.png" alt="UKY logo" />
-        <p class="register-now-and">Register now and start selling with us today!</p>
-        <button type="button" class="register-btn" id="registration-title" aria-label="Register">Register</button>
+      <div class="hero-panel">
+        <form id="sellerRequestForm" class="request-form">
+          <h2>Shop Registration</h2>
+          <p>Fill out your shop details to request seller access.</p>
+
+          <div class="field">
+            <label for="businessName">Shop Name</label>
+            <input id="businessName" name="businessName" type="text" placeholder="e.g. AestheThrift" required>
+          </div>
+
+          <div class="field">
+            <label for="businessDescription">Shop Description</label>
+            <textarea id="businessDescription" name="businessDescription" placeholder="Describe your shop, style, and the items you plan to sell." required></textarea>
+          </div>
+
+          <div class="field">
+            <label for="businessPermit">Business Permit or Reference</label>
+            <input id="businessPermit" name="businessPermit" type="text" placeholder="Permit number, drive link, or document reference">
+          </div>
+
+          <div class="field">
+            <label for="sellerNotes">Notes</label>
+            <textarea id="sellerNotes" name="sellerNotes" placeholder="Optional extra details for the reviewer."></textarea>
+          </div>
+
+          <div id="sellerFormStatus" class="inline-status" aria-live="polite"></div>
+
+          <div class="actions">
+            <button type="submit" class="btn btn-primary">Submit Seller Request</button>
+            <button type="button" class="btn btn-secondary" id="goHomeBtn">Back To Home</button>
+          </div>
+        </form>
       </div>
     </section>
+
+    <section id="sellerStateCard" class="status-card" aria-live="polite">
+      <h3 id="sellerStateTitle" class="status-title"></h3>
+      <p id="sellerStateCopy" class="status-copy"></p>
+      <div id="sellerStateActions" class="status-actions"></div>
+    </section>
   </main>
+
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const registerBtn = document.getElementById('registration-title');
-      if (registerBtn) {
-        registerBtn.addEventListener('click', function() {
-          window.location.href = '/css/SellerRegistration.html';
+    const token = sessionStorage.getItem('authToken');
+    const userId = sessionStorage.getItem('currentUserId');
+    const currentRole = sessionStorage.getItem('currentUserRole');
+    const requestForm = document.getElementById('sellerRequestForm');
+    const statusEl = document.getElementById('sellerFormStatus');
+    const stateCard = document.getElementById('sellerStateCard');
+    const stateTitle = document.getElementById('sellerStateTitle');
+    const stateCopy = document.getElementById('sellerStateCopy');
+    const stateActions = document.getElementById('sellerStateActions');
+
+    document.getElementById('goHomeBtn').addEventListener('click', () => {
+      window.location.href = '/index.html';
+    });
+
+    if (!token || !userId) {
+      window.location.href = '/login.html';
+    }
+
+    function setFormStatus(message, type) {
+      statusEl.textContent = message || '';
+      statusEl.className = 'inline-status' + (type ? ' ' + type : '');
+    }
+
+    function showState(title, copy, actions) {
+      stateCard.classList.add('visible');
+      stateTitle.textContent = title;
+      stateCopy.textContent = copy;
+      stateActions.innerHTML = '';
+      (actions || []).forEach((action) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'btn ' + (action.primary ? 'btn-primary' : 'btn-secondary');
+        button.textContent = action.label;
+        button.addEventListener('click', action.onClick);
+        stateActions.appendChild(button);
+      });
+    }
+
+    function setFormEnabled(enabled) {
+      requestForm.querySelectorAll('input, textarea, button[type="submit"]').forEach((element) => {
+        element.disabled = !enabled;
+      });
+    }
+
+    async function fetchProfile() {
+      const response = await fetch(`/api/profile/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!response.ok) {
+        throw new Error(await response.text() || 'Unable to load profile.');
+      }
+      return response.json();
+    }
+
+    function renderProfileState(profile) {
+      document.getElementById('businessName').value = profile.businessName || '';
+      document.getElementById('businessDescription').value = profile.businessDescription || '';
+
+      if (profile.role === 'seller' && profile.sellerApproved) {
+        requestForm.style.display = 'none';
+        showState(
+          'Seller account approved',
+          'Your shop is already approved. You can proceed to add products or manage inventory.',
+          [
+            { label: 'Add Product', primary: true, onClick: () => { window.location.href = '/addproduct.html'; } },
+            { label: 'Inventory', primary: false, onClick: () => { window.location.href = '/inventorymanagement.html'; } }
+          ]
+        );
+        return;
+      }
+
+      if (profile.verificationStatus === 'PENDING' && profile.businessName && profile.businessDescription) {
+        setFormEnabled(false);
+        showState(
+          'Seller request pending',
+          'Your seller application is under review. You can update the form and submit again only after a rejection.',
+          [
+            { label: 'Back To Home', primary: false, onClick: () => { window.location.href = '/index.html'; } }
+          ]
+        );
+      }
+
+      if (profile.verificationStatus === 'REJECTED') {
+        setFormEnabled(true);
+        showState(
+          'Seller request needs revision',
+          'Your previous seller request was rejected. Update your shop details and resubmit below.',
+          []
+        );
+        return;
+      }
+
+      setFormEnabled(true);
+    }
+
+    requestForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      setFormStatus('Submitting seller request...', 'info');
+
+      const payload = {
+        userId: Number(userId),
+        businessName: document.getElementById('businessName').value.trim(),
+        businessDescription: document.getElementById('businessDescription').value.trim(),
+        businessPermit: document.getElementById('businessPermit').value.trim(),
+        notes: document.getElementById('sellerNotes').value.trim()
+      };
+
+      if (!payload.businessName || !payload.businessDescription) {
+        setFormStatus('Business name and description are required.', '');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/seller/request', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
         });
+
+        if (!response.ok) {
+          const message = await response.text();
+          throw new Error(message || 'Unable to submit seller request.');
+        }
+
+        setFormStatus('Seller request submitted successfully.', 'success');
+        showState(
+          'Seller request submitted',
+          'Your application is now pending admin review. Once approved, you can come back here and continue to add products.',
+          [
+            { label: 'Back To Home', primary: false, onClick: () => { window.location.href = '/index.html'; } }
+          ]
+        );
+      } catch (error) {
+        setFormStatus(error.message || 'Unable to submit seller request.', '');
       }
     });
+
+    fetchProfile()
+      .then(renderProfileState)
+      .catch((error) => {
+        setFormStatus(error.message || 'Unable to load seller state. Please log in again.');
+      });
   </script>
 </body>
 </html>

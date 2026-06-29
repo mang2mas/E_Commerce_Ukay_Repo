@@ -1,5 +1,7 @@
 package com.ukayukay.backend.entity;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -76,6 +78,13 @@ public class User {
 
     @Column(name = "is_shadow_banned")
     private Boolean isShadowBanned = false;
+
+    @JsonIgnore
+    @Column(name = "password_reset_token", length = 10)
+    private String passwordResetToken;
+
+    @Column(name = "password_reset_token_expiry")
+    private LocalDateTime passwordResetTokenExpiry;
 
     public enum UserRole {
         buyer, admin, seller
