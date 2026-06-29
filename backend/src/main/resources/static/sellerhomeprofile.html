@@ -1,427 +1,315 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="initial-scale=1, width=device-width" />
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard - Ukay Ukay</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles */
+        body { font-family: 'Inter', sans-serif; margin: 0; padding-top: 110px; background-color: #faf9ee; color: #333; }
+        * { box-sizing: border-box; }
+        
+        /* Dashboard Layout Container */
+        .dashboard-container { max-width: 1400px; margin: 0 auto; padding: 20px 40px; display: flex; gap: 40px; }
+        
+        /* Sidebar Navigation */
+        .sidebar { flex: 0 0 220px; display: flex; flex-direction: column; gap: 10px; position: sticky; top: 130px; height: fit-content; }
+        .nav-item { display: flex; align-items: center; gap: 15px; padding: 12px 20px; font-size: 16px; font-weight: 600; color: #555; text-decoration: none; border-radius: 8px; transition: 0.2s; }
+        .nav-item:hover, .nav-item.active { background-color: #e5e5e5; color: #000; }
+        .nav-item i { font-size: 18px; width: 24px; text-align: center; }
 
-    <link rel="stylesheet" href="./css/sellerhomeprofile.css" />
-    <link rel="stylesheet" href="./css/globals.css" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Arial:wght@400&display=swap"
-    />
-  </head>
-  <body>
-    <div class="seller-home-profile">
-      <img
-        class="ways-to-style-park-model-homes"
-        alt=""
-        src="./public/7-Ways-to-Style-Park-Model-Homes-with-Thrifted-Finds-and-Vintage-Charm-1@2x.png"
-      />
+        /* Main Content Area */
+        .main-content { flex: 1; display: flex; flex-direction: column; gap: 30px; }
 
-      <img
-        class="images-2-1"
-        loading="lazy"
-        alt=""
-        src="./public/images-2-11@2x.png"
-      />
+        /* Card Base Style */
+        .card { background: white; border: 1px solid #e5e5e5; border-radius: 8px; padding: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        
+        /* Profile Header */
+        .profile-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; }
+        .about-section { flex: 1; }
+        .about-section h2 { margin: 0 0 15px 0; font-size: 24px; font-weight: 700; text-transform: uppercase; }
+        .about-section p { font-size: 14px; line-height: 1.6; color: #555; margin-bottom: 10px; }
+        .profile-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 15px; min-width: 200px; }
+        .profile-actions h1 { margin: 0; font-size: 28px; font-weight: 700; color: #000; }
+        .btn-group { display: flex; gap: 10px; }
+        .btn { padding: 10px 20px; font-weight: 700; font-size: 13px; cursor: pointer; border-radius: 4px; transition: all 0.2s; border: none; }
+        .btn-follow { background: #fbce60; color: #000; }
+        .btn-follow:hover { background: #e0b034; }
+        .btn-contact { background: #e5e5e5; color: #000; border: 1px solid #ccc; }
 
-      <div class="seller-home-profile-child"></div>
-      <div class="div">5</div>
-      <div class="div2">4<br /></div>
-      <div class="div3">3</div>
-      <div class="div4">2<br /></div>
-      <img class="star-1-icon" alt="" src="./public/star-12@2x.png" />
+        /* Stats & Analytics Row */
+    
+        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .metric-card { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 25px 15px; }
+        .metric-card i { font-size: 24px; color: #888; margin-bottom: 10px; }
+        .metric-value { font-size: 28px; font-weight: 700; color: #000; margin-bottom: 5px; }
+        .metric-label { font-size: 11px; font-weight: 700; color: #666; text-transform: uppercase; letter-spacing: 0.05em; }
 
-      <img class="star-2-icon" alt="" src="./public/star-12@2x.png" />
+        /* Active Listings Section */
+        .listings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        .listings-header h2 { margin: 0; font-size: 20px; font-weight: 700; }
+        .btn-add-product { background: #000; color: #fff; padding: 10px 20px; font-size: 13px; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .btn-add-product:hover { background: #333; }
 
-      <img class="star-3-icon" alt="" src="./public/star-12@2x.png" />
+        /* Filters */
+        .filters-row { display: flex; gap: 15px; margin-bottom: 30px; }
+        .filter-select { padding: 10px 15px; font-size: 13px; border: 1px solid #ddd; border-radius: 4px; background: #fff; color: #333; cursor: pointer; outline: none; flex: 1; font-family: 'Inter', sans-serif; font-weight: 600; }
+        
+        /* =========================================
+           MASONRY GRID & HOVER OVERLAY CSS
+           ========================================= */
+        .masonry-grid { display: flex; justify-content: space-between; align-items: stretch; gap: 16px; width: 100%; }
+        .masonry-column { display: flex; flex-direction: column; flex: 1; justify-content: flex-start; gap: 16px; }
+        .masonry-item { position: relative; background-color: transparent; border: none; overflow: hidden; cursor: pointer; width: 100%; display: block; }
+        .masonry-item img { width: 100%; height: auto; display: block; object-fit: cover; transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .masonry-item:hover img { transform: scale(1.03); }
+        .item-hover-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.15); opacity: 0; transition: opacity 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; padding: 12px; box-sizing: border-box; z-index: 10; }
+        .masonry-item:hover .item-hover-overlay { opacity: 1; }
+        .overlay-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; }
+        .item-title-badge { background-color: #1a1a1a; color: #ffffff; font-size: 10px; font-weight: 700; letter-spacing: 0.03em; padding: 6px 10px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 82%; }
+        .zoom-icon-circle { background-color: #ffffff; width: 28px; height: 28px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 13px; color: #000000; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+        .overlay-bottom { display: grid; grid-template-columns: 1fr 1fr; width: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .item-price-tag { background-color: #1a1a1a; color: #ffffff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; padding: 8px 4px; }
+        .item-price-tag span { color: #888888; font-size: 9px; margin-left: 3px; }
+        .btn-add-cart-action { background-color: #ffffff; color: #000000; border: 1px solid #1a1a1a; font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s, color 0.2s; }
+        .btn-add-cart-action:hover { background-color: #fbce60; color: #000000; }
 
-      <img class="star-4-icon" alt="" src="./public/star-12@2x.png" />
+        /* Responsive */
+        @media (max-width: 900px) {
+            .dashboard-container { flex-direction: column; }
+            .sidebar { position: relative; top: 0; flex-direction: row; justify-content: center; }
+            .profile-header { flex-direction: column; align-items: center; text-align: center; }
+            .profile-actions { align-items: center; }
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+            .filters-row { flex-wrap: wrap; }
+            .masonry-grid { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
 
-      <img class="star-5-icon" alt="" src="./public/star-53@2x.png" />
-
-      <img class="star-1-1" alt="" src="./public/star-1-11@2x.png" />
-
-      <img class="star-1-5" alt="" src="./public/star-1-11@2x.png" />
-
-      <img class="star-1-2" alt="" src="./public/star-1-11@2x.png" />
-
-      <img class="star-1-3" alt="" src="./public/star-1-11@2x.png" />
-
-      <img class="star-1-4" alt="" src="./public/star-1-11@2x.png" />
-
-      <main class="page-body">
-        <section class="component-20">
-          <div class="icons-nav">
-            <div class="vector-parent">
-              <img
-                class="vector-icon"
-                loading="lazy"
-                alt=""
-                src="./public/Vector.svg"
-              />
-
-              <div class="home">Home</div>
-            </div>
-            <div class="vector-parent">
-              <img
-                class="vector-icon"
-                loading="lazy"
-                alt=""
-                src="./public/inventory-alt-1.svg"
-              />
-
-              <div class="home">Inventory</div>
-            </div>
-            <div class="vector-parent">
-              <img class="vector-icon" alt="" src="./public/Vector1.svg" />
-
-              <div class="home">Analytics</div>
-            </div>
-          </div>
-        </section>
-        <section class="main-content">
-          <div class="profile-header-section">
-            <div class="about-aesthethrift-parent">
-              <div class="about-aesthethrift">ABOUT <br />@aestheThrift</div>
-              <div class="welcome-to-aesthethrift-we-s">
-                <div class="welcome-to-aesthethrift">
-                  Welcome to @aestheThrift! <br /><br />We specialize in
-                  handpicked thrifted clothing that combines style,
-                  affordability, and sustainability. <br /><br />From vintage
-                  gems to everyday essentials, our collection is perfect for
-                  fashion lovers who want unique pieces without breaking the
-                  bank.<br /><br />Every purchase supports a more eco-friendly
-                  future while helping you build a wardrobe that's truly your
-                  own.
-                </div>
-              </div>
-            </div>
-            <div class="profile-left">
-              <div class="aesthethrift-wrapper">
-                <h1 class="aesthethrift">@aestheThrift</h1>
-              </div>
-              <div class="profile-actions">
-                <button class="follow-wrapper">
-                  <div class="follow">+ Follow</div>
-                </button>
-                <button class="contact-seller-wrapper">
-                  <div class="contact-seller">Contact Seller</div>
-                </button>
-              </div>
-            </div>
-          </div>
-          <section class="stats-and-reviews-row">
-            <div class="reviews-panel">
-              <b class="reviews">REVIEWS</b>
-              <div class="based-on-67">Based on 67 reviews</div>
-              <h2 class="h2">4.7</h2>
-              <div class="div5">1<br /></div>
-              <div class="rating-bars">
-                <img
-                  class="merged-asset-1-icon"
-                  loading="lazy"
-                  alt=""
-                  src="./public/merged-asset-13@2x.png"
-                />
-
-                <div class="merged-asset-2">
-                  <img
-                    class="merged-asset-1-icon"
-                    loading="lazy"
-                    alt=""
-                    src="./public/merged-asset-22@2x.png"
-                  />
-                </div>
-                <div class="rating-bars-inner">
-                  <img class="frame-child" alt="" src="./public/Line-59.svg" />
-                </div>
-                <div class="rating-bars-child">
-                  <img class="frame-child" alt="" src="./public/Line-59.svg" />
-                </div>
-                <img class="frame-child" alt="" src="./public/Line-59.svg" />
-              </div>
-            </div>
-            <div class="rectangle-parent">
-              <div class="frame-inner"></div>
-              <div class="items-sold-parent">
-                <div class="items-sold">Items Sold</div>
-                <div class="response-rate">Response Rate</div>
-                <div class="ships-on-avg-group">
-                  <h3 class="days">1 - 2 Days</h3>
-                  <div class="ships-on-avg">Ships on Avg.</div>
-                </div>
-              </div>
-              <img
-                class="shopping-bag-2-2"
-                loading="lazy"
-                alt=""
-                src="./public/shopping-bag-2-21@2x.png"
-              />
-
-              <h3 class="h3">67</h3>
-              <div class="active-listing">Active Listing</div>
-              <img
-                class="tags-1-icon"
-                loading="lazy"
-                alt=""
-                src="./public/tags-11@2x.png"
-              />
-
-              <h3 class="h32">67</h3>
-              <h3 class="h33">96%</h3>
-              <img
-                class="comment-dots-2-icon"
-                loading="lazy"
-                alt=""
-                src="./public/comment-dots-21@2x.png"
-              />
-
-              <img
-                class="clock-three-1-icon"
-                loading="lazy"
-                alt=""
-                src="./public/clock-three-11@2x.png"
-              />
-            </div>
-          </section>
-          <section class="metrics-and-review-row">
-            <div class="rectangle-group">
-              <div class="rectangle-div"></div>
-              <img class="star-1-icon2" alt="" src="./public/star-52@2x.png" />
-
-              <img class="star-2-icon2" alt="" src="./public/star-52@2x.png" />
-
-              <img class="star-3-icon2" alt="" src="./public/star-52@2x.png" />
-
-              <img class="star-4-icon2" alt="" src="./public/star-52@2x.png" />
-
-              <img class="star-5-icon2" alt="" src="./public/star-52@2x.png" />
-
-              <div class="exactly-as-described">
-                Exactly as described. Great condition and fast shipping. Will
-                definitely buy again!<br /><br /><br />-@Mang2mas
-              </div>
-              <div class="view-more">View more</div>
-            </div>
-            <div class="vector-container">
-              <div class="vector">
-                <img class="vector-icon3" alt="" src="./public/Vector2.svg" />
-              </div>
-              <div class="revenue-text-group">
-                <div class="revenue">REVENUE</div>
-                <div class="revenue2">REVENUE</div>
-                <h2 class="h22">
-                  <span>₱</span>
-                  <span class="span">3,240</span>
-                </h2>
-                <div class="this-month">THIS MONTH</div>
-              </div>
-            </div>
-            <div class="metrics-and-review-row-inner">
-              <div class="group-div">
-                <div class="vector">
-                  <img class="vector-icon3" alt="" src="./public/Vector3.svg" />
-                </div>
-                <div class="avg-sale-text-group">
-                  <div class="avg-sale">AVG SALE</div>
-                  <h2 class="h23">
-                    <span>₱</span>
-                    <span class="span">249</span>
-                  </h2>
-                  <div class="average-selling-price">AVERAGE SELLING PRICE</div>
-                </div>
-              </div>
-            </div>
-            <div class="inbox-full-1-parent">
-              <div class="vector">
-                <img
-                  class="inbox-full-1-icon"
-                  alt=""
-                  src="./public/inbox-full-1.svg"
-                />
-              </div>
-              <div class="avg-sale-text-group">
-                <div class="avg-sale">VIEWS</div>
-                <h2 class="h24">105</h2>
-                <div class="average-selling-price">TOTAL PRODUCT VIEWS</div>
-              </div>
-            </div>
-          </section>
-          <div class="rectangle-container">
-            <img
-              class="rectangle-icon"
-              alt=""
-              src="./public/Rectangle-286.svg"
-            />
-
-            <h2 class="active-listings">ACTIVE LISTINGS</h2>
-            <button class="add-product-parent" type="button" onclick="window.location.href='addproduct.html'">
-              <b class="add-product">ADD PRODUCT</b>
-              <img
-                class="square-plus-3-1"
-                alt=""
-                src="./public/square-plus-3-1.svg"
-              />
-            </button>
-            <img class="icon" loading="lazy" alt="" src="./public/1@2x.png" />
-
-            <img
-              class="image-26-icon"
-              loading="lazy"
-              alt=""
-              src="./public/image-261@2x.png"
-            />
-
-            <img
-              class="image-24-icon"
-              loading="lazy"
-              alt=""
-              src="./public/image-241@2x.png"
-            />
-
-            <img
-              class="image-25-icon"
-              loading="lazy"
-              alt=""
-              src="./public/image-251@2x.png"
-            />
-
-            <div class="frame-parent">
-              <div class="categories-parent">
-                <div class="response-rate">Categories</div>
-                <img
-                  class="angle-small-down-2-1"
-                  alt=""
-                  src="./public/angle-small-down-2-1.svg"
-                />
-              </div>
-              <div class="items">
-                <div class="tops">Tops</div>
-                <div class="tops">Bottoms</div>
-                <div class="tops">Outerwear</div>
-                <div class="tops">Bags</div>
-                <div class="tops">Accessories</div>
-                <div class="tops">Shirts</div>
-              </div>
-            </div>
-            <div class="frame-group">
-              <div class="size-parent">
-                <div class="response-rate">Size</div>
-                <img
-                  class="angle-small-down-2-1"
-                  alt=""
-                  src="./public/angle-small-down-2-1.svg"
-                />
-              </div>
-              <div class="items">
-                <div class="tops">Tops</div>
-                <div class="tops">Bottoms</div>
-                <div class="tops">Outerwear</div>
-                <div class="tops">Bags</div>
-                <div class="tops">Accessories</div>
-                <div class="tops">Shirts</div>
-              </div>
-            </div>
-            <div class="frame-container">
-              <div class="sort-by-parent">
-                <div class="response-rate">Sort By</div>
-                <img
-                  class="angle-small-down-2-1"
-                  alt=""
-                  src="./public/angle-small-down-2-1.svg"
-                />
-              </div>
-              <div class="items">
-                <div class="tops">Tops</div>
-                <div class="tops">Bottoms</div>
-                <div class="tops">Outerwear</div>
-                <div class="tops">Bags</div>
-                <div class="tops">Accessories</div>
-                <div class="tops">Shirts</div>
-              </div>
-            </div>
-            <div class="frame-div">
-              <div class="condition-parent">
-                <div class="response-rate">Condition</div>
-                <img
-                  class="angle-small-down-2-1"
-                  alt=""
-                  src="./public/angle-small-down-2-1.svg"
-                />
-              </div>
-              <div class="items">
-                <div class="tops">Tops</div>
-                <div class="tops">Bottoms</div>
-                <div class="tops">Outerwear</div>
-                <div class="tops">Bags</div>
-                <div class="tops">Accessories</div>
-                <div class="tops">Shirts</div>
-              </div>
-            </div>
-            <div class="line-div"></div>
-            <img
-              class="image-21-icon"
-              loading="lazy"
-              alt=""
-              src="./public/image-214@2x.png"
-            />
-
-            <img
-              class="image-17-icon"
-              loading="lazy"
-              alt=""
-              src="./public/image-171@2x.png"
-            />
-
-            <img
-              class="image-11-icon"
-              loading="lazy"
-              alt=""
-              src="./public/image-11@2x.png"
-            />
-          </div>
-        </section>
-      </main>
-      <header class="seller-home-profile-item"></header>
-      <div class="header-seller">
-        <img class="home-1-icon" alt="" src="./public/home-1@2x.png" />
-
-        <div class="rectangle-parent2">
-          <img class="group-child" alt="" src="./public/Rectangle-286.svg" />
-
-          <img
-            class="group-item"
-            loading="lazy"
-            alt=""
-            src="./public/Rectangle-286.svg"
-          />
-
-          <div class="sell">SELL</div>
-          <div class="buy-wrapper">
-            <div class="buy">BUY</div>
-          </div>
+    <!-- UNIFORM NAVBAR -->
+    <header style="background-color: rgba(36, 36, 36, 0.50); backdrop-filter: blur(8px); position: fixed; top: 0; left: 0; width: 100%; height: 90px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 9999;">
+        <div style="display: flex; align-items: center; gap: 30px;">
+            <button style="background:none; border:none; color:white; font-size:20px; cursor:pointer;"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <img src="/images/logo.png" style="height: 36px; width: auto;" alt="Ukay Ukay">
         </div>
-        <img class="header-seller-child" alt="" />
+        
+        <div style="display: flex; align-items: center; gap: 24px; position: relative; z-index: 10000;">
+            <!-- Buy/Sell Toggle -->
+            <div style="display: flex; background-color: rgba(255,255,255,0.2); padding: 3px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.3); margin-right: 12px; backdrop-filter: blur(8px);">
+                <button style="background-color: #ffffff; color: #000000; border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">BUY</button>
+                <button style="background: none; color: rgba(255,255,255,0.7); border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">SELL</button>
+            </div>
+    
+            <a href="homepage.html" style="color:white; text-decoration:none; font-size:20px;"><i class="fa-solid fa-house"></i></a>
+            <a href="ordermanagement.html" style="color:white; text-decoration:none; font-size:20px;"><i class="fa-regular fa-user"></i></a>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <a href="shoppingcart.html" style="color:white; text-decoration:none; font-size:20px;"><i class="fa-solid fa-bag-shopping"></i></a>
+                <span id="loginStatus" style="color: #000000; font-size: 12px; font-weight: 600; background-color: rgba(255, 255, 255, 0.7); padding: 4px 8px; border-radius: 4px;">Not logged in</span>
+            </div>
+        </div>
+    </header>
 
-        <img
-          class="untitled-design-3-removebg-p-icon"
-          loading="lazy"
-          alt=""
-          src="./public/Untitled-design-3-removebg-preview-1@2x.png"
-        />
+    <div class="dashboard-container">
+        
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <a href="#" class="nav-item active"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="#" class="nav-item"><i class="fa-solid fa-box"></i> Inventory</a>
+            <a href="#" class="nav-item"><i class="fa-solid fa-chart-simple"></i> Analytics</a>
+        </aside>
 
-        <div class="header-seller-item"></div>
-      </div>
+        <!-- MAIN DASHBOARD CONTENT -->
+        <main class="main-content">
+            
+           <!-- Profile Info Card -->
+            <div class="card profile-header">
+                <div class="about-section">
+                    <h2>ABOUT @aestheThrift</h2>
+                    <p>Welcome to @aestheThrift!</p>
+                    <p>We specialize in handpicked thrifted clothing that combines style, affordability, and sustainability. From vintage gems to everyday essentials, our collection is perfect for fashion lovers who want unique pieces without breaking the bank.</p>
+                    <p>Every purchase supports a more eco-friendly future while helping you build a wardrobe that's truly your own.</p>
+                </div>
+                <div class="profile-actions">
+                    <img src="/images/profile-placeholder.jpg" alt="@aestheThrift" class="seller-profile-img">
+                    <h1>@aestheThrift</h1>
+                </div>
+            </div>
+
+            <!-- Metrics Grid -->
+            <!-- Metrics Grid -->
+            <div class="metrics-grid">
+                <div class="card metric-card">
+                    <i class="fa-solid fa-star" style="color: #fbce60;"></i>
+                    <div class="metric-value">4.7</div>
+                    <div class="metric-label">Based on 67 Reviews</div>
+                </div>
+                <div class="card metric-card">
+                    <i class="fa-solid fa-peso-sign"></i>
+                    <div class="metric-value">3,240</div>
+                    <div class="metric-label">Revenue This Month</div>
+                </div>
+                <div class="card metric-card">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <div class="metric-value">₱249</div>
+                    <div class="metric-label">Average Sale Price</div>
+                </div>
+                
+                <div class="card metric-card">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <div class="metric-value">67</div>
+                    <div class="metric-label">Items Sold</div>
+                </div>
+                <div class="card metric-card">
+                    <i class="fa-solid fa-tags"></i>
+                    <div class="metric-value">67</div>
+                    <div class="metric-label">Active Listings</div>
+                </div>
+                <div class="card metric-card">
+                    <i class="fa-solid fa-truck-fast"></i>
+                    <div class="metric-value">1 - 2</div>
+                    <div class="metric-label">Days to Ship Avg</div>
+                </div>
+            </div>
+
+            <!-- Active Listings & Grid -->
+            <div class="card">
+                <div class="listings-header">
+                    <h2>ACTIVE LISTINGS</h2>
+                    <button class="btn-add-product" onclick="window.location.href='addproduct.html'">
+                        <i class="fa-solid fa-square-plus"></i> ADD PRODUCT
+                    </button>
+                </div>
+
+                <!-- Filters -->
+                <div class="filters-row">
+                    <select class="filter-select">
+                        <option>Categories</option>
+                        <option>Tops</option>
+                        <option>Bottoms</option>
+                        <option>Outerwear</option>
+                        <option>Bags</option>
+                        <option>Accessories</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>Size</option>
+                        <option>Small</option>
+                        <option>Medium</option>
+                        <option>Large</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>Condition</option>
+                        <option>New</option>
+                        <option>Like New</option>
+                        <option>Good</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>Sort By</option>
+                        <option>Newest</option>
+                        <option>Price: Low to High</option>
+                        <option>Price: High to Low</option>
+                    </select>
+                </div>
+
+                <!-- Masonry Grid -->
+                <div class="masonry-grid">
+                    <!-- COLUMN 1 -->
+                    <div class="masonry-column">
+                        <div class="masonry-item">
+                            <img src="/images/item1.jpg" alt="Vintage Top">
+                            <div class="item-hover-overlay">
+                                <div class="overlay-top">
+                                    <div class="item-title-badge">VINTAGE TOP</div>
+                                    <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                                </div>
+                                <div class="overlay-bottom">
+                                    <div class="item-price-tag">₱390.00 <span>PHP</span></div>
+                                    <button class="btn-add-cart-action">ADD TO CART</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="masonry-item">
+                            <img src="/images/item2.jpg" alt="Retro Blouse">
+                            <div class="item-hover-overlay">
+                                <div class="overlay-top">
+                                    <div class="item-title-badge">RETRO BLOUSE</div>
+                                    <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                                </div>
+                                <div class="overlay-bottom">
+                                    <div class="item-price-tag">₱450.00 <span>PHP</span></div>
+                                    <button class="btn-add-cart-action">ADD TO CART</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COLUMN 2 -->
+                    <div class="masonry-column">
+                        <div class="masonry-item">
+                            <img src="/images/item4.jpg" alt="Brown Jacket">
+                            <div class="item-hover-overlay">
+                                <div class="overlay-top">
+                                    <div class="item-title-badge">BROWN JACKET</div>
+                                    <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                                </div>
+                                <div class="overlay-bottom">
+                                    <div class="item-price-tag">₱550.00 <span>PHP</span></div>
+                                    <button class="btn-add-cart-action">ADD TO CART</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="masonry-item">
+                            <img src="/images/item5.jpg" alt="Denim Skirt">
+                            <div class="item-hover-overlay">
+                                <div class="overlay-top">
+                                    <div class="item-title-badge">DENIM SKIRT</div>
+                                    <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                                </div>
+                                <div class="overlay-bottom">
+                                    <div class="item-price-tag">₱380.00 <span>PHP</span></div>
+                                    <button class="btn-add-cart-action">ADD TO CART</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COLUMN 3 -->
+                    <div class="masonry-column">
+                        <div class="masonry-item">
+                            <img src="/images/item7.jpg" alt="Pleated Pants">
+                            <div class="item-hover-overlay">
+                                <div class="overlay-top">
+                                    <div class="item-title-badge">PLEATED PANTS</div>
+                                    <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                                </div>
+                                <div class="overlay-bottom">
+                                    <div class="item-price-tag">₱490.00 <span>PHP</span></div>
+                                    <button class="btn-add-cart-action">ADD TO CART</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="masonry-item">
+                            <img src="/images/item8.jpg" alt="Lace Dress">
+                            <div class="item-hover-overlay">
+                                <div class="overlay-top">
+                                    <div class="item-title-badge">LACE DRESS</div>
+                                    <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                                </div>
+                                <div class="overlay-bottom">
+                                    <div class="item-price-tag">₱620.00 <span>PHP</span></div>
+                                    <button class="btn-add-cart-action">ADD TO CART</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
     </div>
-  </body>
+
+</body>
 </html>
