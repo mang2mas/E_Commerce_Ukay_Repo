@@ -4,34 +4,35 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Shop Registration</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/globals.css" />
   <link rel="stylesheet" href="css/sellerregistration.css" />
+  <style>
+    body { padding-top: 90px; } /* Ensures content starts below the fixed header */
+  </style>
 </head>
 <body>
+
+  <header style="background-color: rgba(36, 36, 36, 0.50); backdrop-filter: blur(8px); position: fixed; top: 0; left: 0; width: 100%; height: 90px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 9999;">
+      <div style="display: flex; align-items: center; gap: 30px;">
+          <img src="/images/logo.png" style="height: 36px; width: auto;" alt="Logo">
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 24px;">
+          <div style="display: flex; background-color: rgba(255,255,255,0.2); padding: 3px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(8px);">
+              <button style="background: none; color: rgba(255,255,255,0.7); border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">BUY</button>
+              <button style="background-color: #ffffff; color: #000000; border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">SELL</button>
+          </div>
+
+          <a href="index.html" style="color:white; text-decoration:none; font-size:20px;"><i class="fa-solid fa-house"></i></a>
+          <a href="shoppingcart.html" style="color:white; text-decoration:none; font-size:20px;"><i class="fa-solid fa-bag-shopping"></i></a>
+          <span id="loginStatus" style="color: #000000; font-size: 12px; font-weight: 600; background-color: rgba(255, 255, 255, 0.7); padding: 4px 8px; border-radius: 4px;">Not logged in</span>
+      </div>
+  </header>
+
   <main class="SHOP-REGISTRATION" data-model-id="1:8076">
     <div class="rectangle" aria-hidden="true"></div>
     <div class="div" aria-hidden="true"></div>
-
-
-    <header class="header-seller">
-      <div class="header-left">
-        <a href="/index.html" aria-label="Go to homepage">
-          <img class="untitled-design" src="/images/LOGO.png" alt="UKY logo" />
-        </a>
-      </div>
-      <div class="header-right">
-        <div class="toggle-container">
-          <button class="toggle-btn">BUY</button>
-          <button class="toggle-btn active">SELL</button>
-        </div>
-        <a href="/index.html" class="home-link" aria-label="Home">
-          <svg class="home-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="currentColor" />
-          </svg>
-        </a>
-      </div>
-    </header>
-
 
     <section class="card" aria-labelledby="registration-title">
       <div class="card-inner">
@@ -41,18 +42,14 @@
       </div>
     </section>
   </main>
+  
   <script>
     const registerBtn = document.getElementById('registration-title');
     if (registerBtn) {
       registerBtn.addEventListener('click', function() {
-        window.location.href = '/css/SellerRegistration.html';
+        window.location.href = '/css/SellerRegistration2.html';
       });
     }
   </script>
 </body>
 </html>
-
-
-
-
-
