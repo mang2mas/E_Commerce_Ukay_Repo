@@ -3,28 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Audit Logs</title>
+    <title>Admin Dashboard - Audit Logs</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         :root { --bg-cream: #faf9ee; --text-black: #000000; --border-gray: #e5e5e5; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-cream); margin: 0; padding-top: 110px; }
         
-        /* Unified Header */
+        /* Unified Admin Header */
         header { background-color: rgba(36, 36, 36, 0.50); backdrop-filter: blur(8px); position: fixed; top: 0; left: 0; width: 100%; height: 90px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; z-index: 9999; }
+        .header-actions { display: flex; gap: 15px; align-items: center; }
+        .header-btn { color: white; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.35); border-radius: 999px; padding: 8px 16px; text-decoration: none; font-weight: 700; font-size: 13px; transition: background 0.2s ease; }
+        .header-btn:hover { background: rgba(255,255,255,0.22); }
         
-        .admin-layout { max-width: 1400px; margin: 0 auto; padding: 0 20px; }
+        /* Dashboard Layout */
+        .admin-layout { max-width: 1400px; margin: 0 auto 30px auto; padding: 0 20px; }
         .card { background: white; border: 1px solid var(--border-gray); border-radius: 8px; padding: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
         /* Filtering UI */
         .controls { display: flex; gap: 15px; margin-bottom: 25px; }
-        .filter-input { padding: 10px 15px; border: 1px solid var(--border-gray); border-radius: 4px; font-family: 'Inter'; }
+        .filter-input { padding: 10px 15px; border: 1px solid var(--border-gray); border-radius: 4px; font-family: 'Inter', sans-serif; font-size: 13px; outline: none; }
 
         /* Table */
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th { text-align: left; font-size: 12px; color: #888; padding: 15px; text-transform: uppercase; border-bottom: 2px solid #eee; }
-        td { padding: 20px 15px; border-top: 1px solid #eee; font-size: 14px; }
+        td { padding: 20px 15px; border-top: 1px solid #eee; font-size: 14px; color: #333; }
         
+        /* Action Tags */
         .action-tag { padding: 4px 10px; border-radius: 4px; font-weight: 700; font-size: 11px; text-transform: uppercase; }
         .status-success { color: #2e7d32; font-weight: 600; }
     </style>
@@ -32,16 +39,24 @@
 <body>
 
     <header>
-        <div style="color: white; font-weight: 800; font-size: 20px;">ADMIN PORTAL</div>
-        <div style="color: white;"><i class="fa-solid fa-user-circle"></i> Administrator</div>
+        <div style="color: white; font-weight: 800; font-size: 20px; letter-spacing: 1px;">ADMIN PORTAL</div>
+        <div class="header-actions">
+            <a href="adminseller.html" class="header-btn">Seller Verifications</a>
+            <a href="adminuser.html" class="header-btn">User Verifications</a>
+            <div style="display: flex; align-items: center; gap: 10px; color: white; margin-left: 15px;">
+                <i class="fa-solid fa-user-circle" style="font-size: 18px;"></i>
+                <span style="font-size: 14px;">Administrator</span>
+                <span id="loginStatus" style="color: #000; background: rgba(255, 255, 255, 0.9); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;">Logged in</span>
+            </div>
+        </div>
     </header>
 
     <main class="admin-layout">
         <section class="card">
-            <h2>Admin Action Audit Logs</h2>
+            <h2 style="margin-bottom: 20px; font-size: 22px;">Admin Action Audit Logs</h2>
             
             <div class="controls">
-                <input type="text" class="filter-input" placeholder="Search by action...">
+                <input type="text" class="filter-input" placeholder="Search by action..." style="width: 250px;">
                 <select class="filter-input">
                     <option>All Actions</option>
                     <option>Verification</option>
@@ -91,5 +106,6 @@
             </table>
         </section>
     </main>
+
 </body>
-</html>
+</html>x

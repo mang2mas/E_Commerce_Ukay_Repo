@@ -74,7 +74,7 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/**").permitAll()
                 // Static resources
                 .requestMatchers("/", "/index.html", "/login.html", "/REGISTRATION.html",
-                    "/sellerregistration.html", "/sellerverification.html", "/adminseller.html", "/checkout.html",
+                    "/sellerregistration.html", "/sellerverification.html", "/adminseller.html", "/adminauditlogs.html", "/checkout.html",
                     "/discoverypage.html", "/customerviewall.html", "/ItemDescription.html",
                     "/shoppingcart.html", "/forgotpassword.html", "/contentmoderation.html", "/revenue.html",
                     "/inventorymanagement.html", "/addproduct.html", "/ordermanagement.html",
