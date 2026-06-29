@@ -66,21 +66,22 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 0 5%;
-    background-color: transparent; 
-    border-bottom: none; 
-    position: fixed; /* Changed from absolute */
+    background-color: rgba(32, 34, 38, 0.22);
+    border-bottom: none;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     z-index: 1000;
     height: 90px;
     box-sizing: border-box;
-    transition: background-color 0.3s ease, backdrop-filter 0.3s ease; /* Smooth slide-in effect */
+    transition: background-color 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease;
 }
 
 .navbar.scrolled {
-    background-color: rgba(0, 0, 0, 0.397); /* Transparent black background */
-    backdrop-filter: blur(5px); /* Optional blur to make it look clean */
+    background-color: rgba(40, 44, 50, 0.78);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
 }
 
 .nav-left {
@@ -884,8 +885,22 @@ body {
 }
 
 /* Class to show the modal via JavaScript */
-.login-modal-overlay.show {
+.login-modal-overlay.active {
     display: flex;
+}
+
+/* Visual hint for login-protected actions */
+.requires-login {
+    opacity: 0.92;
+}
+
+.requires-login .btn-add-cart-action,
+.requires-login .btn-view-item,
+.requires-login .btn-primary,
+.requires-login .btn-outline,
+.requires-login .category-card,
+.requires-login .view-all {
+    cursor: pointer;
 }
 
 /* White Cutout Container (Styled to match your login screenshot) */

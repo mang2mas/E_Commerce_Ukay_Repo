@@ -1,6 +1,13 @@
 let currentUserId = sessionStorage.getItem("currentUserId") || null;
 let currentUserRole = sessionStorage.getItem("currentUserRole") || null;
 
+function normalizeImagePath(path) {
+    if (!path || typeof path !== 'string') return '/images/item1.jpg';
+    const trimmed = path.trim();
+    if (trimmed === '') return '/images/item1.jpg';
+    if (/^https?:\/\//i.test(trimmed)) return trimmed;
+    return trimmed.startsWith('/') ? trimmed : '/' + trimmed;
+}
 
 function getProductContext(target) {
     const card = target?.closest('.masonry-item');
@@ -21,8 +28,8 @@ function getProductContext(target) {
     const productId = card?.dataset.productId || button?.dataset.productId || parsedProduct?.productId || new URLSearchParams(window.location.search).get('productId');
     const productName = card?.querySelector('.item-title-badge')?.textContent?.trim() || button?.dataset.productName || parsedProduct?.productName || 'item';
     const price = card?.querySelector('.item-price-tag')?.textContent?.trim() || parsedProduct?.price;
-    const imageUrl = card?.querySelector('img')?.src || parsedProduct?.imageUrl;
-
+    const rawImage = card?.querySelector('img')?.src || parsedProduct?.imagePath || parsedProduct?.imageUrl;
+    const imageUrl = normalizeImagePath(rawImage);
 
     return { productId, productName, price, imageUrl };
 }
@@ -52,17 +59,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 event.preventDefault();
                 event.stopPropagation();
 
-
-                const nextUrl = anchor?.href || (itemCard ? './ItemDescription.html' : checkoutBtn ? './checkout.html' : window.location.href);
+                const productContext = getProductContext(event.target);
+                const targetProductId = productContext.productId;
+                let nextUrl = anchor?.href || window.location.href;
+                if (itemCard && targetProductId) {
+                    nextUrl = `./ItemDescription.html?productId=${encodeURIComponent(targetProductId)}`;
+                } else if (checkoutBtn) {
+                    nextUrl = './checkout.html';
+                }
                 sessionStorage.setItem('pendingRedirect', nextUrl);
-
 
                 const modal = document.getElementById('loginModalOverlay');
                 if (modal) {
                     modal.classList.add('active');
                     document.body.classList.add('modal-open');
                 } else {
-                    window.location.href = './login.html';
+                    window.location.href = './login.html?next=' + encodeURIComponent(nextUrl);
                 }
                 return;
             }
@@ -154,13 +166,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }, true);
     function refreshLoginStatusIndicator() {
         const statusLabel = document.getElementById('loginStatus');
-        const logoutButton = document.getElementById('logoutBtn');
-        if (statusLabel) {
-            statusLabel.textContent = currentUserId ? 'Logged in' : 'Not logged in';
-        }
-        if (logoutButton) {
-            logoutButton.style.display = currentUserId ? 'inline-flex' : 'none';
-        }
+        if (!statusLabel) return;
+        statusLabel.textContent = currentUserId ? 'Logged in' : 'Not logged in';
     }
 
 
@@ -170,13 +177,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const navbar = document.querySelector(".navbar");
     if (navbar) {
-        window.addEventListener("scroll", () => {
+        const updateNavbarOverlay = () => {
             if (window.scrollY > 50) {
                 navbar.classList.add("scrolled");
             } else {
                 navbar.classList.remove("scrolled");
             }
-        });
+        };
+        window.addEventListener("scroll", updateNavbarOverlay);
+        updateNavbarOverlay();
     }
 
 
@@ -210,19 +219,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-
-    const logoutButton = document.getElementById('logoutBtn');
-    if (logoutButton) {
-        logoutButton.addEventListener('click', () => {
-            sessionStorage.removeItem('currentUserId');
-            sessionStorage.removeItem('currentUserRole');
-            sessionStorage.removeItem('selectedProduct');
-            currentUserId = null;
-            currentUserRole = null;
-            refreshLoginStatusIndicator();
-            window.location.reload();
-        });
-    }
 
     const loginTrigger = document.querySelector('.login-trigger');
     if (loginTrigger) {
@@ -368,15 +364,13 @@ function setLoggedIn(user){
             return;
         }
 
-
         const userId = currentUserId ? Number(currentUserId) : null;
         container.html('<div class="recommended-loading">Loading new arrivals…</div>');
-
-
         const query = userId ? `?userId=${userId}` : '';
+
         $.get(`/api/products/recommended${query}`)
             .done(function(products) {
-                renderRecommendedProducts(products);
+                renderRecommendedProducts(products, '#newArrivalsContainer');
             })
             .fail(function(xhr) {
                 console.error('Failed to load recommended products:', xhr.responseText);
@@ -384,47 +378,174 @@ function setLoggedIn(user){
             });
     }
 
-
-    function renderRecommendedProducts(products) {
-        const container = $('#newArrivalsContainer');
+    function renderRecommendedProducts(products, containerSelector = '#newArrivalsContainer') {
+        const container = $(containerSelector);
         container.empty();
-
 
         if (!products || products.length === 0) {
             container.html('<div class="recommended-loading">No recommended items available right now.</div>');
             return;
         }
 
-
-        // Simple CSS-column masonry: append cards directly — columns handled by CSS
-        container.empty();
         const toShow = products.slice(0, 30);
         toShow.forEach(product => {
             const productId = product.productId || product.id;
             const $card = $('<div>').addClass('recommended-card').data('product', product);
-            const imageUrl = product.imagePath || '/images/item1.jpg';
+            const imageUrl = normalizeImagePath(product.imagePath || product.imageUrl);
             const name = product.itemName || 'Untitled item';
-            const price = product.price != null ? '₱' + product.price : 'Price unavailable';
-            const category = product.category || 'Vintage';
-
+            const price = product.price != null ? `₱${parseFloat(product.price).toFixed(2)}` : 'Price unavailable';
 
             $card.append(`<div class="recommended-image"><img src="${imageUrl}" alt="${name}"></div>`);
-            $card.append(`<div class="recommended-details"><span class="recommended-label">${name}</span></div>`);
-            const $actions = $('<div>').addClass('recommended-actions');
+            $card.append(`<div class="recommended-overlay"><div class="recommended-actions"></div></div>`);
+            if (!currentUserId) {
+                $card.addClass('requires-login');
+            }
+            const $actions = $card.find('.recommended-actions');
             $actions.append($('<button>').addClass('recommended-price-pill').text(price).prop('disabled', true));
-            $actions.append($('<button>').addClass('btn-add-cart-action').text('ADD TO CART').click(function(event) {
+            $actions.append($('<button>').addClass('btn-add-cart-action').attr('type', 'button').text('ADD TO CART').click(function(event) {
                 event.preventDefault();
-                alert('Item added to cart.');
+                const userId = sessionStorage.getItem('currentUserId');
+                if (!userId) {
+                    const nextUrl = `./ItemDescription.html?productId=${encodeURIComponent(productId)}`;
+                    sessionStorage.setItem('pendingRedirect', nextUrl);
+                    const modal = document.getElementById('loginModalOverlay');
+                    if (modal) {
+                        modal.classList.add('active');
+                        document.body.classList.add('modal-open');
+                        return;
+                    }
+                    return window.location.href = './login.html?next=' + encodeURIComponent(nextUrl);
+                }
+                fetch(`/api/cart/add?userId=${encodeURIComponent(userId)}&productId=${encodeURIComponent(productId)}`, { method: 'POST' })
+                    .then(resp => {
+                        if (!resp.ok) return resp.text().then(text => { throw new Error(text || 'Unable to add to cart'); });
+                        alert(`Added ${name} to cart.`);
+                    })
+                    .catch(err => alert(err.message || 'Unable to add item to cart.'));
             }));
-            $actions.append($('<button>').addClass('btn-view-item').text('VIEW').click(function(event) {
+            $actions.append($('<button>').addClass('btn-view-item').attr('type', 'button').text('VIEW').click(function(event) {
                 event.preventDefault();
+                const userId = sessionStorage.getItem('currentUserId');
+                if (!userId) {
+                    const nextUrl = `./ItemDescription.html?productId=${encodeURIComponent(productId)}`;
+                    sessionStorage.setItem('pendingRedirect', nextUrl);
+                    const modal = document.getElementById('loginModalOverlay');
+                    if (modal) {
+                        modal.classList.add('active');
+                        document.body.classList.add('modal-open');
+                        return;
+                    }
+                    return window.location.href = './login.html?next=' + encodeURIComponent(nextUrl);
+                }
                 window.location.href = `./ItemDescription.html?productId=${productId}`;
             }));
             $card.append($actions);
-
-
             container.append($card);
         });
+    }
+
+    function loadRecommendedProductsInto(containerSelector, limit = 12) {
+        const container = $(containerSelector);
+        if (!container.length) return;
+
+        container.html('<div class="recommended-loading">Loading recommendations…</div>');
+        const query = currentUserId ? `?userId=${currentUserId}&limit=${limit}` : `?limit=${limit}`;
+
+        $.get(`/api/products/recommended${query}`)
+            .done(function(products) {
+                renderRecommendedProducts(products, containerSelector);
+            })
+            .fail(function(xhr) {
+                console.error('Failed to load recommendations:', xhr.responseText);
+                container.html('<div class="recommended-loading">Unable to load recommendations.</div>');
+            });
+    }
+
+    function loadYouMightAlsoLike(containerSelector, currentProductId, category, style, sellerId, limit = 6) {
+        const container = $(containerSelector);
+        if (!container.length) return;
+
+        container.html('<div class="recommended-loading">Loading suggestions…</div>');
+        const excludedProductId = Number(currentProductId);
+        const desiredCategory = category ? String(category).trim().toLowerCase() : '';
+        const desiredStyle = style ? String(style).trim().toLowerCase() : '';
+        const desiredSellerId = sellerId != null ? String(sellerId) : null;
+
+        const renderFallback = function() {
+            const fallbackQuery = currentUserId ? `?userId=${currentUserId}` : '';
+            $.get(`/api/products/recommended${fallbackQuery}`)
+                .done(function(products) {
+                    const filtered = (products || []).filter(product => String(product.productId) !== String(excludedProductId));
+                    renderRecommendedProducts(filtered.slice(0, limit), containerSelector);
+                })
+                .fail(function(xhr) {
+                    console.error('Failed to load suggestion products:', xhr.responseText);
+                    container.html('<div class="recommended-loading">Unable to load suggestions.</div>');
+                });
+        };
+
+        $.get('/api/products')
+            .done(function(products) {
+                const filtered = (products || []).filter(function(product) {
+                    const productId = product.productId != null ? product.productId : product.id;
+                    return String(productId) !== String(excludedProductId);
+                });
+                if (filtered.length === 0) {
+                    renderFallback();
+                    return;
+                }
+
+                const exactMatches = [];
+                const categoryStyleMatches = [];
+                const categoryMatches = [];
+                const styleMatches = [];
+                const sellerMatches = [];
+                const others = [];
+
+                filtered.forEach(function(product) {
+                    const productSellerId = product.seller ? String(product.seller.userId || '') : '';
+                    const productStyle = product.style ? String(product.style).trim().toLowerCase() : '';
+                    const productCategory = product.category ? String(product.category).trim().toLowerCase() : '';
+
+                    const sameSeller = desiredSellerId && productSellerId && productSellerId === desiredSellerId;
+                    const sameStyle = desiredStyle && productStyle && productStyle === desiredStyle;
+                    const sameCategory = desiredCategory && productCategory && productCategory === desiredCategory;
+
+                    if (sameSeller && sameStyle && sameCategory) {
+                        exactMatches.push(product);
+                    } else if (sameCategory && sameStyle) {
+                        categoryStyleMatches.push(product);
+                    } else if (sameCategory) {
+                        categoryMatches.push(product);
+                    } else if (sameStyle) {
+                        styleMatches.push(product);
+                    } else if (sameSeller) {
+                        sellerMatches.push(product);
+                    } else {
+                        others.push(product);
+                    }
+                });
+
+                const sortedCandidates = [].concat(
+                    exactMatches,
+                    categoryStyleMatches,
+                    categoryMatches,
+                    styleMatches,
+                    sellerMatches,
+                    others
+                );
+
+                const matched = sortedCandidates.slice(0, limit);
+                if (matched.length === 0) {
+                    renderFallback();
+                } else {
+                    renderRecommendedProducts(matched, containerSelector);
+                }
+            })
+            .fail(function(xhr) {
+                console.error('Failed to load related products:', xhr.responseText);
+                renderFallback();
+            });
     }
 
 
@@ -571,22 +692,6 @@ function setLoggedIn(user){
             })
             .fail(function(xhr){ $('#notifications').text('Unable to load notifications: ' + xhr.responseText); });
     }
-
-
-    // --- Login Form Actions ---
-    $('#loginForm').on('submit', function(e){
-        e.preventDefault();
-        const email = $('#email').val();
-        const password = $('#password').val();
-        $('#loginStatus').text('Logging in…');
-        $.ajax({
-            url: '/api/auth/login',
-            method: 'POST',
-            data: { email: email, password: password }
-        })
-            .done(function(user){ setLoggedIn(user); })
-            .fail(function(xhr){ $('#loginStatus').text('Login failed: ' + xhr.responseText); });
-    });
 
 
     // --- Register Form Actions ---
@@ -844,6 +949,15 @@ const closeModalBtn = document.getElementById('closeModalBtn');
 const modalLoginForm = document.getElementById('modalLoginForm');
 
 
+if (loginModal) {
+    loginModal.addEventListener('click', (e) => {
+        if (e.target === loginModal) {
+            loginModal.classList.remove('active');
+            document.body.classList.remove('modal-open');
+        }
+    });
+}
+
 if (closeModalBtn && loginModal) {
     closeModalBtn.addEventListener('click', () => {
         loginModal.classList.remove('active');
@@ -897,6 +1011,7 @@ if (modalLoginForm) {
 
             const redirectUrl = sessionStorage.getItem('pendingRedirect') || window.location.href;
             sessionStorage.removeItem('pendingRedirect');
+            closeLoginModal();
             window.location.href = redirectUrl;
         } catch (error) {
             alert('Login failed: ' + (error.message || 'Invalid credentials'));
