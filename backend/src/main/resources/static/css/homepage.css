@@ -865,7 +865,8 @@ body {
 }
 
 .navbar.solid-bg .icon-btn,
-.navbar.solid-bg .login-status {
+.navbar.solid-bg .login-status,
+.navbar .login-status {
     color: #ffffff;
 }
 
