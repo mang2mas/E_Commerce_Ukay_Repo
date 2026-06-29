@@ -187,7 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // If user selected SELL, enforce authentication and send to registration
             if (button.dataset.view === 'sell') {
-                const target = './sellerregistration.html';
+                const target = './css/SellerRegistration2.html';
                 if (!currentUserId) {
                     sessionStorage.setItem('pendingRedirect', target);
                     const modal = document.getElementById('loginModalOverlay');
