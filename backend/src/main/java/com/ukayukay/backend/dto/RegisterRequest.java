@@ -39,15 +39,12 @@ public class RegisterRequest {
     public void setFullName(String fullName) { this.fullName = fullName; }
     public String getContactNo() { return contactNo; }
     public void setContactNo(String contactNo) { this.contactNo = contactNo; }
-<<<<<<< HEAD
     public String getAccountType() { return accountType; }
     public void setAccountType(String accountType) { this.accountType = accountType; }
-=======
     public Boolean getIsPwdSenior() { return isPwdSenior; }
     public void setIsPwdSenior(Boolean isPwdSenior) { this.isPwdSenior = isPwdSenior; }
     public String getIdNumber() { return idNumber; }
     public void setIdNumber(String idNumber) { this.idNumber = idNumber; }
->>>>>>> 44bde22999a56a54d247dbc6001ae69db94b0da1
     public User.UserRole getRole() { return role; }
     public void setRole(User.UserRole role) { this.role = role; }
 }

@@ -51,7 +51,6 @@ public class AuthService {
         newUser.setFullName(request.getFullName());
         newUser.setContactNo(request.getContactNo());
         newUser.setRole(request.getRole() == null ? User.UserRole.buyer : request.getRole());
-<<<<<<< HEAD
         newUser.setDiscountType("NONE");
         newUser.setIsPwdSenior(false);
 
@@ -63,10 +62,8 @@ public class AuthService {
             newUser.setDiscountType("PWD");
             newUser.setIsPwdSenior(true);
         }
-=======
         newUser.setIsPwdSenior(Boolean.TRUE.equals(request.getIsPwdSenior()));
         newUser.setIdNumber(request.getIdNumber());
->>>>>>> 44bde22999a56a54d247dbc6001ae69db94b0da1
 
         return userRepository.save(newUser);
     }
