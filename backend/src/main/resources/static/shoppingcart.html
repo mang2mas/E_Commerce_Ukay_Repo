@@ -34,7 +34,7 @@
             <button style="color:white; background:none; border:none; font-size:20px; cursor:pointer;"><i class="fa-solid fa-house"></i></button>
             <button style="color:white; background:none; border:none; font-size:20px; cursor:pointer;"><i class="fa-regular fa-user"></i></button>
             <button style="color:white; background:none; border:none; font-size:20px; cursor:pointer;"><i class="fa-solid fa-bag-shopping"></i></button>
-            <span style="color: #000000; font-size: 14px;">Logged in</span>
+            <span id="loginStatus" style="color: #000000; font-size: 14px;">Not logged in</span>
         </div>
     </header>
 
@@ -42,25 +42,12 @@
         <section class="cart-list">
             <h1>SHOPPING CART</h1>
             <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                <a href="#">← Continue Shopping</a>
-                <label><input type="checkbox"> Select All</label>
+                <a href="index.html">← Continue Shopping</a>
+                <label><input type="checkbox" id="selectAllCartItems"> Select All</label>
             </div>
 
-            <div class="seller-group">
-                <div style="padding: 15px; border-bottom: 1px solid #e5e5e5; font-weight: 700;">Sold by @TIREDTHRIFT</div>
-                <div class="cart-item">
-                    <img src="/images/item1.jpg" style="width: 150px; height: 120px; object-fit: cover; background:#eee;">
-                    <div style="flex: 1;">
-                        <b>VINTAGE PLAID BUTTON DOWN</b>
-                        <p style="font-size: 12px; color: #666;">Size: L · Condition: 10/10</p>
-                        <p style="color: #f47a55; font-weight: 700;">₱499.00</p>
-                    </div>
-                    <div style="text-align: right;">
-                        <input type="checkbox" style="display: block; margin-bottom: 10px;">
-                        <button style="border:none; background:none; text-decoration: underline; cursor:pointer;">Remove</button>
-                    </div>
-                </div>
-            </div>
+            <div id="cartItemsContainer"></div>
+            <div id="cartEmptyState" style="padding: 40px 20px; text-align:center; color:#666; display:none;">Your cart is empty. Browse items to start shopping.</div>
         </section>
 
         <!-- ORDER SUMMARY -->
@@ -68,16 +55,16 @@
             <h2>ORDER SUMMARY</h2>
             
             <div style="display: flex; justify-content: space-between; margin: 20px 0;">
-                <span>Items</span> <span>₱1,999.00</span>
+                <span>Items</span> <span id="cartItemsCount">0 items</span>
             </div>
             <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
                 <span>Shipping</span> <span>Calculated at checkout</span>
             </div>
             <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 20px;">
-                <span>ESTIMATED TOTAL</span> <span>₱1,999.00</span>
+                <span>ESTIMATED TOTAL</span> <span id="cartEstimatedTotal">₱0.00</span>
             </div>
 
-            <button class="btn-checkout">PROCEED TO CHECKOUT</button>
+            <button id="checkoutButton" class="btn-checkout" type="button">PROCEED TO CHECKOUT</button>
             <p style="font-size: 11px; margin-top: 10px; color: #666;">Secure checkouts - Safe & encrypted payments</p>
             
             <div style="margin-top: 20px; padding: 15px; border: 1px solid #e5e5e5;">
@@ -87,5 +74,24 @@
         </aside>
     </main>
 
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof loadCart === 'function') {
+                loadCart();
+            }
+            const checkoutButton = document.getElementById('checkoutButton');
+            if (checkoutButton) {
+                checkoutButton.addEventListener('click', function() {
+                    if (!sessionStorage.getItem('currentUserId')) {
+                        window.location.href = './login.html';
+                        return;
+                    }
+                    window.location.href = './checkout.html';
+                });
+            }
+        });
+    </script>
 </body>
 </html>

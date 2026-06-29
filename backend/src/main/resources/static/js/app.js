@@ -1,6 +1,27 @@
 let currentUserId = sessionStorage.getItem("currentUserId") || null;
 let currentUserRole = sessionStorage.getItem("currentUserRole") || null;
 
+function getAuthToken() {
+    return sessionStorage.getItem("authToken") || null;
+}
+
+function getAuthHeaders() {
+    const token = getAuthToken();
+    return token ? { 'Authorization': 'Bearer ' + token } : {};
+}
+
+function authFetch(url, options = {}) {
+    const headers = Object.assign({}, options.headers || {}, getAuthHeaders());
+    return fetch(url, Object.assign({}, options, { headers }));
+}
+
+function setAuthHeader(xhr) {
+    const token = getAuthToken();
+    if (token) {
+        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+    }
+}
+
 function normalizeImagePath(path) {
     if (!path || typeof path !== 'string') return '/images/item1.jpg';
     const trimmed = path.trim();
@@ -116,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
 
-                fetch(`/api/cart/add?userId=${currentUserId}&productId=${productId}`, {
+                authFetch(`/api/cart/add?userId=${currentUserId}&productId=${productId}`, {
                     method: 'POST'
                 })
                     .then(response => {
@@ -195,25 +216,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const toggleButtons = document.querySelectorAll(".toggle-btn");
     toggleButtons.forEach(button => {
         button.addEventListener("click", () => {
+            const isSellView = button.dataset.view === 'sell';
+
+            if (isSellView && !currentUserId) {
+                const target = './css/SellerRegistration2.html';
+                sessionStorage.setItem('pendingRedirect', target);
+                const modal = document.getElementById('loginModalOverlay');
+                if (modal) {
+                    modal.classList.add('active');
+                    document.body.classList.add('modal-open');
+                } else {
+                    window.location.href = `./login.html?next=${encodeURIComponent(target)}`;
+                }
+                return;
+            }
+
             toggleButtons.forEach(btn => btn.classList.remove("active"));
             button.classList.add("active");
 
-
-            // If user selected SELL, enforce authentication and send to registration
-            if (button.dataset.view === 'sell') {
+            if (isSellView) {
                 const target = './css/SellerRegistration2.html';
-                if (!currentUserId) {
-                    sessionStorage.setItem('pendingRedirect', target);
-                    const modal = document.getElementById('loginModalOverlay');
-                    if (modal) {
-                        modal.classList.add('active');
-                        document.body.classList.add('modal-open');
-                    } else {
-                        window.location.href = `./login.html?next=${encodeURIComponent(target)}`;
-                    }
-                    return;
-                }
-                // Authenticated -> go to seller registration
                 window.location.href = target;
             }
         });
@@ -325,13 +347,119 @@ function setLoggedIn(user){
     }
 }
     function loadCart(){
-        if(!currentUserId){ $('#cart').text('Not logged in.'); return; }
-        $('#cart').text('Loading cart…');
-        $.get('/api/cart/user/' + currentUserId)
+        if(!currentUserId){
+            $('#cart').text('Not logged in.');
+            $('#cartItemsContainer').empty();
+            $('#cartEmptyState').show();
+            $('#cartItemsCount').text('0 items');
+            $('#cartEstimatedTotal').text('₱0.00');
+            return;
+        }
+
+        const cartPageContainer = $('#cartItemsContainer');
+        if (cartPageContainer.length) {
+            cartPageContainer.empty();
+            $('#cartEmptyState').show().text('Loading cart…');
+        }
+        const legacyCart = $('#cart');
+        if (legacyCart.length) {
+            legacyCart.text('Loading cart…');
+        }
+
+        $.ajax({
+            url: '/api/cart/user/' + currentUserId,
+            method: 'GET',
+            beforeSend: setAuthHeader
+        })
             .done(renderCart)
-            .fail(function(xhr){ $('#cart').text('Failed to load cart: ' + xhr.responseText); });
+            .fail(function(xhr){
+                if (legacyCart.length) {
+                    legacyCart.text('Failed to load cart: ' + xhr.responseText);
+                }
+                if (cartPageContainer.length) {
+                    $('#cartEmptyState').show().text('Failed to load cart: ' + xhr.responseText);
+                }
+            });
     }
 
+
+    function formatCurrency(value) {
+        const amount = Number(value);
+        return Number.isFinite(amount) ? `₱${amount.toFixed(2)}` : '₱0.00';
+    }
+
+    function renderCart(cartItems) {
+        const items = Array.isArray(cartItems) ? cartItems : [];
+        const cartContainer = $('#cartItemsContainer');
+        const cartEmptyState = $('#cartEmptyState');
+        const legacyCart = $('#cart');
+
+        const totalQuantity = items.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+        const totalPrice = items.reduce((sum, item) => {
+            const productPrice = Number(item.product?.price) || 0;
+            return sum + productPrice * (Number(item.quantity) || 1);
+        }, 0);
+
+        if (cartContainer.length) {
+            cartContainer.empty();
+            if (items.length === 0) {
+                cartEmptyState.show().text('Your cart is empty.');
+            } else {
+                cartEmptyState.hide();
+                items.forEach(item => {
+                    const product = item.product || {};
+                    const imageUrl = normalizeImagePath(product.imagePath || product.imageUrl);
+                    const quantity = Number(item.quantity) || 1;
+                    const unitPrice = Number(product.price) || 0;
+                    const subtotal = unitPrice * quantity;
+
+                    const $itemWrapper = $('<div>').addClass('seller-group');
+                    const $itemRow = $('<div>').addClass('cart-item');
+                    $itemRow.append($('<img>').attr('src', imageUrl).attr('alt', product.itemName || 'Cart item'));
+
+                    const $info = $('<div>').css('flex', '1');
+                    $info.append($('<b>').text(product.itemName || 'Untitled item'));
+                    $info.append($('<p>').css({'font-size':'12px', 'color':'#666'}).text(`Category: ${product.category || 'N/A'} · Size: ${product.size || 'N/A'}`));
+                    $info.append($('<p>').css({'color':'#f47a55', 'font-weight':'700'}).text(formatCurrency(unitPrice)));
+                    $itemRow.append($info);
+
+                    const $actions = $('<div>').css({'text-align':'right'});
+                    $actions.append($('<div>').css({'margin-bottom':'10px'}).text(`Qty: ${quantity}`));
+                    $actions.append($('<div>').css({'margin-bottom':'10px', 'font-weight':'700'}).text(formatCurrency(subtotal)));
+                    $actions.append($('<button>').text('Remove').css({'border':'none','background':'none','color':'#f47a55','text-decoration':'underline','cursor':'pointer'})
+                        .click(function(event) {
+                            event.preventDefault();
+                            if (!confirm('Remove this item from your cart?')) return;
+                            $.ajax({ url: '/api/cart/' + item.cartId, method: 'DELETE' })
+                                .done(function() { loadCart(); })
+                                .fail(function(xhr) { alert('Unable to remove item: ' + xhr.responseText); });
+                        }));
+                    $itemRow.append($actions);
+                    $itemWrapper.append($itemRow);
+                    cartContainer.append($itemWrapper);
+                });
+            }
+            $('#cartItemsCount').text(`${totalQuantity} item${totalQuantity === 1 ? '' : 's'}`);
+            $('#cartEstimatedTotal').text(formatCurrency(totalPrice));
+        }
+
+        if (legacyCart.length) {
+            if (items.length === 0) {
+                legacyCart.text('Your cart is empty.');
+            } else {
+                legacyCart.empty();
+                const summary = $('<div>').text(`Cart (${totalQuantity} item${totalQuantity === 1 ? '' : 's'}) - ${formatCurrency(totalPrice)}`);
+                legacyCart.append(summary);
+                items.slice(0, 3).forEach(item => {
+                    const product = item.product || {};
+                    legacyCart.append($('<div>').text(`${product.itemName || 'Item'} x${item.quantity || 1}`));
+                });
+                if (items.length > 3) {
+                    legacyCart.append($('<div>').text(`+ ${items.length - 3} more items`));
+                }
+            }
+        }
+    }
 
     function renderOrders(data){
         const $container = $('#orders').empty();
@@ -416,7 +544,7 @@ function setLoggedIn(user){
                     }
                     return window.location.href = './login.html?next=' + encodeURIComponent(nextUrl);
                 }
-                fetch(`/api/cart/add?userId=${encodeURIComponent(userId)}&productId=${encodeURIComponent(productId)}`, { method: 'POST' })
+                authFetch(`/api/cart/add?userId=${encodeURIComponent(userId)}&productId=${encodeURIComponent(productId)}`, { method: 'POST' })
                     .then(resp => {
                         if (!resp.ok) return resp.text().then(text => { throw new Error(text || 'Unable to add to cart'); });
                         alert(`Added ${name} to cart.`);
