@@ -38,11 +38,6 @@ public class BusinessRequestService {
                     String.format("User not found with ID: %d", userId)));
 
 
-        if (!User.UserRole.seller.equals(user.getRole())) {
-            throw new RuntimeException("Only users with role 'seller' can submit business requests");
-        }
-
-
         BusinessRequest req = new BusinessRequest();
         req.setUser(user);
         req.setBusinessName(businessName);

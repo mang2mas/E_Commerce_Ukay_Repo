@@ -259,28 +259,16 @@
                 <tr>
                     <th>Seller</th>
                     <th>Shop Name</th>
+                    <th>Permit</th>
+                    <th>Notes</th>
                     <th>Date</th>
                     <th>Status</th>
                 </tr>
             </thead>
 
-            <tbody>
+            <tbody id="sellerRequestsBody">
                 <tr>
-                    <td class="seller-info">
-                        <img src="/images/profile-placeholder.jpg">
-
-                        <div>
-                            <b>Jenmarc Ronquillo</b><br>
-                            <small>jenmarc@email.com</small>
-                        </div>
-                    </td>
-
-                    <td>THRIFTTOBUSAN</td>
-                    <td>May 28, 2026</td>
-
-                    <td>
-                        <span class="badge-pending">Pending</span>
-                    </td>
+                    <td colspan="6" style="padding:20px; text-align:center; color:#888;">Loading seller requests...</td>
                 </tr>
             </tbody>
         </table>
@@ -358,6 +346,77 @@
         if (e.target === this) {
             closeModal();
         }
+    });
+</script>
+
+<script>
+    // Admin: load seller verification requests and populate the table
+    async function loadSellerRequests() {
+        const tbody = document.getElementById('sellerRequestsBody');
+        tbody.innerHTML = '<tr><td colspan="6" style="padding:20px; text-align:center; color:#888;">Loading seller requests...</td></tr>';
+
+            const token = sessionStorage.getItem('authToken');
+            if (!token) {
+                tbody.innerHTML = '<tr><td colspan="6" style="padding:20px; text-align:center; color:#d00;">Admin login required to load requests.</td></tr>';
+                return;
+            }
+
+            const res = await fetch('/api/admin/requests', {
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            });
+            if (!res.ok) {
+                tbody.innerHTML = '<tr><td colspan="6" style="padding:20px; text-align:center; color:#d00;">Failed to load requests</td></tr>';
+                return;
+            }
+
+            const data = await res.json();
+            if (!Array.isArray(data) || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="padding:20px; text-align:center; color:#888;">No seller requests found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(req => {
+                const avatar = (req.user && req.user.avatarUrl) ? req.user.avatarUrl : '/images/profile-placeholder.jpg';
+                const fullName = req.user && req.user.fullName ? req.user.fullName : '';
+                const email = req.user && req.user.email ? req.user.email : '';
+                const date = req.createdAt ? new Date(req.createdAt).toLocaleDateString() : '';
+                const status = req.status || 'Pending';
+                return `
+                    <tr>
+                        <td class="seller-info">
+                            <img src="${avatar}" alt="avatar">
+                            <div>
+                                <b>${escapeHtml(fullName)}</b><br>
+                                <small>${escapeHtml(email)}</small>
+                            </div>
+                        </td>
+                        <td>${escapeHtml(req.businessName || '')}</td>
+                        <td>${escapeHtml(req.businessPermit || '')}</td>
+                        <td>${escapeHtml(req.notes || '')}</td>
+                        <td>${escapeHtml(date)}</td>
+                        <td><span class="badge-pending">${escapeHtml(status)}</span></td>
+                    </tr>`;
+            }).join('');
+
+        } catch (err) {
+            tbody.innerHTML = `<tr><td colspan="6" style="padding:20px; text-align:center; color:#d00;">Error loading requests: ${escapeHtml(err.message || String(err))}</td></tr>`;
+        }
+    }
+
+    function escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    // Load on page ready
+    document.addEventListener('DOMContentLoaded', function() {
+        loadSellerRequests();
     });
 </script>
 

@@ -163,6 +163,14 @@
                             <label>Province</label>
                             <input type="text" id="rev-province" readonly class="readonly-input">
                         </div>
+                        <div class="location-fields">
+                            <label>Business Permit</label>
+                            <input type="text" id="rev-permit" readonly class="readonly-input">
+                        </div>
+                        <div class="location-fields">
+                            <label>Additional Notes</label>
+                            <textarea id="rev-notes" readonly class="readonly-textarea"></textarea>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -180,25 +188,100 @@
     </div>
 
     <script>
-        window.onload = function() {
-            if(localStorage.getItem('shopName')) document.getElementById('rev-shopName').value = localStorage.getItem('shopName');
-            if(localStorage.getItem('shopDesc')) document.getElementById('rev-shopDesc').value = localStorage.getItem('shopDesc');
-            if(localStorage.getItem('address')) document.getElementById('rev-address').value = localStorage.getItem('address');
-            if(localStorage.getItem('city')) document.getElementById('rev-city').value = localStorage.getItem('city');
-            if(localStorage.getItem('province')) document.getElementById('rev-province').value = localStorage.getItem('province');
-            if(localStorage.getItem('contact')) document.getElementById('rev-contact').textContent = localStorage.getItem('contact');
-            if(localStorage.getItem('email')) document.getElementById('rev-email').textContent = localStorage.getItem('email');
+        function populateReviewFields() {
+            const shopName = localStorage.getItem('shopName') || '';
+            const shopDesc = localStorage.getItem('shopDesc') || '';
+            const address = localStorage.getItem('address') || '';
+            const city = localStorage.getItem('city') || '';
+            const province = localStorage.getItem('province') || '';
+            const contact = localStorage.getItem('contact') || '';
+            const email = localStorage.getItem('email') || '';
+            const shopLogo = localStorage.getItem('shopLogo');
+
+            const hasData = shopName || shopDesc || address || city || province || contact || email;
+            if (!hasData) {
+                alert('No seller registration data found. Please complete the seller registration form first.');
+                window.location.href = '/css/SellerRegistration.html';
+                return;
+            }
+
+            document.getElementById('rev-shopName').value = shopName;
+            document.getElementById('rev-shopDesc').value = shopDesc;
+            document.getElementById('rev-address').value = address;
+            document.getElementById('rev-city').value = city;
+            document.getElementById('rev-province').value = province;
+            document.getElementById('rev-permit').value = localStorage.getItem('businessPermit') || '';
+            document.getElementById('rev-notes').value = localStorage.getItem('notes') || '';
+            document.getElementById('rev-contact').textContent = contact || '-';
+            document.getElementById('rev-email').textContent = email || '-';
+
+            if (shopLogo) {
+                const image = document.querySelector('.profile-pic-container img');
+                if (image) {
+                    image.src = shopLogo;
+                }
+            }
         }
 
-        function submitForm() {
+        document.addEventListener('DOMContentLoaded', populateReviewFields);
+
+        async function submitForm() {
             const c1 = document.getElementById('check1').checked;
             const c2 = document.getElementById('check2').checked;
             const c3 = document.getElementById('check3').checked;
 
-            if (c1 && c2 && c3) {
-                window.location.href = '../sellerhomeprofile.html';
-            } else {
+            if (!(c1 && c2 && c3)) {
                 alert('Please check all confirmation boxes before continuing.');
+                return;
+            }
+
+            const payload = {
+                userId: sessionStorage.getItem('currentUserId') ? parseInt(sessionStorage.getItem('currentUserId')) : null,
+                businessName: localStorage.getItem('shopName') || '',
+                businessDescription: localStorage.getItem('shopDesc') || '',
+                businessPermit: localStorage.getItem('businessPermit') || '',
+                notes: localStorage.getItem('notes') || ''
+            };
+
+            if (!payload.userId) {
+                alert('You must be logged in to submit a seller request.');
+                return;
+            }
+
+            const token = sessionStorage.getItem('authToken');
+            const headers = { 'Content-Type': 'application/json' };
+            if (!token) {
+                alert('You must be logged in to submit a seller request.');
+                return;
+            }
+            headers['Authorization'] = 'Bearer ' + token;
+
+            try {
+                const res = await fetch('/api/seller/request', {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    localStorage.removeItem('shopName');
+                    localStorage.removeItem('shopDesc');
+                    localStorage.removeItem('address');
+                    localStorage.removeItem('city');
+                    localStorage.removeItem('province');
+                    localStorage.removeItem('contact');
+                    localStorage.removeItem('email');
+                    localStorage.removeItem('businessPermit');
+                    localStorage.removeItem('notes');
+
+                    alert('Seller request submitted successfully.');
+                    window.location.href = '/sellerhomeprofile.html';
+                } else {
+                    const text = await res.text();
+                    alert('Submission failed: ' + (text || 'Server returned an error.'));
+                }
+            } catch (err) {
+                alert('Network error: ' + err.message);
             }
         }
     </script>

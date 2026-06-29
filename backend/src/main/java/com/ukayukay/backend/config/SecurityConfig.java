@@ -74,7 +74,7 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/**").permitAll()
                 // Static resources
                 .requestMatchers("/", "/index.html", "/login.html", "/REGISTRATION.html",
-                    "/sellerregistration.html", "/sellerverification.html", "/adminseller.html", "/checkout.html",
+                    "/sellerregistration.html", "/sellerverification.html", "/adminseller.html", "/auditlog.html", "/checkout.html",
                     "/discoverypage.html", "/customerviewall.html", "/ItemDescription.html",
                     "/shoppingcart.html", "/forgotpassword.html", "/contentmoderation.html", "/revenue.html",
                     "/inventorymanagement.html", "/addproduct.html", "/ordermanagement.html",
@@ -85,6 +85,7 @@ public class SecurityConfig {
                 // Admin-only endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/moderation/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/seller/request").authenticated()
                 // Seller endpoints
                 .requestMatchers("/api/seller/**").hasAnyRole("SELLER", "ADMIN")
                 // All other endpoints require authentication
