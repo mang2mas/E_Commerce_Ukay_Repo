@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Customer Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root { --bg-cream: #faf9ee; --text-black: #000000; --border-gray: #e5e5e5; --accent-yellow: #fcd462; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-cream); margin: 0; padding-top: 110px; }
+        
+        /* Unified Admin Header */
+        header { background-color: rgba(36, 36, 36, 0.50); backdrop-filter: blur(8px); position: fixed; top: 0; left: 0; width: 100%; height: 90px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; z-index: 9999; }
+        .header-actions { display: flex; gap: 15px; align-items: center; }
+        .header-btn { color: white; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.35); border-radius: 999px; padding: 8px 16px; text-decoration: none; font-weight: 700; font-size: 13px; transition: 0.2s; }
+        .header-btn:hover { background: rgba(255,255,255,0.22); }
+        
+        /* Dashboard Layout */
+        .admin-layout { display: flex; max-width: 1400px; margin: 0 auto 30px auto; gap: 30px; padding: 0 20px; }
+        .card { background: white; border: 1px solid var(--border-gray); border-radius: 8px; padding: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+        /* Left Side: Table & Controls (Read & Search) */
+        .table-panel { flex: 2; }
+        .controls-row { display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center; }
+        .search-box { padding: 10px 15px; border: 1px solid var(--border-gray); border-radius: 4px; width: 300px; outline: none; font-family: 'Inter'; }
+        .btn-add { background: #000; color: #fff; padding: 10px 20px; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; font-size: 12px; color: #888; padding: 15px 10px; border-bottom: 2px solid #eee; text-transform: uppercase; }
+        td { padding: 15px 10px; border-top: 1px solid #eee; font-size: 14px; }
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .user-info img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .status-active { background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+        .status-inactive { background: #ffebee; color: #c62828; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+        
+        .action-btns button { background: none; border: none; cursor: pointer; font-size: 16px; margin-right: 10px; color: #666; transition: 0.2s; }
+        .action-btns button:hover { color: #000; }
+
+        /* Right Side: Detail Panel (View & Orders) */
+        .details-panel { flex: 1; position: sticky; top: 130px; height: fit-content; }
+        .details-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
+        .details-header img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; }
+        .detail-row { margin-bottom: 15px; font-size: 14px; color: #333; }
+        .detail-row label { display: block; font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 4px; font-weight: 600; }
+        
+        .order-history { margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px; }
+        .order-item { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; padding: 10px; background: #f9f9f9; border-radius: 4px; }
+
+        /* Modals (Create, Update, Delete) */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; justify-content: center; align-items: center; }
+        .modal-box { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; position: relative; }
+        .modal-box h2 { margin-bottom: 20px; font-size: 20px; }
+        .close-btn { position: absolute; top: 20px; right: 20px; cursor: pointer; font-size: 20px; color: #888; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 5px; color: #555; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; outline: none; font-family: 'Inter'; }
+        
+        .btn-submit { width: 100%; padding: 12px; background: var(--accent-yellow); border: none; font-weight: 700; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+        .btn-danger { width: 100%; padding: 12px; background: #c62828; color: white; border: none; font-weight: 700; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div style="color: white; font-weight: 800; font-size: 20px; letter-spacing: 1px;">ADMIN PORTAL</div>
+        <div class="header-actions">
+            <a href="adminseller.html" class="header-btn">Sellers</a>
+            <a href="adminuser.html" class="header-btn">Verifications</a>
+            <div style="display: flex; align-items: center; gap: 10px; color: white; margin-left: 15px;">
+                <i class="fa-solid fa-user-circle" style="font-size: 18px;"></i>
+                <span style="font-size: 14px;">Administrator</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="admin-layout">
+        
+        <section class="card table-panel">
+            <div class="controls-row">
+                <input type="text" class="search-box" placeholder="Search by name, email, or phone...">
+                <button class="btn-add" onclick="openCustomerModal('add')"><i class="fa-solid fa-plus"></i> Add Customer</button>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Customer</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>C001</td>
+                        <td class="user-info">
+                            <img src="/images/profile-placeholder.jpg" alt="Profile">
+                            <div>
+                                <b>Juan Dela Cruz</b><br>
+                                <small style="color:#666;">juan@email.com</small>
+                            </div>
+                        </td>
+                        <td>0912 345 6789</td>
+                        <td><span class="status-active">Active</span></td>
+                        <td class="action-btns">
+                            <button onclick="openCustomerModal('edit')" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="openDeleteModal()" title="Deactivate"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>C002</td>
+                        <td class="user-info">
+                            <img src="/images/profile-placeholder.jpg" alt="Profile">
+                            <div>
+                                <b>Maria Santos</b><br>
+                                <small style="color:#666;">maria@email.com</small>
+                            </div>
+                        </td>
+                        <td>0998 765 4321</td>
+                        <td><span class="status-inactive">Inactive</span></td>
+                        <td class="action-btns">
+                            <button onclick="openCustomerModal('edit')" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="openDeleteModal()" title="Deactivate"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <aside class="card details-panel">
+            <div class="details-header">
+                <img src="/images/profile-placeholder.jpg" alt="Profile">
+                <div>
+                    <b style="font-size: 18px;">Juan Dela Cruz</b><br>
+                    <span style="color:#666; font-size: 13px;">juan@email.com</span>
+                </div>
+            </div>
+
+            <div class="detail-row"><label>Phone</label>0912 345 6789</div>
+            <div class="detail-row"><label>Address</label>123 Manila Ave, Metro Manila</div>
+            <div class="detail-row"><label>Date Joined</label>June 20, 2026</div>
+            <div class="detail-row"><label>Status</label><span class="status-active">Active</span></div>
+            
+            <div style="display: flex; gap: 20px; margin-top: 20px;">
+                <div><label style="font-size: 11px; color: #888; text-transform: uppercase;">Total Orders</label><br><b>12</b></div>
+                <div><label style="font-size: 11px; color: #888; text-transform: uppercase;">Total Spent</label><br><b>₱18,450</b></div>
+            </div>
+
+            <div class="order-history">
+                <label style="font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 10px; display: block;">Recent Orders</label>
+                <div class="order-item">
+                    <div><b>#1001</b><br><small style="color:#2e7d32;">Completed</small></div>
+                    <div>₱2,300</div>
+                </div>
+                <div class="order-item">
+                    <div><b>#1002</b><br><small style="color:#d4a32b;">Pending</small></div>
+                    <div>₱1,800</div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <div class="modal-overlay" id="customerFormModal">
+        <div class="modal-box">
+            <i class="fa-solid fa-xmark close-btn" onclick="closeModals()"></i>
+            <h2 id="modalTitle">Add New Customer</h2>
+            <form onsubmit="event.preventDefault(); closeModals();">
+                <div style="display: flex; gap: 15px;">
+                    <div class="form-group" style="flex: 1;"><label>First Name</label><input type="text" required></div>
+                    <div class="form-group" style="flex: 1;"><label>Last Name</label><input type="text" required></div>
+                </div>
+                <div class="form-group"><label>Email Address</label><input type="email" required></div>
+                <div class="form-group"><label>Phone Number</label><input type="tel"></div>
+                <div class="form-group"><label>Address</label><input type="text"></div>
+                <div class="form-group">
+                    <label>Account Status</label>
+                    <select>
+                        <option>Active</option>
+                        <option>Inactive</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-submit">SAVE CUSTOMER</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-box" style="text-align: center;">
+            <i class="fa-solid fa-xmark close-btn" onclick="closeModals()"></i>
+            <i class="fa-solid fa-circle-exclamation" style="font-size: 50px; color: #c62828; margin-bottom: 15px;"></i>
+            <h2>Deactivate Customer?</h2>
+            <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Are you sure you want to deactivate this account? They will no longer be able to log in, but their order history will remain safe.</p>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-submit" style="background: #eee; color: #333;" onclick="closeModals()">CANCEL</button>
+                <button class="btn-danger" onclick="closeModals()">DEACTIVATE</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal Logic to switch between Add/Edit and Delete
+        function openCustomerModal(type) {
+            document.getElementById('customerFormModal').style.display = 'flex';
+            document.getElementById('modalTitle').innerText = type === 'add' ? 'Add New Customer' : 'Edit Customer Details';
+        }
+
+        function openDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        function closeModals() {
+            document.getElementById('customerFormModal').style.display = 'none';
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

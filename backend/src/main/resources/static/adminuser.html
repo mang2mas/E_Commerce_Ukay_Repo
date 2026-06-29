@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - User Verification</title>
+    <!-- Fonts and Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -62,10 +63,12 @@
 </head>
 <body>
 
+    <!-- Admin Top Navbar -->
     <header>
         <div style="color: white; font-weight: 800; font-size: 20px; letter-spacing: 1px;">ADMIN PORTAL</div>
         <div class="header-actions">
             <a href="adminseller.html" class="header-btn">Seller Verifications</a>
+            <a href="/admincustomers.html" class="header-btn">Customers</a>
             <a href="/adminauditlogs.html" class="header-btn">Audit Logs</a>
             <div style="display: flex; align-items: center; gap: 10px; color: white; margin-left: 15px;">
                 <i class="fa-solid fa-user-circle" style="font-size: 18px;"></i>
@@ -77,6 +80,7 @@
 
     <div class="admin-layout">
         
+        <!-- Verification List (Left) -->
         <section class="card verification-panel">
             <h2 style="margin-bottom: 15px; font-size: 22px;">User Verification</h2>
             <div class="filter-tabs">
@@ -110,6 +114,7 @@
             </table>
         </section>
 
+        <!-- Verification Detail Panel (Right) -->
         <aside class="card details-panel">
             
             <div class="details-header">
@@ -120,6 +125,7 @@
                 </div>
             </div>
 
+            <!-- Expandable ID Verification -->
             <div class="detail-row">
                 <label>ID Verification (PWD/Senior)</label>
                 <div class="image-preview" onclick="openModal()">
@@ -151,11 +157,13 @@
         </aside>
     </div>
 
+    <!-- FULLSCREEN IMAGE MODAL -->
     <div class="modal" id="idModal">
         <span class="close-modal" onclick="closeModal()">&times;</span>
         <img src="/images/id_placeholder.jpg" alt="ID Verification">
     </div>
 
+    <!-- JavaScript for Modal -->
     <script>
         function openModal() {
             document.getElementById('idModal').style.display = 'flex';
