@@ -1,4 +1,5 @@
-﻿.inventory-management {
+﻿
+.inventory-management {
   display: grid;
   grid-template-columns: 92px minmax(0, 1fr);
   min-height: 100vh;
