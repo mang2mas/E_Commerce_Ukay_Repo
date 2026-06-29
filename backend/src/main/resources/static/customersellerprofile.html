@@ -20,7 +20,7 @@
         .profile-container { max-width: 1200px; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; gap: 30px; }
         
         /* Top Banner & Profile Card */
-        .profile-header-card { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 40px; display: flex; flex-wrap: wrap; gap: 40px; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .profile-header-card { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 40px; display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .profile-image { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #fbce60; }
         .profile-info { flex: 1; min-width: 300px; }
         
@@ -28,10 +28,12 @@
         .profile-title h1 { margin: 0; font-size: 32px; font-weight: 700; }
         .verified-badge { background: #fff9e6; color: #d4a32b; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
         
-        .profile-meta { font-size: 14px; color: #666; margin-bottom: 25px; display: flex; gap: 20px; }
+        .profile-meta { font-size: 14px; color: #666; margin-bottom: 20px; display: flex; gap: 20px; flex-wrap: wrap; }
+        .profile-email { display: inline-flex; align-items: center; gap: 8px; margin-top: 6px; padding: 8px 12px; background: #f8f5e8; color: #7a5f00; border-radius: 999px; font-size: 14px; font-weight: 600; width: fit-content; }
+        .profile-email a { color: inherit; text-decoration: none; }
         
         /* Stats Row */
-        .stats-row { display: flex; gap: 40px; margin-bottom: 25px; flex-wrap: wrap; }
+        .stats-row { display: flex; gap: 24px; margin-bottom: 20px; flex-wrap: wrap; }
         .stat-box { display: flex; flex-direction: column; gap: 5px; }
         .stat-value { font-size: 21px; font-weight: 700; color: #000; display: flex; align-items: center; gap: 8px; }
         .stat-label { font-size: 13px; color: #666; text-transform: uppercase; }
@@ -47,6 +49,15 @@
         .left-sidebar { flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 30px; }
         .info-card { background: white; border: 1px solid #e5e5e5; border-radius: 8px; padding: 30px; }
         .listings-section { flex: 2; background: white; border: 1px solid #e5e5e5; border-radius: 8px; padding: 30px; }
+        .seller-products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+        .seller-product-card { background: #fff; border: 1px solid #ececec; border-radius: 8px; overflow: hidden; box-shadow: 0 3px 8px rgba(0,0,0,0.05); }
+        .seller-product-card img { width: 100%; height: 220px; object-fit: cover; display: block; }
+        .seller-product-info { padding: 12px; }
+        .seller-product-title { font-weight: 700; font-size: 14px; margin: 0 0 6px; color: #111; }
+        .seller-product-price { color: #d4a32b; font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+        .seller-product-details { font-size: 12px; color: #666; line-height: 1.45; margin-bottom: 4px; }
+        .seller-product-meta { font-size: 12px; color: #888; }
+        .seller-empty-state { color: #666; font-size: 14px; padding: 10px 0; }
 
         /* MASONRY GRID (Uniform Design) */
         .masonry-grid { display: flex; justify-content: space-between; align-items: stretch; gap: 16px; width: 100%; }
@@ -314,219 +325,171 @@
 <body>
 
     <main class="profile-container">
-        
-        <!-- PROFILE HEADER -->
         <div class="profile-header-card">
-            <img src="/images/profile-placeholder.jpg" alt="@TIREDTHRIFT" class="profile-image">
+            <img id="profileImage" src="/images/profile-placeholder.jpg" alt="Seller profile" class="profile-image">
             
             <div class="profile-info">
                 <div class="profile-title">
-                    <h1>@TIREDTHRIFT</h1>
+                    <h1 id="sellerDisplayName">@Seller</h1>
                     <span class="verified-badge"><i class="fa-solid fa-circle-check"></i> Verified Seller</span>
                 </div>
                 
                 <div class="profile-meta">
-                    <span>Joined July 2026</span>
-                    <span>67 Followers</span>
+                    <span id="sellerMeta">Loading seller profile…</span>
                 </div>
                 
                 <div class="stats-row">
                     <div class="stat-box">
-                        <span class="stat-value"><i class="fa-solid fa-bag-shopping"></i> 142</span>
+                        <span class="stat-value" id="itemsSoldValue"><i class="fa-solid fa-bag-shopping"></i> 0</span>
                         <span class="stat-label">Items Sold</span>
                     </div>
                     <div class="stat-box">
-                        <span class="stat-value"><i class="fa-solid fa-tags"></i> 35</span>
+                        <span class="stat-value" id="activeListingsValue"><i class="fa-solid fa-tags"></i> 0</span>
                         <span class="stat-label">Active Listings</span>
                     </div>
                     <div class="stat-box">
-                        <span class="stat-value"><i class="fa-regular fa-comment-dots"></i> 100%</span>
-                        <span class="stat-label">Response Rate</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-value"><i class="fa-solid fa-truck-fast"></i> 1-2 Days</span>
+                        <span class="stat-value" id="shippingValue"><i class="fa-solid fa-truck-fast"></i> --</span>
                         <span class="stat-label">Ships Avg</span>
                     </div>
                 </div>
-                
-                <div class="action-buttons">
-                    <button class="btn btn-follow"><i class="fa-solid fa-plus"></i> FOLLOW</button>
-                    <button class="btn btn-contact"><i class="fa-regular fa-comment"></i> CONTACT SELLER</button>
-                </div>
+
+                <div id="sellerEmail" class="profile-email"></div>
             </div>
         </div>
 
-        <!-- BOTTOM PANELS -->
         <div class="bottom-layout">
-            
-            <!-- Left Side: Info & Reviews -->
             <div class="left-sidebar">
-                
-                <!-- About Card -->
                 <div class="info-card">
-                    <h3>About @TIREDTHRIFT</h3>
-                    <p>Curating vintage and archive fashion pieces. Every item is carefully inspected, cleaned, and authenticated before listing.</p>
+                    <h3 id="aboutTitle">About Seller</h3>
+                    <p id="aboutDescription">Loading seller information…</p>
                 </div>
 
-                <!-- Reviews Card -->
                 <div class="info-card">
                     <h3>Reviews</h3>
                     <div class="rating-summary">
-                        <div class="score-big">4.9</div>
+                        <div class="score-big" id="sellerRating">0.0</div>
                         <div>
                             <div class="stars">
                                 <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
                             </div>
-                            <div style="font-size: 12px; color: #666; margin-top: 5px;">Based on 67 reviews</div>
+                            <div id="reviewCount" style="font-size: 12px; color: #666; margin-top: 5px;">No reviews yet</div>
                         </div>
                     </div>
-                    <p><strong>Exactly as described!</strong> "The jacket fits perfectly and shipped super fast. Highly recommend this seller."</p>
-                    <a href="#" style="font-size: 14px; color: #000; font-weight: bold;">View all reviews ➔</a>
+                    <p id="reviewSummary">This seller has not received reviews yet.</p>
                 </div>
-                
             </div>
 
-            <!-- Right Side: Listings -->
             <div class="listings-section">
-                <h3>Active Listings</h3>
-                
-                <div class="masonry-grid">
-                    
-                    <!-- COLUMN 1 -->
-                    <div class="masonry-column">
-                        <div class="masonry-item">
-                            <img src="/images/item1.jpg" alt="Orange Plaid Short Sleeve">
-                            <div class="item-hover-overlay">
-                                <div class="overlay-top">
-                                    <div class="item-title-badge">ORANGE PLAID SHORT SLEEVE</div>
-                                    <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                                </div>
-                                <div class="overlay-bottom">
-                                    <div class="item-price-tag">₱350.00 <span>PHP</span></div>
-                                    <button class="btn-add-cart-action">ADD TO CART</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="masonry-item">
-                            <img src="/images/item2.jpg" alt="Asymmetric Dark Plaid Blouse">
-                            <div class="item-hover-overlay">
-                                <div class="overlay-top">
-                                    <div class="item-title-badge">ASYMMETRIC DARK PLAID BLOUSE</div>
-                                    <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                                </div>
-                                <div class="overlay-bottom">
-                                    <div class="item-price-tag">₱390.00 <span>PHP</span></div>
-                                    <button class="btn-add-cart-action">ADD TO CART</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="masonry-item">
-                            <img src="/images/item3.jpg" alt="Green Flannel Layered Set">
-                            <div class="item-hover-overlay">
-                                <div class="overlay-top">
-                                    <div class="item-title-badge">GREEN FLANNEL LAYERED SET</div>
-                                    <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                                </div>
-                                <div class="overlay-bottom">
-                                    <div class="item-price-tag">₱550.00 <span>PHP</span></div>
-                                    <button class="btn-add-cart-action">ADD TO CART</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- COLUMN 2 -->
-                    <div class="masonry-column">
-                        <div class="masonry-item">
-                            <img src="/images/item4.jpg" alt="Beige Traditional Short Sleeve">
-                            <div class="item-hover-overlay">
-                                <div class="overlay-top">
-                                    <div class="item-title-badge">BEIGE TRADITIONAL SHORT SLEEVE</div>
-                                    <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                                </div>
-                                <div class="overlay-bottom">
-                                    <div class="item-price-tag">₱420.00 <span>PHP</span></div>
-                                    <button class="btn-add-cart-action">ADD TO CART</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="masonry-item">
-                            <img src="/images/item5.jpg" alt="Vintage Brown Plaid Shirt">
-                            <div class="item-hover-overlay">
-                                <div class="overlay-top">
-                                    <div class="item-title-badge">VINTAGE BROWN PLAID SHIRT</div>
-                                    <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                                </div>
-                                <div class="overlay-bottom">
-                                    <div class="item-price-tag">₱380.00 <span>PHP</span></div>
-                                    <button class="btn-add-cart-action">ADD TO CART</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="masonry-item">
-                            <img src="/images/item6.jpg" alt="Pinstripe Corset Waist Blouse">
-                            <div class="item-hover-overlay">
-                                <div class="overlay-top">
-                                    <div class="item-title-badge">PINSTRIPE CORSET WAIST BLOUSE</div>
-                                    <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                                </div>
-                                <div class="overlay-bottom">
-                                    <div class="item-price-tag">₱450.00 <span>PHP</span></div>
-                                    <button class="btn-add-cart-action">ADD TO CART</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- COLUMN 3 -->
-                    <div class="masonry-column">
-                        <div class="masonry-item">
-                            <img src="/images/item7.jpg" alt="Retro Striped Long Sleeve">
-                            <div class="item-hover-overlay">
-                                <div class="overlay-top">
-                                    <div class="item-title-badge">RETRO STRIPED LONG SLEEVE</div>
-                                    <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                                </div>
-                                <div class="overlay-bottom">
-                                    <div class="item-price-tag">₱380.00 <span>PHP</span></div>
-                                    <button class="btn-add-cart-action">ADD TO CART</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="masonry-item">
-                            <img src="/images/item8.jpg" alt="Wide-Leg Pleated Trousers">
-                            <div class="item-hover-overlay">
-                                <div class="overlay-top">
-                                    <div class="item-title-badge">WIDE-LEG PLEATED TROUSERS</div>
-                                    <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                                </div>
-                                <div class="overlay-bottom">
-                                    <div class="item-price-tag">₱590.00 <span>PHP</span></div>
-                                    <button class="btn-add-cart-action">ADD TO CART</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="masonry-item">
-                            <img src="/images/item9.jpg" alt="Y2K Coquette Lace Layered Dress">
-                            <div class="item-hover-overlay">
-                                <div class="overlay-top">
-                                    <div class="item-title-badge">Y2K COQUETTE LAYERED DRESS</div>
-                                    <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                                </div>
-                                <div class="overlay-bottom">
-                                    <div class="item-price-tag">₱499.00 <span>PHP</span></div>
-                                    <button class="btn-add-cart-action">ADD TO CART</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
+                <h3 id="activeListingsTitle">Active Listings</h3>
+                <div id="sellerProducts" class="seller-products-grid"></div>
             </div>
-            
         </div>
-
     </main>
+
+    <script>
+        async function fetchJson(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) return null;
+                return await response.json();
+            } catch (error) {
+                console.error(error);
+                return null;
+            }
+        }
+
+        function formatDisplayName(seller, shop) {
+            const baseName = shop?.shopName || seller?.businessName || seller?.fullName || `Seller ${seller?.userId || ''}`;
+            const trimmed = String(baseName || '').trim();
+            if (!trimmed) return '@seller';
+            return trimmed.startsWith('@') ? trimmed : `@${trimmed}`;
+        }
+
+        function isActiveProduct(product) {
+            const status = product?.status;
+            if (!status) return true;
+            return ['available', 'active', 'approved'].includes(String(status).toLowerCase());
+        }
+
+        function formatPrice(value) {
+            if (value == null || value === '') return 'Price not set';
+            const number = Number(value);
+            if (Number.isNaN(number)) return value;
+            return `₱${number.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
+
+        function renderProducts(products) {
+            const container = document.getElementById('sellerProducts');
+            const activeProducts = (products || []).filter(isActiveProduct);
+
+            if (!activeProducts.length) {
+                container.innerHTML = '<div class="seller-empty-state">No active listings yet.</div>';
+                return;
+            }
+
+            container.innerHTML = activeProducts.map((product) => {
+                const image = product?.imagePath || '/images/profile-placeholder.jpg';
+                const title = product?.itemName || product?.productName || product?.name || 'Untitled Item';
+                const price = formatPrice(product?.price || product?.productPrice);
+                const description = product?.description ? String(product.description).slice(0, 90) : 'No description available.';
+                const details = [product?.itemCondition ? `Condition: ${product.itemCondition}` : null, product?.size ? `Size: ${product.size}` : null, product?.category ? `Category: ${product.category}` : null].filter(Boolean).join(' • ');
+                return `
+                    <div class="seller-product-card">
+                        <img src="${image}" alt="${title}">
+                        <div class="seller-product-info">
+                            <p class="seller-product-title">${title}</p>
+                            <div class="seller-product-price">${price}</div>
+                            <div class="seller-product-details">${description}${description.length >= 90 ? '…' : ''}</div>
+                            <div class="seller-product-meta">${details || 'More details coming soon.'}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function loadSellerProfile() {
+            const params = new URLSearchParams(window.location.search);
+            const sellerId = params.get('sellerId');
+
+            if (!sellerId) {
+                document.getElementById('sellerDisplayName').textContent = '@seller';
+                document.getElementById('sellerMeta').textContent = 'No seller selected.';
+                document.getElementById('aboutDescription').textContent = 'Open this page from an item page to view that seller profile.';
+                return;
+            }
+
+            const [seller, shop, products] = await Promise.all([
+                fetchJson(`/api/profile/${sellerId}`),
+                fetchJson(`/api/shops/seller/${sellerId}`).catch(() => null),
+                fetchJson(`/api/products/seller/${sellerId}`)
+            ]);
+
+            const safeSeller = seller || {};
+            const safeShop = shop || {};
+            const safeProducts = Array.isArray(products) ? products : [];
+            const activeProducts = safeProducts.filter(isActiveProduct);
+
+            const displayName = formatDisplayName(safeSeller, safeShop);
+            document.getElementById('sellerDisplayName').textContent = displayName;
+            document.getElementById('profileImage').alt = displayName;
+            document.getElementById('profileImage').src = safeShop.shopLogoUrl || safeSeller.businessPermitUrl || '/images/profile-placeholder.jpg';
+            document.getElementById('sellerMeta').textContent = safeShop.shopName ? `Shop profile • ${safeShop.shopName}` : `Seller profile • ${safeSeller.fullName || safeSeller.businessName || 'Seller'}`;
+            document.getElementById('aboutTitle').textContent = `About ${displayName}`;
+            document.getElementById('aboutDescription').textContent = safeShop.shopDescription || safeSeller.businessDescription || 'This seller has not added a description yet.';
+            document.getElementById('sellerEmail').innerHTML = safeSeller.email ? `<i class="fa-solid fa-envelope"></i><a href="mailto:${safeSeller.email}">${safeSeller.email}</a>` : '';
+            document.getElementById('itemsSoldValue').innerHTML = `<i class="fa-solid fa-bag-shopping"></i> ${safeShop.totalSales ?? 0}`;
+            document.getElementById('activeListingsValue').innerHTML = `<i class="fa-solid fa-tags"></i> ${activeProducts.length}`;
+            document.getElementById('shippingValue').innerHTML = `<i class="fa-solid fa-truck-fast"></i> ${safeShop.responseRate != null ? `${safeShop.responseRate}%` : '--'}`;
+            document.getElementById('sellerRating').textContent = safeShop.averageRating != null ? Number(safeShop.averageRating).toFixed(1) : '0.0';
+            document.getElementById('reviewCount').textContent = safeShop.totalRatings != null ? `Based on ${safeShop.totalRatings} reviews` : 'No reviews yet';
+            document.getElementById('reviewSummary').textContent = safeShop.totalRatings ? 'Customer feedback is available for this seller.' : 'This seller has not received reviews yet.';
+            document.getElementById('activeListingsTitle').textContent = `Active Listings (${activeProducts.length})`;
+
+            renderProducts(safeProducts);
+        }
+
+        loadSellerProfile();
+    </script>
 
 </body>
 </html>

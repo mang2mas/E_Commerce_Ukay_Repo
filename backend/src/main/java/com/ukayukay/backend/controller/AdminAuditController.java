@@ -24,7 +24,13 @@ public class AdminAuditController {
 
     @GetMapping
     public ResponseEntity<List<AuditLog>> getAuditLogs() {
-        return ResponseEntity.ok(auditLogService.getAllLogs());
+        try {
+            return ResponseEntity.ok(auditLogService.getAllLogs());
+        } catch (Exception e) {
+            System.err.println("Failed to serve audit logs: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.ok(List.of());
+        }
     }
 }
 

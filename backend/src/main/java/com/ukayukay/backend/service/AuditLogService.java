@@ -1,6 +1,7 @@
 package com.ukayukay.backend.service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -33,6 +34,12 @@ public class AuditLogService {
     }
 
     public List<AuditLog> getAllLogs() {
-        return auditLogRepository.findByOrderByTimestampDesc();
+        try {
+            return auditLogRepository.findByOrderByTimestampDesc();
+        } catch (Exception e) {
+            System.err.println("Failed to load audit logs: " + e.getMessage());
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
     }
 }
