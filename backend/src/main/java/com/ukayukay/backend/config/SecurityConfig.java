@@ -77,7 +77,7 @@ public class SecurityConfig {
                     "/sellerregistration.html", "/sellerverification.html", "/checkout.html",
                     "/discoverypage.html", "/customerviewall.html", "/ItemDescription.html",
                     "/shoppingcart.html", "/forgotpassword.html", "/contentmoderation.html", "/revenue.html",
-                    "/addproduct.html", "/ordermanagement.html",
+                    "/inventorymanagement.html", "/addproduct.html", "/ordermanagement.html",
                     "/addproduct.html", "/editproduct.html", "/productreview.html",
                     "/sellerhomeprofile.html", "/customersellerprofile.html",
                     "/css/**", "/js/**", "/images/**").permitAll()
