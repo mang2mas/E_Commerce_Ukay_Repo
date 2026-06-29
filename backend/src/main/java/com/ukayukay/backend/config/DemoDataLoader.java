@@ -67,6 +67,13 @@ public class DemoDataLoader implements CommandLineRunner {
         createProduct(sellerA, "Cropped Graphic Sweatshirt", "Tops", new BigDecimal("799.00"), 6,
                 "Soft sweatshirt with statement graphics and a cozy fit.", "/images/item14.jpg", "M", "USED", LocalDate.now().minusDays(14), "Streetwear");
 
+        createProduct(sellerA, "Baggy Pants", "Bottoms", new BigDecimal("899.00"), 5,
+                "Comfortable baggy pants for relaxed everyday wear.", "/images/item15.jpg", "L", "USED", LocalDate.now().minusDays(16), "Casual");
+        createProduct(sellerB, "Laced Top", "Tops", new BigDecimal("749.00"), 3,
+                "Delicate laced top with a flattering fit.", "/images/item16.jpg", "S", "USED", LocalDate.now().minusDays(15), "Lace");
+        createProduct(sellerC, "Ripped Jeans", "Bottoms", new BigDecimal("1099.00"), 4,
+                "Trendy ripped jeans with a vintage washed look.", "/images/item17.jpg", "M", "USED", LocalDate.now().minusDays(14), "Denim");
+
         System.out.println("Seeded demo products and sellers for homepage recommendations.");
     }
 

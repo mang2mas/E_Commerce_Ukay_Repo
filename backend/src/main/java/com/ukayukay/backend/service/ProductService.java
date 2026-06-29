@@ -210,15 +210,35 @@ public class ProductService {
 
     public Product updateProduct(Integer id, Product updatedProduct) {
         Product existing = getProductById(id);
-        existing.setItemName(updatedProduct.getItemName());
-        existing.setCategory(updatedProduct.getCategory());
-        existing.setPrice(updatedProduct.getPrice());
-        existing.setStockQuantity(updatedProduct.getStockQuantity());
-        existing.setDescription(updatedProduct.getDescription());
-        existing.setImagePath(updatedProduct.getImagePath());
-        existing.setSize(updatedProduct.getSize());
-        existing.setItemCondition(updatedProduct.getItemCondition());
-        existing.setStatus(updatedProduct.getStatus());
+
+        if (updatedProduct.getItemName() != null) {
+            existing.setItemName(updatedProduct.getItemName());
+        }
+        if (updatedProduct.getCategory() != null) {
+            existing.setCategory(updatedProduct.getCategory());
+        }
+        if (updatedProduct.getPrice() != null) {
+            existing.setPrice(updatedProduct.getPrice());
+        }
+        if (updatedProduct.getStockQuantity() != null) {
+            existing.setStockQuantity(updatedProduct.getStockQuantity());
+        }
+        if (updatedProduct.getDescription() != null) {
+            existing.setDescription(updatedProduct.getDescription());
+        }
+        if (updatedProduct.getImagePath() != null) {
+            existing.setImagePath(updatedProduct.getImagePath());
+        }
+        if (updatedProduct.getSize() != null) {
+            existing.setSize(updatedProduct.getSize());
+        }
+        if (updatedProduct.getItemCondition() != null) {
+            existing.setItemCondition(updatedProduct.getItemCondition());
+        }
+        if (updatedProduct.getStatus() != null) {
+            existing.setStatus(updatedProduct.getStatus());
+        }
+
         return productRepository.save(existing);
     }
 
