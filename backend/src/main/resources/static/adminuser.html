@@ -17,6 +17,9 @@
         header { background-color: rgba(36, 36, 36, 0.50); backdrop-filter: blur(8px); position: fixed; top: 0; left: 0; width: 100%; height: 90px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; z-index: 9999; }
         
         .admin-layout { display: flex; max-width: 1400px; margin: 30px auto; gap: 30px; padding: 0 20px; }
+        .header-actions { display: flex; gap: 12px; align-items: center; }
+        .header-btn { color: white; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.35); border-radius: 999px; padding: 10px 16px; text-decoration: none; font-weight: 700; font-size: 0.9rem; transition: background 0.2s ease; }
+        .header-btn:hover { background: rgba(255,255,255,0.22); }
 
         /* Dashboard Card */
         .card { background: white; border: 1px solid var(--border-gray); border-radius: 8px; padding: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
@@ -50,9 +53,13 @@
 
     <header>
         <div style="color: white; font-weight: 800; font-size: 20px;">ADMIN PORTAL</div>
-        <div style="display: flex; align-items: center; gap: 15px; color: white;">
-            <i class="fa-solid fa-user-circle"></i> Administrator
-            <span id="loginStatus" style="color: #000; background: rgba(255, 255, 255, 0.7); padding: 4px 8px; border-radius: 4px; font-size: 12px;">Logged in</span>
+        <div class="header-actions">
+            <a href="/adminseller.html" class="header-btn">Seller</a>
+            <a href="/adminauditlogs.html" class="header-btn">Audit Log</a>
+            <div style="display: flex; align-items: center; gap: 15px; color: white;">
+                <i class="fa-solid fa-user-circle"></i> Administrator
+                <span id="loginStatus" style="color: #000; background: rgba(255, 255, 255, 0.7); padding: 4px 8px; border-radius: 4px; font-size: 12px;">Logged in</span>
+            </div>
         </div>
     </header>
 
@@ -79,11 +86,7 @@
         </section>
 
         <!-- Verification Detail Panel -->
-        <aside class="<!-- Verification Detail Panel -->
-<aside class="card details-panel">
-    
-    <div class="details-header">
-        <img src="/images/profile-placeholder.jpg">
+        <aside class="card details-panel">
         <div>
             <b>Jenmarc Ronquillo</b><br>
             <small>THRIFTTOBUSAN</small>
