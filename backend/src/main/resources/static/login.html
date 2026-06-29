@@ -24,19 +24,31 @@
                 <label for="password">PASSWORD</label>
                 <input type="password" id="password" placeholder="Enter your password" required>
             </div>
+<<<<<<< HEAD
+
+            <div style="text-align: right; margin-top: -8px; margin-bottom: 15px;">
+                <a href="forgotpassword.html" style="font-size: 12px; color: black; text-decoration: underline; cursor: pointer;">Forgot password?</a>
+            </div>
+
+=======
+>>>>>>> origin/main
             <button type="submit" class="btn-login">Log in</button>
             <div id="message" class="message" aria-live="polite"></div>
             <div class="signup-prompt">
                 Don’t have an account? <a href="./REGISTRATION.html">Sign up</a>
             </div>
         </form>
+<<<<<<< HEAD
+        
+=======
+>>>>>>> origin/main
     </div>
 
     <script>
-        const nextUrl = new URLSearchParams(window.location.search).get('next') || './index.html';
+        const homeUrl = './index.html';
 
         if (sessionStorage.getItem('authToken')) {
-            window.location.href = nextUrl;
+            window.location.href = homeUrl;
         }
 
         async function loginUser(email, password) {
@@ -81,7 +93,7 @@
                 sessionStorage.setItem('currentUserRole', data.role);
                 sessionStorage.setItem('currentUserEmail', data.email);
                 sessionStorage.setItem('currentUserFullName', data.fullName);
-                window.location.href = nextUrl;
+                window.location.href = homeUrl;
             } catch (error) {
                 showMessage('Login failed: ' + (error.message || 'Invalid credentials'));
             }

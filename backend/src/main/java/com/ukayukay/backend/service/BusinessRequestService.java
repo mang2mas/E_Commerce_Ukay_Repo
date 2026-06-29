@@ -30,16 +30,46 @@ public class BusinessRequestService {
                 .orElseThrow(() -> new RuntimeException(
                     String.format("User not found with ID: %d", userId)));
 
-        if (!User.UserRole.seller.equals(user.getRole())) {
-            throw new RuntimeException("Only users with role 'seller' can submit business requests");
+        if (user.getRole() == User.UserRole.admin) {
+            throw new RuntimeException("Administrator accounts cannot submit seller requests.");
+        }
+
+        if (Boolean.TRUE.equals(user.getSellerApproved()) && User.UserRole.seller.equals(user.getRole())) {
+            throw new RuntimeException("Your seller account is already approved.");
+        }
+
+        String normalizedBusinessName = businessName == null ? "" : businessName.trim();
+        String normalizedBusinessDescription = businessDescription == null ? "" : businessDescription.trim();
+        String normalizedBusinessPermit = businessPermit == null ? "" : businessPermit.trim();
+        String normalizedNotes = notes == null ? "" : notes.trim();
+
+        if (normalizedBusinessName.isBlank()) {
+            throw new RuntimeException("Business name is required.");
+        }
+        if (normalizedBusinessDescription.isBlank()) {
+            throw new RuntimeException("Business description is required.");
+        }
+
+        List<BusinessRequest> existingRequests = businessRequestRepository.findByUser(user);
+        boolean hasPendingRequest = existingRequests.stream()
+            .anyMatch(request -> request.getStatus() == BusinessRequest.RequestStatus.PENDING);
+        if (hasPendingRequest) {
+            throw new RuntimeException("You already have a pending seller request.");
         }
 
         BusinessRequest req = new BusinessRequest();
         req.setUser(user);
-        req.setBusinessName(businessName);
-        req.setBusinessDescription(businessDescription);
-        req.setBusinessPermit(businessPermit);
-        req.setNotes(notes);
+        req.setBusinessName(normalizedBusinessName);
+        req.setBusinessDescription(normalizedBusinessDescription);
+        req.setBusinessPermit(normalizedBusinessPermit);
+        req.setNotes(normalizedNotes);
+
+        user.setBusinessName(normalizedBusinessName);
+        user.setBusinessDescription(normalizedBusinessDescription);
+        user.setBusinessPermitUrl(normalizedBusinessPermit.isBlank() ? null : normalizedBusinessPermit);
+        user.setVerificationStatus(User.VerificationStatus.PENDING);
+        user.setSellerApproved(false);
+        userRepository.save(user);
 
         return businessRequestRepository.save(req);
     }
@@ -65,10 +95,17 @@ public class BusinessRequestService {
         // Update linked user verification state
         User user = req.getUser();
         if (user != null) {
-            user.setVerificationStatus(newStatus == BusinessRequest.RequestStatus.APPROVED
-                    ? User.VerificationStatus.APPROVED
-                    : User.VerificationStatus.REJECTED);
-            user.setSellerApproved(newStatus == BusinessRequest.RequestStatus.APPROVED);
+            if (newStatus == BusinessRequest.RequestStatus.APPROVED) {
+                user.setVerificationStatus(User.VerificationStatus.APPROVED);
+                user.setSellerApproved(true);
+                user.setRole(User.UserRole.seller);
+            } else if (newStatus == BusinessRequest.RequestStatus.REJECTED) {
+                user.setVerificationStatus(User.VerificationStatus.REJECTED);
+                user.setSellerApproved(false);
+                if (user.getRole() != User.UserRole.admin) {
+                    user.setRole(User.UserRole.buyer);
+                }
+            }
             userRepository.save(user);
         }
 

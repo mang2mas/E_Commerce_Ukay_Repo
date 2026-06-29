@@ -57,4 +57,16 @@ public class CartService {
     public void removeFromCart(Integer cartId) {
         cartRepository.deleteById(cartId);
     }
+
+    public Cart updateQuantity(Integer cartId, Integer quantity) {
+        Cart cart = cartRepository.findById(cartId)
+            .orElseThrow(() -> new RuntimeException("Cart item not found with ID: " + cartId));
+
+        int stock = cart.getProduct().getStockQuantity() != null ? cart.getProduct().getStockQuantity() : 1;
+        if (quantity < 1)     quantity = 1;
+        if (quantity > stock) throw new RuntimeException("Requested quantity exceeds available stock ("+stock+").");
+
+        cart.setQuantity(quantity);
+        return cartRepository.save(cart);
+    }
 }

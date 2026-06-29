@@ -1,8 +1,10 @@
-let currentUserId = sessionStorage.getItem("currentUserId") || null;
+let currentUserId   = sessionStorage.getItem("currentUserId")   || null;
 let currentUserRole = sessionStorage.getItem("currentUserRole") || null;
+let authToken       = sessionStorage.getItem("authToken")       || null;
 
 function getProductContext(target) {
     const card = target?.closest('.masonry-item');
+    const recommendedCard = target?.closest('.recommended-card');
     const button = target?.closest('.btn-add-cart-action');
     const selectedProduct = sessionStorage.getItem('selectedProduct');
     let parsedProduct = null;
@@ -15,28 +17,104 @@ function getProductContext(target) {
         }
     }
 
-    const productId = card?.dataset.productId || button?.dataset.productId || parsedProduct?.productId || new URLSearchParams(window.location.search).get('productId');
-    const productName = card?.querySelector('.item-title-badge')?.textContent?.trim() || button?.dataset.productName || parsedProduct?.productName || 'item';
-    const price = card?.querySelector('.item-price-tag')?.textContent?.trim() || parsedProduct?.price;
-    const imageUrl = card?.querySelector('img')?.src || parsedProduct?.imageUrl;
+    const productId =
+        card?.dataset.productId ||
+        recommendedCard?.dataset.productId ||
+        button?.dataset.productId ||
+        parsedProduct?.productId ||
+        new URLSearchParams(window.location.search).get('productId');
+
+    const productName =
+        card?.querySelector('.item-title-badge')?.textContent?.trim() ||
+        recommendedCard?.querySelector('.recommended-label')?.textContent?.trim() ||
+        button?.dataset.productName ||
+        parsedProduct?.productName ||
+        'item';
+
+    const price =
+        card?.querySelector('.item-price-tag')?.textContent?.trim() ||
+        recommendedCard?.querySelector('.recommended-price-pill')?.textContent?.trim() ||
+        parsedProduct?.price;
+
+    const imageUrl = card?.querySelector('img')?.src || recommendedCard?.querySelector('img')?.src || parsedProduct?.imageUrl;
 
     return { productId, productName, price, imageUrl };
 }
 
+function addToCart(productId, productName) {
+    const activeUserId = sessionStorage.getItem('currentUserId');
+    const token = sessionStorage.getItem('authToken');
+
+    if (!activeUserId) {
+        alert('Please login first to add items to cart.');
+        window.location.href = './login.html';
+        return;
+    }
+
+    if (!productId) {
+        alert('Unable to determine product to add to cart.');
+        return;
+    }
+
+    fetch(`/api/cart/add?userId=${encodeURIComponent(activeUserId)}&productId=${encodeURIComponent(productId)}`, {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+    })
+        .then(async (response) => {
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || 'Add to cart failed.');
+            }
+            return response.json();
+        })
+        .then(() => {
+            alert(`Added ${productName || 'item'} to cart.`);
+        })
+        .catch((error) => {
+            const message = (error?.message || '').toLowerCase();
+            if (message.includes('already in your cart')) {
+                alert(`${productName || 'Item'} is already in your cart.`);
+                return;
+            }
+            alert(error.message || 'Unable to add item to cart.');
+        });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-    
+
+    // -----------------------------------------------------------------------
+    // GLOBAL: attach JWT Bearer token to every jQuery AJAX request
+    // -----------------------------------------------------------------------
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            const token = sessionStorage.getItem("authToken");
+            if (token) {
+                xhr.setRequestHeader("Authorization", "Bearer " + token);
+            }
+        }
+    });
+
 // ==========================================================================
     // 0. GLOBAL GATEWAY INTERCEPTOR (HARD REDIRECT TO LOGIN PAGE)
     // ==========================================================================
     document.body.addEventListener("click", (event) => {
-        const itemCard = event.target.closest('.masonry-item');
+        const itemCard = event.target.closest('.masonry-item, .recommended-card');
         const addCartBtn = event.target.closest('.btn-add-cart-action');
         const checkoutBtn = event.target.closest('.btn-checkout');
         const cartClick = event.target.closest('.cart-trigger');
         const profileClick = event.target.closest('.profile-trigger');
         const homeClick = event.target.closest('.home-trigger');
+        const logoClick = event.target.closest('.brand-logo, .navbar img[src*="logo"], .navbar img[src*="LOGO"], header img[src*="logo"], header img[src*="LOGO"]');
+        const homeIconClick = event.target.closest('.icon-btn i.fa-house, a i.fa-house');
         const protectedTarget = event.target.closest('.profile-trigger, .cart-trigger, .home-trigger, .shop-trigger, .category-card, .view-all, .btn-primary, .btn-outline, .btn-add-cart-action, .btn-checkout');
         const anchor = event.target.closest('a');
+
+        if (homeClick || homeIconClick || logoClick) {
+            event.preventDefault();
+            event.stopPropagation();
+            window.location.href = './index.html';
+            return;
+        }
         
         // Check session storage directly to be safe
         const isAuthenticated = Boolean(sessionStorage.getItem("currentUserId"));
@@ -45,9 +123,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!isAuthenticated) {
                 event.preventDefault();
                 event.stopPropagation();
-
-                const nextUrl = anchor?.href || (itemCard ? './ItemDescription.html' : checkoutBtn ? './checkout.html' : window.location.href);
-                sessionStorage.setItem('pendingRedirect', nextUrl);
 
                 const modal = document.getElementById('loginModalOverlay');
                 if (modal) {
@@ -73,36 +148,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            if (homeClick) {
-                event.preventDefault();
-                event.stopPropagation();
-                window.location.href = './index.html';
-                return;
-            }
-
             if (addCartBtn) {
                 event.preventDefault();
                 event.stopPropagation();
                 const { productId, productName } = getProductContext(addCartBtn);
-
-                if (!productId) {
-                    alert('Unable to determine product to add to cart.');
-                    return;
-                }
-
-                fetch(`/api/cart/add?userId=${currentUserId}&productId=${productId}`, {
-                    method: 'POST'
-                })
-                    .then(response => {
-                        if (!response.ok) return response.text().then(text => { throw new Error(text || 'Add to cart failed.'); });
-                        return response.json();
-                    })
-                    .then(() => {
-                        alert(`Added ${productName || 'item'} to cart.`);
-                    })
-                    .catch(error => {
-                        alert(error.message || 'Unable to add item to cart.');
-                    });
+                addToCart(productId, productName);
                 return;
             }
 
@@ -167,6 +217,10 @@ document.addEventListener("DOMContentLoaded", () => {
             if (button.dataset.view === 'sell') {
                 const target = './sellerregistration.html';
                 if (!currentUserId) {
+<<<<<<< HEAD
+                    // Not authenticated -> send to login first, then user returns to homepage
+                    window.location.href = './login.html';
+=======
                     sessionStorage.setItem('pendingRedirect', target);
                     const modal = document.getElementById('loginModalOverlay');
                     if (modal) {
@@ -175,6 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     } else {
                         window.location.href = `./login.html?next=${encodeURIComponent(target)}`;
                     }
+>>>>>>> origin/main
                     return;
                 }
                 // Authenticated -> go to seller registration
@@ -247,13 +302,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // 3. TEAM BACKEND LIFECYCLE CHANNELS
     // ==========================================================================
 function setLoggedIn(user){
-    currentUserId = user ? user.userId || user.userID || user.id : null;
+    currentUserId   = user ? user.userId || user.userID || user.id : null;
     currentUserRole = user ? user.role : null;
-    
+    authToken       = user ? user.token : null;
+
     if(currentUserId){
-        // Add these two lines here to persist the session!
-        sessionStorage.setItem("currentUserId", currentUserId);
+        sessionStorage.setItem("currentUserId",   currentUserId);
         sessionStorage.setItem("currentUserRole", currentUserRole);
+        if (authToken) sessionStorage.setItem("authToken", authToken);
 
         $('#loginStatus').text('Logged in as ' + (user.fullName || user.email) + ' (' + (currentUserRole || '') + ')');
         $('#main-app').show();
@@ -265,9 +321,9 @@ function setLoggedIn(user){
         loadProfile();
         loadNotifications();
     } else {
-        // Clear them out if they log out
         sessionStorage.removeItem("currentUserId");
         sessionStorage.removeItem("currentUserRole");
+        sessionStorage.removeItem("authToken");
 
         $('#loginStatus').text('Not logged in');
         $('#main-app').hide();
@@ -353,10 +409,18 @@ function setLoggedIn(user){
             $card.append(`<div class="recommended-details"><span class="recommended-label">${name}</span></div>`);
             const $actions = $('<div>').addClass('recommended-actions');
             $actions.append($('<button>').addClass('recommended-price-pill').text(price).prop('disabled', true));
-            $actions.append($('<button>').addClass('btn-add-cart-action').text('ADD TO CART').click(function(event) {
-                event.preventDefault();
-                alert('Item added to cart.');
-            }));
+            $card.attr('data-product-id', productId);
+            $actions.append(
+                $('<button>')
+                    .addClass('btn-add-cart-action')
+                    .attr('data-product-id', productId)
+                    .attr('data-product-name', name)
+                    .text('ADD TO CART')
+                    .click(function(event) {
+                        event.preventDefault();
+                        addToCart(productId, name);
+                    })
+            );
             $actions.append($('<button>').addClass('btn-view-item').text('VIEW').click(function(event) {
                 event.preventDefault();
                 window.location.href = `./ItemDescription.html?productId=${productId}`;
@@ -507,13 +571,14 @@ function setLoggedIn(user){
     // --- Login Form Actions ---
     $('#loginForm').on('submit', function(e){
         e.preventDefault();
-        const email = $('#email').val();
+        const email    = $('#email').val();
         const password = $('#password').val();
-        $('#loginStatus').text('Logging in…');
+        $('#loginStatus').text('Logging in\u2026');
         $.ajax({
             url: '/api/auth/login',
             method: 'POST',
-            data: { email: email, password: password }
+            contentType: 'application/json',
+            data: JSON.stringify({ email: email, password: password })
         })
             .done(function(user){ setLoggedIn(user); })
             .fail(function(xhr){ $('#loginStatus').text('Login failed: ' + xhr.responseText); });
@@ -772,15 +837,42 @@ if (closeModalBtn && loginModal) {
 if (modalLoginForm) {
     modalLoginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
+<<<<<<< HEAD
+        const emailValue    = document.getElementById('modalEmail').value.trim();
+        const passwordInput = document.getElementById('modalPassword');
+        const passwordValue = passwordInput ? passwordInput.value : '';
+
+        if (!emailValue || !passwordValue) {
+            alert('Please enter both your email and password.');
+=======
         const emailValue = document.getElementById('modalEmail').value.trim();
         const passwordValue = document.getElementById('modalPassword').value;
 
         if (!emailValue || !passwordValue) {
             alert('Email and password are required.');
+>>>>>>> origin/main
             return;
         }
 
         try {
+<<<<<<< HEAD
+            const resp = await fetch('/api/auth/login', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ email: emailValue, password: passwordValue })
+            });
+            if (!resp.ok) {
+                const msg = await resp.text();
+                alert('Login failed: ' + (msg || 'Please check your credentials.'));
+                return;
+            }
+            const user = await resp.json();
+            setLoggedIn(user);
+            if (loginModal) loginModal.classList.remove('active');
+            window.location.href = './index.html';
+        } catch (err) {
+            alert('Login request failed. Please try again.');
+=======
             const response = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -819,6 +911,7 @@ if (loginModal) {
     loginModal.addEventListener('transitionend', () => {
         if (!loginModal.classList.contains('active')) {
             document.body.classList.remove('modal-open');
+>>>>>>> origin/main
         }
     });
 }

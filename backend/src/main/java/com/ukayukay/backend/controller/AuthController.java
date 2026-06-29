@@ -1,5 +1,7 @@
 package com.ukayukay.backend.controller;
 
+import java.util.Map;
+
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,6 +47,31 @@ public class AuthController {
         }
 
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * POST /api/auth/forgot-password
+     * Body: { "email": "user@example.com" }
+     * Returns the reset code in the response (dev convenience).
+     * Replace with email delivery in production.
+     */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Map<String, String>> forgotPassword(@RequestBody Map<String, String> body) {
+        String code = authService.forgotPassword(body.get("email"));
+        return ResponseEntity.ok(Map.of(
+            "message", "A 6-digit reset code has been generated (15-minute TTL).",
+            "code",    code   // Remove this line and send via email in production
+        ));
+    }
+
+    /**
+     * POST /api/auth/reset-password
+     * Body: { "email": "...", "code": "123456", "newPassword": "..." }
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<Map<String, String>> resetPassword(@RequestBody Map<String, String> body) {
+        authService.resetPassword(body.get("email"), body.get("code"), body.get("newPassword"));
+        return ResponseEntity.ok(Map.of("message", "Password reset successfully. You can now log in."));
     }
 }
 

@@ -1,5 +1,7 @@
 package com.ukayukay.backend.controller;
 
+import java.util.List;
+
 import com.ukayukay.backend.entity.Product;
 import com.ukayukay.backend.entity.User;
 import com.ukayukay.backend.service.ProductService;
@@ -7,6 +9,7 @@ import com.ukayukay.backend.service.UserService;
 import com.ukayukay.backend.security.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -63,6 +66,16 @@ public class AdminController {
             @RequestHeader("Authorization") String authHeader) {
         Integer adminId = extractAdminId(authHeader);
         return ResponseEntity.ok(productService.moderateProduct(productId, status, adminId));
+    }
+
+    /** GET /api/admin/users?role=seller  (role param is optional) */
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> listUsers(
+            @RequestParam(required = false) String role) {
+        if (role != null && !role.isBlank()) {
+            return ResponseEntity.ok(userService.getUsersByRole(role));
+        }
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
     private Integer extractAdminId(String authHeader) {
