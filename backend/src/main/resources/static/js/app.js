@@ -154,8 +154,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }, true);
     function refreshLoginStatusIndicator() {
         const statusLabel = document.getElementById('loginStatus');
-        if (!statusLabel) return;
-        statusLabel.textContent = currentUserId ? 'Logged in' : 'Not logged in';
+        const logoutButton = document.getElementById('logoutBtn');
+        if (statusLabel) {
+            statusLabel.textContent = currentUserId ? 'Logged in' : 'Not logged in';
+        }
+        if (logoutButton) {
+            logoutButton.style.display = currentUserId ? 'inline-flex' : 'none';
+        }
     }
 
 
@@ -205,6 +210,19 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+
+    const logoutButton = document.getElementById('logoutBtn');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', () => {
+            sessionStorage.removeItem('currentUserId');
+            sessionStorage.removeItem('currentUserRole');
+            sessionStorage.removeItem('selectedProduct');
+            currentUserId = null;
+            currentUserRole = null;
+            refreshLoginStatusIndicator();
+            window.location.reload();
+        });
+    }
 
     const loginTrigger = document.querySelector('.login-trigger');
     if (loginTrigger) {
