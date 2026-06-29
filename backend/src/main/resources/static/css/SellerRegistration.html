@@ -1,21 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Seller Registration</title>
-  <link rel="stylesheet" href="./sellerregistration.css" />
-  <style>
-    .form-section { margin-top: 24px; text-align: left; }
-    .form-section label { display: block; margin-bottom: 8px; font-weight: 700; color: #333; }
-    .form-section input, .form-section textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; margin-bottom: 18px; }
-    .form-section textarea { resize: vertical; min-height: 120px; }
-  </style>
-</head>
-<body>
-  <main class="SHOP-REGISTRATION" data-model-id="1:8076">
-    <div class="rectangle" aria-hidden="true"></div>
-    <div class="div" aria-hidden="true"></div>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Registration</title>
+    <style>
+        /* CSS Reset & General Styles */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f6f5ef; color: #333; }
 
     <header class="header-seller">
       <div class="header-left">
@@ -45,8 +37,17 @@
           <label for="shopName">Shop Name</label>
           <input id="shopName" type="text" placeholder="Enter your shop name" />
 
-          <label for="shopEmail">Email Address</label>
-          <input id="shopEmail" type="email" placeholder="seller@example.com" />
+        /* Form Layout */
+        .form-content { display: flex; padding: 50px; gap: 50px; }
+        .left-column { flex: 0 0 250px; }
+        .right-column { flex: 1; }
+        
+        .upload-box {
+            width: 250px; height: 250px; border: 2px dashed #ccc; display: flex; align-items: center;
+            justify-content: center; text-align: center; font-size: 14px; color: #999;
+            background-color: #fafafa; cursor: pointer; padding: 20px; border-radius: 8px;
+            background-size: cover; background-position: center; background-repeat: no-repeat;
+        }
 
           <label for="shopPhone">Contact Number</label>
           <input id="shopPhone" type="tel" placeholder="09XX XXX XXXX" />
@@ -60,13 +61,144 @@
     </section>
   </main>
 
-  <script>
-    const nextButton = document.getElementById('nextButton');
-    if (nextButton) {
-      nextButton.addEventListener('click', function() {
-        window.location.href = './ReviewSubmit.html';
-      });
-    }
-  </script>
+        /* Footer/Next Button */
+        .footer-action { width: 90%; max-width: 1000px; margin: 0 auto 60px auto; text-align: right; }
+        .btn-next {
+            background-color: #fdd65b; border: none; padding: 14px 50px; font-weight: bold;
+            font-size: 14px; cursor: pointer; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .btn-next:hover { background-color: #e5bf4c; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <img src="images/LOGO.png" alt="Logo Placeholder" class="logo-img">
+        <div class="header-actions">
+            <div class="buy-sell-toggle">
+                <div>BUY</div>
+                <div class="sell-active">SELL</div>
+            </div>
+            <img src="images/home.png" alt="Home" class="home-icon">
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="tabs">
+            <div class="tab active">Shop Information</div>
+            <a href="/css/ReviewSubmit.html" class="tab" id="tab-review" onclick="saveData()">Review & Submit</a>
+        </div>
+
+        <div class="form-content">
+            <div class="left-column">
+                <input type="file" id="logoInput" accept="image/*" style="display: none;">
+                <div class="upload-box" id="uploadBox">
+                    <span id="uploadText">Upload Shop Logo/ Photo</span>
+                </div>
+            </div>
+            
+            <div class="right-column">
+                <div class="section-title">Shop Information</div>
+                <div class="input-group">
+                    <label>Shop Name</label>
+                    <input type="text" id="shopName" placeholder="">
+                </div>
+                <div class="input-group">
+                    <label>Shop Description</label>
+                    <textarea id="shopDesc" placeholder=""></textarea>
+                </div>
+
+                <div class="section-title">Location</div>
+                <div class="input-group">
+                    <label>Pick-up Address</label>
+                    <input type="text" id="address" placeholder="">
+                </div>
+                <div class="input-group">
+                    <label>City</label>
+                    <input type="text" id="city" placeholder="">
+                </div>
+                <div class="input-group">
+                    <label>Province</label>
+                    <input type="text" id="province" placeholder="">
+                </div>
+
+                <div class="section-title">Verification</div>
+                <div class="input-group">
+                    <label>Contact Number</label>
+                    <input type="tel" id="contact" placeholder="">
+                </div>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email" placeholder="">
+                </div>
+                <div class="verification-row">
+                    <input type="text" placeholder="Verification Code" disabled>
+                    <button class="btn-send">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-action">
+        <button class="btn-next" onclick="goToReview()">NEXT</button>
+    </div>
+
+    <script>
+        // Image Upload Logic
+        const uploadBox = document.getElementById('uploadBox');
+        const logoInput = document.getElementById('logoInput');
+        const uploadText = document.getElementById('uploadText');
+
+        uploadBox.addEventListener('click', () => {
+            logoInput.click();
+        });
+
+        logoInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageUrl = e.target.result;
+                    uploadBox.style.backgroundImage = `url(${imageUrl})`;
+                    uploadText.style.display = 'none';
+                    uploadBox.style.border = 'none';
+                    localStorage.setItem('shopLogo', imageUrl);
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function saveData() {
+            localStorage.setItem('shopName', document.getElementById('shopName').value);
+            localStorage.setItem('shopDesc', document.getElementById('shopDesc').value);
+            localStorage.setItem('address', document.getElementById('address').value);
+            localStorage.setItem('city', document.getElementById('city').value);
+            localStorage.setItem('province', document.getElementById('province').value);
+            localStorage.setItem('contact', document.getElementById('contact').value);
+            localStorage.setItem('email', document.getElementById('email').value);
+        }
+
+        function goToReview() {
+            saveData();
+            window.location.href = "/css/ReviewSubmit.html";
+        }
+
+        window.onload = function() {
+            if(localStorage.getItem('shopName')) document.getElementById('shopName').value = localStorage.getItem('shopName');
+            if(localStorage.getItem('shopDesc')) document.getElementById('shopDesc').value = localStorage.getItem('shopDesc');
+            if(localStorage.getItem('address')) document.getElementById('address').value = localStorage.getItem('address');
+            if(localStorage.getItem('city')) document.getElementById('city').value = localStorage.getItem('city');
+            if(localStorage.getItem('province')) document.getElementById('province').value = localStorage.getItem('province');
+            if(localStorage.getItem('contact')) document.getElementById('contact').value = localStorage.getItem('contact');
+            if(localStorage.getItem('email')) document.getElementById('email').value = localStorage.getItem('email');
+            
+            // Load saved image if it exists
+            if(localStorage.getItem('shopLogo')) {
+                uploadBox.style.backgroundImage = `url(${localStorage.getItem('shopLogo')})`;
+                uploadText.style.display = 'none';
+                uploadBox.style.border = 'none';
+            }
+        }
+    </script>
 </body>
 </html>
