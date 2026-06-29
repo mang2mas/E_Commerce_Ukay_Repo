@@ -383,8 +383,8 @@ function validateForm() {
   }
 
 
-  if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
-    showValidationError('email', 'Enter a valid email address');
+  if (!email) {
+    showValidationError('email', 'Enter an email address or username');
     valid = false;
   }
 

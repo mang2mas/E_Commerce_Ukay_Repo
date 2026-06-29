@@ -83,7 +83,6 @@ public class SecurityConfig {
                     "/addproduct.html", "/editproduct.html", "/productreview.html",
                     "/sellerhomeprofile.html", "/customersellerprofile.html", "/adminuser.html",
                     "/css/**", "/js/**", "/images/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/**/*.html", "/").permitAll()
                 // Admin-only endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/moderation/**").hasRole("ADMIN")

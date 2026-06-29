@@ -48,6 +48,7 @@
                 <i class="fa-solid fa-user-circle" style="font-size: 18px;"></i>
                 <span style="font-size: 14px;">Administrator</span>
                 <span id="loginStatus" style="color: #000; background: rgba(255, 255, 255, 0.9); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;">Logged in</span>
+                <button class="header-btn" id="adminLogoutBtn" type="button">Logout</button>
             </div>
         </div>
     </header>
@@ -74,39 +75,71 @@
                     <tr>
                         <th>Timestamp</th>
                         <th>Action Performed</th>
-                        <th>Description</th>
+                        <th>Table</th>
                         <th>Status</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>June 29, 2026 09:05 AM</td>
-                        <td><span class="action-tag" style="background:#fcd462">VERIFY_SELLER</span></td>
-                        <td>Approved application for "THRIFTTOBUSAN"</td>
-                        <td class="status-success">Success</td>
-                    </tr>
-                    <tr>
-                        <td>June 29, 2026 10:20 AM</td>
-                        <td><span class="action-tag" style="background:#eee">REJECT_SELLER</span></td>
-                        <td>Rejected application for "BADTHRIFT" (Incomplete Permits)</td>
-                        <td class="status-success">Success</td>
-                    </tr>
-                    <tr>
-                        <td>June 29, 2026 11:45 AM</td>
-                        <td><span class="action-tag" style="background:#ddd">REMOVE_LISTING</span></td>
-                        <td>Removed inappropriate product listing #882</td>
-                        <td class="status-success">Success</td>
-                    </tr>
-                    <tr>
-                        <td>June 29, 2026 01:10 PM</td>
-                        <td><span class="action-tag" style="background:#d1c4e9">USER_BANNED</span></td>
-                        <td>Banned User_5592 for fraudulent activity</td>
-                        <td class="status-success">Success</td>
-                    </tr>
-                </tbody>
+                <tbody id="auditLogTableBody"></tbody>
             </table>
         </section>
     </main>
 
+    <script>
+        const auditLogTableBody = document.getElementById('auditLogTableBody');
+
+        async function loadAuditLogs() {
+            const token = sessionStorage.getItem('authToken');
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers.Authorization = 'Bearer ' + token;
+
+            try {
+                const response = await fetch('/api/admin/audit-logs', { headers });
+                if (!response.ok) throw new Error('Unable to load audit logs');
+                const logs = await response.json();
+                renderLogs(logs);
+            } catch (error) {
+                auditLogTableBody.innerHTML = '<tr><td colspan="4" style="color:#c62828;">' + error.message + '</td></tr>';
+            }
+        }
+
+        function renderLogs(logs) {
+            if (!logs.length) {
+                auditLogTableBody.innerHTML = '<tr><td colspan="4" style="color:#666;">No audit logs found.</td></tr>';
+                return;
+            }
+
+            auditLogTableBody.innerHTML = logs.map(log => `
+                <tr>
+                    <td>${formatDate(log.timestamp)}</td>
+                    <td><span class="action-tag" style="background:#fcd462">${log.action || 'ACTION'}</span></td>
+                    <td>${log.tableAffected || 'N/A'}</td>
+                    <td class="status-success">Success</td>
+                </tr>
+            `).join('');
+        }
+
+        function formatDate(value) {
+            if (!value) return 'N/A';
+            const date = new Date(value);
+            return isNaN(date.getTime()) ? value : date.toLocaleString();
+        }
+
+        function logoutAdmin() {
+            sessionStorage.removeItem('authToken');
+            sessionStorage.removeItem('currentUserId');
+            sessionStorage.removeItem('currentUserRole');
+            sessionStorage.removeItem('currentUserEmail');
+            sessionStorage.removeItem('currentUserFullName');
+            sessionStorage.removeItem('pendingRedirect');
+            window.location.href = './index.html';
+        }
+
+        const logoutButton = document.getElementById('adminLogoutBtn');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', logoutAdmin);
+        }
+
+        window.addEventListener('DOMContentLoaded', loadAuditLogs);
+    </script>
 </body>
 </html>

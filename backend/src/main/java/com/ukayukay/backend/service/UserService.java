@@ -1,6 +1,7 @@
 package com.ukayukay.backend.service;
 
 
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -30,6 +31,26 @@ public class UserService {
         this.auditLogService = auditLogService;
     }
 
+    public List<User> getDiscountEligibleUsers() {
+        return userRepository.findAll().stream()
+                .filter(user -> Boolean.TRUE.equals(user.getIsPwdSenior())
+                        || "SENIOR".equalsIgnoreCase(user.getDiscountType())
+                        || "PWD".equalsIgnoreCase(user.getDiscountType()))
+                .sorted(Comparator.comparing(User::getUserId))
+                .toList();
+    }
+
+    public List<User> getSellersForReview() {
+        return userRepository.findByRole(User.UserRole.seller).stream()
+                .sorted(Comparator.comparing(User::getUserId))
+                .toList();
+    }
+
+    public List<User> getCustomers() {
+        return userRepository.findByRole(User.UserRole.buyer).stream()
+                .sorted(Comparator.comparing(User::getUserId))
+                .toList();
+    }
 
     // 1. Function to Approve or Reject Business Permits
     public User verifySeller(Integer sellerId, User.VerificationStatus status, Integer adminId) {

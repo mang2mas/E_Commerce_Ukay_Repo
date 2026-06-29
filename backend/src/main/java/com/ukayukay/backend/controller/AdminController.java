@@ -1,8 +1,11 @@
 package com.ukayukay.backend.controller;
 
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -34,6 +37,20 @@ public class AdminController {
         this.jwtUtil = jwtUtil;
     }
 
+    @GetMapping("/users/discount-requests")
+    public ResponseEntity<List<User>> getDiscountRequests() {
+        return ResponseEntity.ok(userService.getDiscountEligibleUsers());
+    }
+
+    @GetMapping("/sellers")
+    public ResponseEntity<List<User>> getSellers() {
+        return ResponseEntity.ok(userService.getSellersForReview());
+    }
+
+    @GetMapping("/customers")
+    public ResponseEntity<List<User>> getCustomers() {
+        return ResponseEntity.ok(userService.getCustomers());
+    }
 
     @PutMapping("/sellers/{sellerId}/verify")
     public ResponseEntity<User> verifySellerPermit(

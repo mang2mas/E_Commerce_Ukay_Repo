@@ -74,6 +74,7 @@
                 <i class="fa-solid fa-user-circle" style="font-size: 18px;"></i>
                 <span style="font-size: 14px;">Administrator</span>
                 <span id="loginStatus" style="color: #000; background: rgba(255, 255, 255, 0.9); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;">Logged in</span>
+                <button class="header-btn" id="adminLogoutBtn" type="button">Logout</button>
             </div>
         </div>
     </header>
@@ -84,74 +85,28 @@
         <section class="card verification-panel">
             <h2 style="margin-bottom: 15px; font-size: 22px;">User Verification</h2>
             <div class="filter-tabs">
-                <button class="tab-btn active">Pending (5)</button>
-                <button class="tab-btn">Approved (67)</button>
-                <button class="tab-btn">Rejected (67)</button>
+                <button class="tab-btn active">Pending (0)</button>
+                <button class="tab-btn">Approved (0)</button>
+                <button class="tab-btn">Rejected (0)</button>
             </div>
             <table>
                 <thead>
                     <tr>
                         <th>User</th>
-                        <th>Account Name</th>
-                        <th>Date</th>
+                        <th>Discount Type</th>
+                        <th>ID Number</th>
                         <th>Status</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td class="user-info">
-                            <img src="/images/profile-placeholder.jpg" alt="Profile"> 
-                            <div>
-                                <b>Jenmarc Ronquillo</b><br>
-                                <small style="color:#666;">jenmarc@email.com</small>
-                            </div>
-                        </td>
-                        <td>THRIFTTOBUSAN</td>
-                        <td>May 28, 2026</td>
-                        <td><span class="badge-pending">Pending</span></td>
-                    </tr>
-                </tbody>
+                <tbody id="userTableBody"></tbody>
             </table>
         </section>
 
         <!-- Verification Detail Panel (Right) -->
         <aside class="card details-panel">
             
-            <div class="details-header">
-                <img src="/images/profile-placeholder.jpg" alt="Profile">
-                <div>
-                    <b style="font-size: 18px;">Jenmarc Ronquillo</b><br>
-                    <span style="color:#666; font-size: 13px;">THRIFTTOBUSAN</span>
-                </div>
-            </div>
-
-            <!-- Expandable ID Verification -->
-            <div class="detail-row">
-                <label>ID Verification (PWD/Senior)</label>
-                <div class="image-preview" onclick="openModal()">
-                    <img src="/images/id_placeholder.jpg" alt="ID Verification Document">
-                </div>
-            </div>
-
-            <div class="detail-row">
-                <label>Date Submitted</label>
-                May 28, 2026
-            </div>
-
-            <div class="detail-row">
-                <label>Contact Number</label>
-                0967 123 4567
-            </div>
-
-            <div class="detail-row">
-                <label>Address</label>
-                123 Sampaguita St, Laguna
-            </div>
-
-            <div style="margin-top: 30px;">
-                <button class="btn-main btn-approve">APPROVE</button>
-                <button class="btn-main btn-reject">REJECT</button>
-                <button class="btn-main" style="background:none; border:1px solid #ddd; color: #555;">REQUEST MORE INFO</button>
+            <div id="userDetailContent">
+                <p style="color:#666;">Select a user to view their discount eligibility details.</p>
             </div>
 
         </aside>
@@ -165,6 +120,9 @@
 
     <!-- JavaScript for Modal -->
     <script>
+        const userTableBody = document.getElementById('userTableBody');
+        const userDetailContent = document.getElementById('userDetailContent');
+
         function openModal() {
             document.getElementById('idModal').style.display = 'flex';
         }
@@ -173,11 +131,137 @@
             document.getElementById('idModal').style.display = 'none';
         }
 
-        // Close modal when clicking outside the image
+        async function loadDiscountUsers() {
+            const token = sessionStorage.getItem('authToken');
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers.Authorization = 'Bearer ' + token;
+
+            try {
+                const response = await fetch('/api/admin/users/discount-requests', { headers });
+                if (!response.ok) throw new Error('Unable to load discount requests');
+                const users = await response.json();
+                renderUsers(users);
+            } catch (error) {
+                userTableBody.innerHTML = '<tr><td colspan="4" style="color:#c62828;">' + error.message + '</td></tr>';
+            }
+        }
+
+        function renderUsers(users) {
+            if (!users.length) {
+                userTableBody.innerHTML = '<tr><td colspan="4" style="color:#666;">No discount-eligible users found.</td></tr>';
+                userDetailContent.innerHTML = '<p style="color:#666;">No user records available.</p>';
+                return;
+            }
+
+            window.__discountUsers = users;
+            updateTabCounts(users);
+            setActiveTab(0);
+            renderFilteredUsers(0);
+        }
+
+        function updateTabCounts(users) {
+            const pendingCount = users.filter(u => !u.isDiscountElig).length;
+            const approvedCount = users.filter(u => u.isDiscountElig).length;
+            const rejectedCount = 0;
+
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            if (tabButtons[0]) tabButtons[0].textContent = `Pending (${pendingCount})`;
+            if (tabButtons[1]) tabButtons[1].textContent = `Approved (${approvedCount})`;
+            if (tabButtons[2]) tabButtons[2].textContent = `Rejected (${rejectedCount})`;
+        }
+
+        function setActiveTab(index) {
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabButtons.forEach((button, idx) => {
+                button.classList.toggle('active', idx === index);
+            });
+        }
+
+        function renderFilteredUsers(tabIndex) {
+            const users = window.__discountUsers || [];
+            let filteredUsers = [];
+
+            if (tabIndex === 0) {
+                filteredUsers = users.filter(u => !u.isDiscountElig);
+            } else if (tabIndex === 1) {
+                filteredUsers = users.filter(u => u.isDiscountElig);
+            } else {
+                filteredUsers = [];
+            }
+
+            if (!filteredUsers.length) {
+                userTableBody.innerHTML = '<tr><td colspan="4" style="color:#666;">No records found for this tab.</td></tr>';
+                userDetailContent.innerHTML = '<p style="color:#666;">Select a user to view their discount eligibility details.</p>';
+                return;
+            }
+
+            userTableBody.innerHTML = filteredUsers.map(user => `
+                <tr onclick="selectUser(${user.userId})" style="cursor:pointer;">
+                    <td class="user-info">
+                        <img src="/images/profile-placeholder.jpg" alt="Profile">
+                        <div>
+                            <b>${user.fullName || 'Unnamed User'}</b><br>
+                            <small style="color:#666;">${user.email || 'No email'}</small>
+                        </div>
+                    </td>
+                    <td>${user.discountType || 'NONE'}</td>
+                    <td>${user.idNumber || 'Not provided'}</td>
+                    <td><span class="badge-pending">${user.isDiscountElig ? 'Eligible' : 'Pending'}</span></td>
+                </tr>
+            `).join('');
+
+            if (filteredUsers[0]) {
+                selectUser(filteredUsers[0].userId);
+            }
+        }
+
+        function selectUser(userId) {
+            const user = window.__discountUsers?.find(item => item.userId === userId);
+            if (!user) return;
+            userDetailContent.innerHTML = `
+                <div class="details-header">
+                    <img src="/images/profile-placeholder.jpg" alt="Profile">
+                    <div>
+                        <b style="font-size: 18px;">${user.fullName || 'Unnamed User'}</b><br>
+                        <span style="color:#666; font-size: 13px;">${user.email || 'No email'}</span>
+                    </div>
+                </div>
+                <div class="detail-row"><label>Discount Type</label>${user.discountType || 'NONE'}</div>
+                <div class="detail-row"><label>ID Number</label>${user.idNumber || 'Not provided'}</div>
+                <div class="detail-row"><label>Contact Number</label>${user.contactNo || 'Not provided'}</div>
+                <div class="detail-row"><label>Status</label>${user.isActive === false ? 'Inactive' : 'Active'}</div>
+                <div class="detail-row"><label>Eligible for Discount</label>${user.isDiscountElig ? 'Yes' : 'No'}</div>
+            `;
+        }
+
         document.getElementById('idModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeModal();
             }
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            window.__discountUsers = [];
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabButtons.forEach((button, index) => {
+                button.addEventListener('click', () => {
+                    setActiveTab(index);
+                    renderFilteredUsers(index);
+                });
+            });
+            const logoutButton = document.getElementById('adminLogoutBtn');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', function() {
+                    sessionStorage.removeItem('authToken');
+                    sessionStorage.removeItem('currentUserId');
+                    sessionStorage.removeItem('currentUserRole');
+                    sessionStorage.removeItem('currentUserEmail');
+                    sessionStorage.removeItem('currentUserFullName');
+                    sessionStorage.removeItem('pendingRedirect');
+                    window.location.href = './index.html';
+                });
+            }
+            loadDiscountUsers();
         });
     </script>
 

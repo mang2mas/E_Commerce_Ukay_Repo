@@ -2,10 +2,9 @@ package com.ukayukay.backend.config;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.ukayukay.backend.entity.Product;
@@ -18,14 +17,18 @@ public class DemoDataLoader implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public DemoDataLoader(UserRepository userRepository, ProductRepository productRepository) {
+    public DemoDataLoader(UserRepository userRepository, ProductRepository productRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void run(String... args) {
+        seedAdminAccount();
+
         if (productRepository.count() > 0) {
             return;
         }
@@ -77,17 +80,31 @@ public class DemoDataLoader implements CommandLineRunner {
         System.out.println("Seeded demo products and sellers for homepage recommendations.");
     }
 
+    private void seedAdminAccount() {
+        userRepository.findByEmail("admin").orElseGet(() -> {
+            User admin = new User();
+            admin.setEmail("admin");
+            admin.setPassword(passwordEncoder.encode("admin123"));
+            admin.setFullName("Administrator");
+            admin.setRole(User.UserRole.admin);
+            admin.setIsActive(true);
+            admin.setDiscountType("NONE");
+            admin.setIsPwdSenior(false);
+            return userRepository.save(admin);
+        });
+    }
+
     private User createSeller(String email, String businessName, String description) {
         return userRepository.findByEmail(email).orElseGet(() -> {
             User seller = new User();
             seller.setEmail(email);
-            seller.setPassword("seller123");
+            seller.setPassword(passwordEncoder.encode("seller123"));
             seller.setFullName(businessName);
             seller.setRole(User.UserRole.seller);
             seller.setSellerApproved(true);
             seller.setBusinessName(businessName);
-                        seller.setBusinessDescription(description);
-                        seller.setIsActive(true);
+            seller.setBusinessDescription(description);
+            seller.setIsActive(true);
             return userRepository.save(seller);
         });
     }

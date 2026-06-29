@@ -63,18 +63,28 @@ public class AuthService {
         newUser.setContactNo(request.getContactNo());
         newUser.setRole(request.getRole() == null ? User.UserRole.buyer : request.getRole());
         newUser.setDiscountType("NONE");
+        newUser.setIsDiscountElig(false);
         newUser.setIsPwdSenior(false);
 
 
         String accountType = request.getAccountType();
+        boolean isDiscountEligible = false;
         if ("Senior".equalsIgnoreCase(accountType)) {
             newUser.setDiscountType("SENIOR");
             newUser.setIsPwdSenior(true);
+            isDiscountEligible = true;
         } else if ("PWD".equalsIgnoreCase(accountType)) {
             newUser.setDiscountType("PWD");
             newUser.setIsPwdSenior(true);
+            isDiscountEligible = true;
         }
-        newUser.setIsPwdSenior(Boolean.TRUE.equals(request.getIsPwdSenior()));
+
+        if (Boolean.TRUE.equals(request.getIsPwdSenior())) {
+            isDiscountEligible = true;
+        }
+
+        newUser.setIsDiscountElig(isDiscountEligible);
+        newUser.setIsPwdSenior(isDiscountEligible);
         newUser.setIdNumber(request.getIdNumber());
 
 

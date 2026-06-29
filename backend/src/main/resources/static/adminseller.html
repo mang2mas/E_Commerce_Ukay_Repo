@@ -74,6 +74,7 @@
                 <i class="fa-solid fa-user-circle" style="font-size: 18px;"></i>
                 <span style="font-size: 14px;">Administrator</span>
                 <span id="loginStatus" style="color: #000; background: rgba(255, 255, 255, 0.9); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;">Logged in</span>
+                <button class="header-btn" id="adminLogoutBtn" type="button">Logout</button>
             </div>
         </div>
     </header>
@@ -93,65 +94,19 @@
                     <tr>
                         <th>Seller</th>
                         <th>Shop Name</th>
-                        <th>Date</th>
+                        <th>Contact</th>
                         <th>Status</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td class="seller-info">
-                            <img src="/images/profile-placeholder.jpg" alt="Profile">
-                            <div>
-                                <b>Jenmarc Ronquillo</b><br>
-                                <small style="color:#666;">jenmarc@email.com</small>
-                            </div>
-                        </td>
-                        <td>THRIFTTOBUSAN</td>
-                        <td>May 28, 2026</td>
-                        <td><span class="badge-pending">Pending</span></td>
-                    </tr>
-                </tbody>
+                <tbody id="sellerTableBody"></tbody>
             </table>
         </section>
 
         <!-- Verification Detail Panel (Right) -->
         <aside class="card details-panel">
             
-            <div class="details-header">
-                <img src="/images/profile-placeholder.jpg" alt="Profile">
-                <div>
-                    <b style="font-size: 18px;">Jenmarc Ronquillo</b><br>
-                    <span style="color:#666; font-size: 13px;">THRIFTTOBUSAN</span>
-                </div>
-            </div>
-
-            <div class="detail-row">
-                <label>Date Submitted</label>
-                May 28, 2026
-            </div>
-
-            <div class="detail-row">
-                <label>Contact Number</label>
-                0967 123 4567
-            </div>
-
-            <div class="detail-row">
-                <label>Address</label>
-                123 Sampaguita St, Laguna
-            </div>
-
-            <!-- Expandable Business Permit -->
-            <div class="detail-row">
-                <label>Business Permit</label>
-                <div class="image-preview" onclick="openModal()">
-                    <img src="/images/permit_placeholder.jpg" alt="Business Permit">
-                </div>
-            </div>
-
-            <div style="margin-top: 30px;">
-                <button class="btn-main btn-approve">APPROVE</button>
-                <button class="btn-main btn-reject">REJECT</button>
-                <button class="btn-main" style="background:none; border:1px solid #ddd; color: #555;">REQUEST MORE INFO</button>
+            <div id="sellerDetailContent">
+                <p style="color:#666;">Select a seller to view their details.</p>
             </div>
 
         </aside>
@@ -165,6 +120,21 @@
 
     <!-- JavaScript for Modal -->
     <script>
+        const sellerTableBody = document.getElementById('sellerTableBody');
+        const sellerDetailContent = document.getElementById('sellerDetailContent');
+        function logoutAdmin() {
+            sessionStorage.removeItem('authToken');
+            sessionStorage.removeItem('currentUserId');
+            sessionStorage.removeItem('currentUserRole');
+            sessionStorage.removeItem('currentUserEmail');
+            sessionStorage.removeItem('currentUserFullName');
+            sessionStorage.removeItem('pendingRedirect');
+            window.location.href = './index.html';
+        }
+        const logoutButton = document.getElementById('adminLogoutBtn');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', logoutAdmin);
+        }
         function openModal() {
             document.getElementById('permitModal').style.display = 'flex';
         }
@@ -173,12 +143,71 @@
             document.getElementById('permitModal').style.display = 'none';
         }
 
-        // Close modal when clicking outside the image
+        async function loadSellers() {
+            const token = sessionStorage.getItem('authToken');
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers.Authorization = 'Bearer ' + token;
+
+            try {
+                const response = await fetch('/api/admin/sellers', { headers });
+                if (!response.ok) throw new Error('Unable to load sellers');
+                const sellers = await response.json();
+                window.__sellers = sellers;
+                renderSellers(sellers);
+            } catch (error) {
+                sellerTableBody.innerHTML = '<tr><td colspan="4" style="color:#c62828;">' + error.message + '</td></tr>';
+            }
+        }
+
+        function renderSellers(sellers) {
+            if (!sellers.length) {
+                sellerTableBody.innerHTML = '<tr><td colspan="4" style="color:#666;">No sellers found.</td></tr>';
+                sellerDetailContent.innerHTML = '<p style="color:#666;">No seller records available.</p>';
+                return;
+            }
+
+            sellerTableBody.innerHTML = sellers.map(seller => `
+                <tr onclick="selectSeller(${seller.userId})" style="cursor:pointer;">
+                    <td class="seller-info">
+                        <img src="/images/profile-placeholder.jpg" alt="Profile">
+                        <div>
+                            <b>${seller.fullName || 'Unnamed Seller'}</b><br>
+                            <small style="color:#666;">${seller.email || 'No email'}</small>
+                        </div>
+                    </td>
+                    <td>${seller.businessName || 'Not provided'}</td>
+                    <td>${seller.contactNo || 'Not provided'}</td>
+                    <td><span class="badge-pending">${seller.sellerApproved ? 'Approved' : 'Pending'}</span></td>
+                </tr>
+            `).join('');
+            selectSeller(sellers[0].userId);
+        }
+
+        function selectSeller(userId) {
+            const seller = window.__sellers?.find(item => item.userId === userId);
+            if (!seller) return;
+            sellerDetailContent.innerHTML = `
+                <div class="details-header">
+                    <img src="/images/profile-placeholder.jpg" alt="Profile">
+                    <div>
+                        <b style="font-size: 18px;">${seller.fullName || 'Unnamed Seller'}</b><br>
+                        <span style="color:#666; font-size: 13px;">${seller.businessName || 'No shop name'}</span>
+                    </div>
+                </div>
+                <div class="detail-row"><label>Email</label>${seller.email || 'Not provided'}</div>
+                <div class="detail-row"><label>Contact Number</label>${seller.contactNo || 'Not provided'}</div>
+                <div class="detail-row"><label>Business Description</label>${seller.businessDescription || 'No description provided.'}</div>
+                <div class="detail-row"><label>Status</label>${seller.sellerApproved ? 'Approved' : 'Pending approval'}</div>
+            `;
+        }
+
         document.getElementById('permitModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeModal();
             }
         });
+
+        window.addEventListener('DOMContentLoaded', loadSellers);
     </script>
 
 </body>

@@ -191,8 +191,40 @@ document.addEventListener("DOMContentLoaded", () => {
         statusLabel.textContent = currentUserId ? 'Logged in' : 'Not logged in';
     }
 
+    function clearLoginSession() {
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('currentUserId');
+        sessionStorage.removeItem('currentUserRole');
+        sessionStorage.removeItem('currentUserEmail');
+        sessionStorage.removeItem('currentUserFullName');
+        sessionStorage.removeItem('pendingRedirect');
+        currentUserId = null;
+        currentUserRole = null;
+        refreshLoginStatusIndicator();
+    }
+
+    function handleLogout() {
+        clearLoginSession();
+        window.location.href = './index.html';
+    }
+
+    function ensureLogoutButton() {
+        let logoutBtn = document.getElementById('logoutBtn');
+        const navRight = document.querySelector('.nav-right');
+        if (!navRight) return;
+        if (!logoutBtn) {
+            logoutBtn = document.createElement('button');
+            logoutBtn.id = 'logoutBtn';
+            logoutBtn.type = 'button';
+            logoutBtn.className = 'logout-btn';
+            logoutBtn.textContent = 'LOG OUT';
+            navRight.appendChild(logoutBtn);
+        }
+        logoutBtn.addEventListener('click', handleLogout);
+    }
 
     refreshLoginStatusIndicator();
+    ensureLogoutButton();
     loadProducts();
 
 
@@ -382,6 +414,28 @@ function setLoggedIn(user){
             });
     }
 
+
+    function normalizeRedirectUrl(url) {
+        const trimmed = String(url || '').trim();
+        if (!trimmed || trimmed === './' || trimmed === '/' || trimmed === 'index.html' || trimmed === './index.html' || trimmed.endsWith('/index.html') || trimmed === window.location.origin + '/') {
+            return './index.html';
+        }
+        return trimmed;
+    }
+
+    function getRoleDefaultRedirect(role) {
+        const normalizedRole = String(role || '').trim().toLowerCase();
+        return normalizedRole === 'admin' ? './adminuser.html' : './index.html';
+    }
+
+    function resolveLoginRedirect(role, redirectUrl) {
+        const normalizedRedirect = normalizeRedirectUrl(redirectUrl);
+        const isLoginTarget = normalizedRedirect.includes('login.html') || normalizedRedirect === './index.html';
+        if (isLoginTarget) {
+            return getRoleDefaultRedirect(role);
+        }
+        return normalizedRedirect;
+    }
 
     function formatCurrency(value) {
         const amount = Number(value);
@@ -1136,11 +1190,14 @@ if (modalLoginForm) {
             sessionStorage.setItem('currentUserEmail', data.email);
             sessionStorage.setItem('currentUserFullName', data.fullName);
 
-
-            const redirectUrl = sessionStorage.getItem('pendingRedirect') || window.location.href;
+            let redirectUrl = sessionStorage.getItem('pendingRedirect') || '';
             sessionStorage.removeItem('pendingRedirect');
+
+            const normalizedRedirect = normalizeRedirectUrl(redirectUrl);
+            const finalRedirect = resolveLoginRedirect(data.role, normalizedRedirect);
+
             closeLoginModal();
-            window.location.href = redirectUrl;
+            window.location.href = finalRedirect;
         } catch (error) {
             alert('Login failed: ' + (error.message || 'Invalid credentials'));
         }

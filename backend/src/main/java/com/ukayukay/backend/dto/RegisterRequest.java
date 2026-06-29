@@ -2,7 +2,6 @@ package com.ukayukay.backend.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ukayukay.backend.entity.User;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -10,8 +9,8 @@ import jakarta.validation.constraints.Size;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RegisterRequest {
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email must be a valid email address")
+    @NotBlank(message = "Email or username is required")
+    @Size(max = 100, message = "Email or username must not exceed 100 characters")
     private String email;
 
     @NotBlank(message = "Password is required")
