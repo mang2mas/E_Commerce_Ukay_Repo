@@ -4,26 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Review & Submit</title>
+    <!-- FontAwesome for Navbar Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* CSS Reset & General Styles */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f6f5ef; color: #333; }
+        body { background-color: #f6f5ef; color: #333; padding-top: 90px; }
 
-        /* Header Styles */
-        header {
-            background-color: #8c8b86; height: 80px; display: flex;
-            justify-content: space-between; align-items: center; padding: 0 5%;
-        }
-        .logo-img { height: 36px; object-fit: contain; }
-        .header-actions { display: flex; align-items: center; gap: 24px; }
-        .buy-sell-toggle {
-            background-color: rgba(255, 255, 255, 0.2); border-radius: 40px;
-            display: flex; font-size: 12px; font-weight: bold; padding: 3px;
-            border: 1px solid rgba(255, 255, 255, 0.4); color: white;
-        }
-        .buy-sell-toggle div { padding: 6px 20px; border-radius: 40px; cursor: pointer; }
-        .sell-active { background-color: #fdd65b; color: #333; }
-        .home-icon { height: 24px; cursor: pointer; }
+        /* UNIFORM NAVBAR */
+        header { background-color: rgba(36, 36, 36, 0.50); backdrop-filter: blur(8px); position: fixed; top: 0; left: 0; width: 100%; height: 90px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; z-index: 9999; }
 
         /* Main Form Container */
         .main-container {
@@ -97,8 +86,6 @@
         /* Checkboxes */
         .checkbox-section { display: flex; flex-direction: column; gap: 16px; padding-left: 10px; }
         .checkbox-section label { font-size: 14px; color: #444; display: flex; align-items: center; gap: 12px; cursor: pointer; }
-        
-        /* Checkbox size adjustments */
         input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
 
         /* Footer / Submit Button */
@@ -112,22 +99,31 @@
 </head>
 <body>
 
+    <!-- UNIFORM NAVBAR -->
     <header>
-        <img src="images/LOGO.png" alt="Logo Placeholder" class="logo-img">
-        <div class="header-actions">
-            <div class="buy-sell-toggle">
-                <div>BUY</div>
-                <div class="sell-active">SELL</div>
+        <div style="display: flex; align-items: center; gap: 30px;">
+            <img src="/images/LOGO.png" style="height: 36px; width: auto;" alt="Logo">
+        </div>
+        <div style="display: flex; align-items: center; gap: 24px;">
+            <div style="display: flex; background-color: rgba(255,255,255,0.2); padding: 3px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(8px);">
+                <button style="background: none; color: rgba(255,255,255,0.7); border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">BUY</button>
+                <button style="background-color: #ffffff; color: #000000; border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">SELL</button>
             </div>
-            <img src="images/home.png" alt="Home" class="home-icon">
+            <a href="index.html" style="color:white; font-size:20px; text-decoration:none;"><i class="fa-solid fa-house"></i></a>
+            <a href="shoppingcart.html" style="color:white; font-size:20px; text-decoration:none;"><i class="fa-solid fa-bag-shopping"></i></a>
+            <span id="loginStatus" style="color: #000000; font-size: 12px; font-weight: 600; background-color: rgba(255, 255, 255, 0.7); padding: 4px 8px; border-radius: 4px;">Not logged in</span>
         </div>
     </header>
 
     <div class="main-container">
-        <div class="tabs">
-            <a href="SellerRegistration.html" class="tab">Shop Information</a>
-            <div class="tab active">Review & Submit</div>
-        </div>
+        <!-- ... inside <div class="tabs"> ... -->
+<div class="tabs">
+    <a href="SellerRegistration2.html" class="tab">Shop Information</a>
+    <div class="tab active">Review & Submit</div>
+</div>
+
+<!-- ... inside the .review-box ... -->
+<button class="btn-edit" onclick="window.location.href='SellerRegistration2.html'">✏️ Edit</button>
 
         <div class="review-content">
             <div class="review-intro">
@@ -139,7 +135,7 @@
             </div>
 
             <div class="review-box">
-                <button class="btn-edit" onclick="window.location.href='SellerRegistration.html'">✏️ Edit</button>
+                <button class="btn-edit" onclick="window.location.href='SellerRegistration2.html'">✏️ Edit</button>
                 <h3 class="box-title">🏪 Shop Information</h3>
 
                 <div class="review-grid">
@@ -156,22 +152,16 @@
                     </div>
 
                     <div class="review-right">
-                        <input type="text" id="rev-shopName" readonly class="readonly-input bold-input" value="aestheThrift">
-                        <textarea id="rev-shopDesc" readonly class="readonly-textarea">Welcome to @aestheThrift!
-
-We specialize in handpicked thrifted clothing that combines style, affordability, and sustainability.
-
-From vintage gems to everyday essentials, our collection is perfect for fashion lovers who want unique pieces without breaking the bank.
-
-Every purchase supports a more eco-friendly future while helping you build a wardrobe that's truly your own.</textarea>
+                        <input type="text" id="rev-shopName" readonly class="readonly-input bold-input">
+                        <textarea id="rev-shopDesc" readonly class="readonly-textarea"></textarea>
 
                         <div class="location-fields">
                             <label>Pick-up Address</label>
-                            <input type="text" id="rev-address" readonly class="readonly-input" value="123 Sampaguita St., Brgy. Pila-Pila">
+                            <input type="text" id="rev-address" readonly class="readonly-input">
                             <label>City</label>
-                            <input type="text" id="rev-city" readonly class="readonly-input" value="Biringan City">
+                            <input type="text" id="rev-city" readonly class="readonly-input">
                             <label>Province</label>
-                            <input type="text" id="rev-province" readonly class="readonly-input" value="Laguna">
+                            <input type="text" id="rev-province" readonly class="readonly-input">
                         </div>
                     </div>
                 </div>
