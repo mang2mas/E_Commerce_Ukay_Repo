@@ -27,6 +27,7 @@
             <button class="icon-btn"><i class="fa-solid fa-house"></i></button>
             <a href="./ordermanagement.html" class="icon-btn profile-trigger" aria-label="Order Management"><i class="fa-regular fa-user"></i></a>
             <button class="icon-btn cart-trigger"><i class="fa-solid fa-bag-shopping"></i></button>
+            <button class="logout-btn" id="logoutBtn" type="button">LOG OUT</button>
             <span class="login-status" id="loginStatus">Not logged in</span>
         </div>
     </header>
@@ -36,8 +37,8 @@
          ========================================================================== -->
     <section class="hero-carousel">
         <div class="carousel-container" id="carouselContainer">
-            <div class="slide active" style="background-image: url('/images/carousel-img1.jpg');"></div>
-            <div class="slide" style="background-image: url('/images/carousel-img2.jpg');"></div>
+            <div class="slide" style="background-image: url('/images/carousel-img1.jpg');"></div>
+            <div class="slide active" style="background-image: url('/images/carousel-img2.jpg');"></div>
             <div class="slide" style="background-image: url('/images/carousel-img3.jpg');"></div>
         </div>
         <div class="hero-overlay"></div>
@@ -60,10 +61,6 @@
         <div class="feature-item">
             <i class="fa-solid fa-bolt"></i> 
             <div><strong>FAST SHIPPING</strong><p>Fast and reliable shipping</p></div>
-        </div>
-        <div class="feature-item">
-            <i class="fa-solid fa-arrows-rotate"></i> 
-            <div><strong>7-DAY RETURNS</strong><p>Easy Returns & Exchanges</p></div>
         </div>
         <div class="feature-item">
             <i class="fa-solid fa-shield-halved"></i> 
@@ -226,47 +223,34 @@
             </form>
         </section>
     </div>
-
-   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="/js/app.js"></script>
-
-<!-- LOGIN MODAL OVERLAY -->
-<div id="loginModalOverlay" class="modal-overlay">
-    <div class="login-wrapper modal-content">
-        <button id="closeModalBtn" class="close-modal">&times;</button>
+<div class="login-modal-overlay" id="loginModal">
+    <div class="login-wrapper">
+        <button type="button" class="close-modal-btn" id="closeModalBtn">&times;</button>
+        
         <div class="logo-container">
             <img src="/images/LOGO.png" alt="Ukay Ukay Logo">
         </div>
-        
+       
         <h2><strong>Log in</strong> to continue shopping</h2>
-        
-        <form id="modalLoginForm">
+       
+        <form id="loginForm">
             <div class="form-group">
-                <label for="modalEmail">EMAIL</label>
-                <input type="email" id="modalEmail" placeholder="Enter your email" required>
+                <label for="email">EMAIL</label>
+                <input type="email" id="email" placeholder="Enter your email" required>
             </div>
-            
-            <div style="margin-bottom: 20px; text-align: left;">
-    <label style="display: block; font-weight: bold; font-size: 14px; margin-bottom: 5px;">PASSWORD</label>
-    <input id="modalPassword" type="password" placeholder="Enter your password" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; box-sizing: border-box;">
-    
-    <div style="text-align: right; margin-top: 5px; margin-bottom: 15px;">
-        <a href="forgotpassword.html" style="font-size: 12px; color: black; text-decoration: underline; cursor: pointer;">Forgot password?</a>
+            <div class="form-group">
+                <label for="password">PASSWORD</label>
+                <input type="password" id="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="btn-login">Log in</button>
+            <div id="message" class="message" aria-live="polite"></div>
+            <div class="signup-prompt">
+                Don’t have an account? <a href="./REGISTRATION.html">Sign up</a>
+            </div>
+        </form>
     </div>
 </div>
-
-<button type="submit" class="btn-login" style="width: 100%; background-color: #fbce60; color: #000; border: none; padding: 12px; font-weight: bold; font-size: 14px; cursor: pointer; margin-bottom: 30px;">
-    LOG IN
-</button>
-        
-        <div class="signup-prompt">
-            Don't have an account? <a href="./REGISTRATION.html">Sign up</a>
-        </div>
-        
-        <div class="admin-wrapper">
-            <a href="./sellerverification.html" class="admin-link">Admin</a>
-        </div>
-    </div>
-</div>
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/js/app.js"></script>
 </body>
 </html>
