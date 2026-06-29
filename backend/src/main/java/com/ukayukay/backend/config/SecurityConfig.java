@@ -1,7 +1,8 @@
 package com.ukayukay.backend.config;
 
 
-import com.ukayukay.backend.security.JwtAuthFilter;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,8 +22,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-
-import java.util.List;
+import com.ukayukay.backend.security.JwtAuthFilter;
 
 
 @Configuration
@@ -87,6 +87,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/moderation/**").hasRole("ADMIN")
                 // Seller endpoints
+                .requestMatchers(HttpMethod.POST, "/api/seller/request").authenticated()
                 .requestMatchers("/api/seller/**").hasAnyRole("SELLER", "ADMIN")
                 // All other endpoints require authentication
                 .anyRequest().authenticated()
