@@ -183,14 +183,17 @@ public class ProductService {
             throw new RuntimeException(AppConstants.SELLER_INFO_INCOMPLETE);
         }
 
-        product.setStatus(AppConstants.PRODUCT_STATUS_AVAILABLE);
+        if (product.getStatus() == null || product.getStatus().isBlank()) {
+            product.setStatus(AppConstants.PRODUCT_STATUS_AVAILABLE);
+        }
         product.setSeller(seller);
         return productRepository.save(product);
     }
 
     public Product createProduct(Product product) {
-        // New products added directly to the catalog are held for moderation.
-        product.setStatus("PENDING_APPROVAL");
+        if (product.getStatus() == null || product.getStatus().isBlank()) {
+            product.setStatus("PENDING_APPROVAL");
+        }
         return productRepository.save(product);
     }
 

@@ -1,8 +1,15 @@
 package com.ukayukay.backend.controller;
 
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,8 +19,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ukayukay.backend.entity.Product;
 import com.ukayukay.backend.service.ProductService;
 import com.ukayukay.backend.util.AppConstants;
@@ -25,10 +35,11 @@ public class ProductController {
 
 
     private final ProductService productService;
+    private final ObjectMapper objectMapper;
 
-
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, ObjectMapper objectMapper) {
         this.productService = productService;
+        this.objectMapper = objectMapper;
     }
 
 
@@ -73,9 +84,48 @@ public class ProductController {
     }
 
 
-    @PostMapping("/seller/{sellerId}")
-    public Product addProductAsSeller(@PathVariable Integer sellerId, @RequestBody Product product) {
+    @PostMapping(value = "/seller/{sellerId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Product addProductAsSellerMultipart(
+            @PathVariable Integer sellerId,
+            @RequestPart("product") String productJson,
+            @RequestPart(value = "image", required = false) MultipartFile imageFile) throws IOException {
+
+        Product product = objectMapper.readValue(productJson, Product.class);
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String imagePath = saveProductImage(imageFile);
+            product.setImagePath(imagePath);
+        }
+
         return productService.createProductForSeller(sellerId, product);
+    }
+
+    @PostMapping(value = "/seller/{sellerId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Product addProductAsSellerJson(@PathVariable Integer sellerId, @RequestBody Product product) {
+        return productService.createProductForSeller(sellerId, product);
+    }
+
+    private String saveProductImage(MultipartFile imageFile) throws IOException {
+        String storageDir = "src/main/resources/static/images/uploaded";
+        Path uploadDir = Paths.get(storageDir);
+        if (!Files.exists(uploadDir)) {
+            Files.createDirectories(uploadDir);
+        }
+
+        String extension = "jpg";
+        String originalName = imageFile.getOriginalFilename();
+        if (originalName != null && originalName.contains(".")) {
+            extension = originalName.substring(originalName.lastIndexOf('.') + 1);
+        }
+
+        String imageName = UUID.randomUUID().toString() + "." + extension;
+        Path target = uploadDir.resolve(imageName);
+
+        try (InputStream inputStream = imageFile.getInputStream()) {
+            Files.copy(inputStream, target);
+        }
+
+        return "/images/uploaded/" + imageName;
     }
 
 

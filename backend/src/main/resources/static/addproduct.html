@@ -76,6 +76,7 @@
 
     <main class="layout-container">
         <aside class="upload-section">
+            <input type="file" id="productPhotoInput" accept="image/*" style="display: none;">
             <div class="upload-box">
                 <i class="fa-solid fa-cloud-arrow-up"></i>
                 <div>Upload Photo Here</div>
@@ -94,57 +95,57 @@
             <div class="form-row">
                 <div class="form-group" style="flex: 2;">
                     <label>Product Name</label>
-                    <input type="text" placeholder="e.g. Vintage Plaid Button Down">
+                    <input type="text" id="productNameInput" placeholder="e.g. Vintage Plaid Button Down">
                 </div>
                 <div class="form-group" style="flex: 1;">
                     <label>Price (PHP)</label>
-                    <input type="text" placeholder="0.00">
+                    <input type="text" id="productPriceInput" placeholder="0.00">
                 </div>
             </div>
             <div class="form-group" style="margin-bottom: 20px;">
                 <label>Brand Name</label>
-                <input type="text" placeholder="e.g. Levi's, Unbranded">
+                <input type="text" id="productBrandInput" placeholder="e.g. Levi's, Unbranded">
             </div>
             <div class="form-group" style="margin-bottom: 20px;">
                 <label>Product Description</label>
-                <textarea rows="4" placeholder="Describe the item..."></textarea>
+                <textarea id="productDescriptionInput" rows="4" placeholder="Describe the item..."></textarea>
             </div>
             <div class="form-group" style="margin-bottom: 40px;">
                 <label>Category</label>
                 <div class="pill-group">
-                    <label class="pill-label"><input type="radio" name="category" checked><span class="pill-text">Tops</span></label>
-                    <label class="pill-label"><input type="radio" name="category"><span class="pill-text">Bottoms</span></label>
-                    <label class="pill-label"><input type="radio" name="category"><span class="pill-text">Outerwear</span></label>
-                    <label class="pill-label"><input type="radio" name="category"><span class="pill-text">Bags</span></label>
-                    <label class="pill-label"><input type="radio" name="category"><span class="pill-text">Accessories</span></label>
+                    <label class="pill-label"><input type="radio" name="category" value="Tops" checked><span class="pill-text">Tops</span></label>
+                    <label class="pill-label"><input type="radio" name="category" value="Bottoms"><span class="pill-text">Bottoms</span></label>
+                    <label class="pill-label"><input type="radio" name="category" value="Outerwear"><span class="pill-text">Outerwear</span></label>
+                    <label class="pill-label"><input type="radio" name="category" value="Bags"><span class="pill-text">Bags</span></label>
+                    <label class="pill-label"><input type="radio" name="category" value="Accessories"><span class="pill-text">Accessories</span></label>
                 </div>
             </div>
 
             <h3>Product Details</h3>
             <div class="form-group" style="margin-bottom: 20px;">
                 <label>Color</label>
-                <div class="color-group">
-                    <span class="color-swatch bg-black active"></span>
-                    <span class="color-swatch bg-white"></span>
-                    <span class="color-swatch bg-red"></span>
-                    <span class="color-swatch bg-orange"></span>
-                    <span class="color-swatch bg-yellow"></span>
-                    <span class="color-swatch bg-green"></span>
-                    <span class="color-swatch bg-blue"></span>
-                    <span class="color-swatch bg-purple"></span>
-                    <span class="color-swatch bg-pink"></span>
-                    <span class="color-swatch bg-brown"></span>
-                    <span class="color-swatch bg-gray"></span>
+                <div class="color-group" id="productColorGroup">
+                    <span class="color-swatch bg-black active" data-color="Black"></span>
+                    <span class="color-swatch bg-white" data-color="White"></span>
+                    <span class="color-swatch bg-red" data-color="Red"></span>
+                    <span class="color-swatch bg-orange" data-color="Orange"></span>
+                    <span class="color-swatch bg-yellow" data-color="Yellow"></span>
+                    <span class="color-swatch bg-green" data-color="Green"></span>
+                    <span class="color-swatch bg-blue" data-color="Blue"></span>
+                    <span class="color-swatch bg-purple" data-color="Purple"></span>
+                    <span class="color-swatch bg-pink" data-color="Pink"></span>
+                    <span class="color-swatch bg-brown" data-color="Brown"></span>
+                    <span class="color-swatch bg-gray" data-color="Gray"></span>
                 </div>
             </div>
             <div class="form-group" style="margin-bottom: 40px;">
                 <label>Size</label>
                 <div class="pill-group">
-                    <label class="pill-label"><input type="radio" name="size"><span class="pill-text">XS</span></label>
-                    <label class="pill-label"><input type="radio" name="size"><span class="pill-text">S</span></label>
-                    <label class="pill-label"><input type="radio" name="size" checked><span class="pill-text">M</span></label>
-                    <label class="pill-label"><input type="radio" name="size"><span class="pill-text">L</span></label>
-                    <label class="pill-label"><input type="radio" name="size"><span class="pill-text">XL</span></label>
+                    <label class="pill-label"><input type="radio" name="size" value="XS"><span class="pill-text">XS</span></label>
+                    <label class="pill-label"><input type="radio" name="size" value="S"><span class="pill-text">S</span></label>
+                    <label class="pill-label"><input type="radio" name="size" value="M" checked><span class="pill-text">M</span></label>
+                    <label class="pill-label"><input type="radio" name="size" value="L"><span class="pill-text">L</span></label>
+                    <label class="pill-label"><input type="radio" name="size" value="XL"><span class="pill-text">XL</span></label>
                 </div>
             </div>
 
@@ -152,30 +153,176 @@
             <div class="form-group" style="margin-bottom: 20px;">
                 <label>Condition Rating</label>
                 <div class="pill-group">
-                    <label class="pill-label"><input type="radio" name="condition" checked><span class="pill-text">Like New</span></label>
-                    <label class="pill-label"><input type="radio" name="condition"><span class="pill-text">Excellent</span></label>
-                    <label class="pill-label"><input type="radio" name="condition"><span class="pill-text">Good</span></label>
-                    <label class="pill-label"><input type="radio" name="condition"><span class="pill-text">Fair</span></label>
+                    <label class="pill-label"><input type="radio" name="condition" value="Like New" checked><span class="pill-text">Like New</span></label>
+                    <label class="pill-label"><input type="radio" name="condition" value="Excellent"><span class="pill-text">Excellent</span></label>
+                    <label class="pill-label"><input type="radio" name="condition" value="Good"><span class="pill-text">Good</span></label>
+                    <label class="pill-label"><input type="radio" name="condition" value="Fair"><span class="pill-text">Fair</span></label>
                 </div>
             </div>
             <div class="form-group">
                 <label>Flaw Notes</label>
-                <textarea rows="2" placeholder="List any stains, tears, or missing buttons..."></textarea>
+                <textarea id="productFlawNotesInput" rows="2" placeholder="List any stains, tears, or missing buttons..."></textarea>
             </div>
 
             <div class="action-row">
                 <div class="form-group" style="width: 200px;">
                     <label>Status</label>
-                    <select>
-                        <option>Active / Published</option>
-                        <option>Draft</option>
+                    <select id="productStatusSelect">
+                        <option value="AVAILABLE">Active / Published</option>
+                        <option value="DRAFT">Draft</option>
                     </select>
                 </div>
-                <button class="btn-submit">ADD ITEM</button>
+                <button type="button" class="btn-submit" id="addProductButton">ADD ITEM</button>
             </div>
 
         </section>
     </main>
+
+    <script src="js/app.js"></script>
+    <script>
+        const uploadBox = document.querySelector('.upload-box');
+        const productPhotoInput = document.getElementById('productPhotoInput');
+        const categoryRadios = document.querySelectorAll('input[name="category"]');
+        const sizeRadios = document.querySelectorAll('input[name="size"]');
+        const conditionRadios = document.querySelectorAll('input[name="condition"]');
+        const colorSwatches = document.querySelectorAll('.color-swatch');
+        const addProductButton = document.getElementById('addProductButton');
+        let selectedImageData = null;
+        let selectedColor = 'Black';
+
+        uploadBox.addEventListener('click', () => {
+            productPhotoInput.click();
+        });
+
+        productPhotoInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                selectedImageData = event.target.result;
+                uploadBox.style.backgroundImage = `url(${selectedImageData})`;
+                uploadBox.style.backgroundSize = 'cover';
+                uploadBox.style.backgroundPosition = 'center';
+                uploadBox.style.color = 'transparent';
+                uploadBox.style.border = 'none';
+                uploadBox.innerHTML = '';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        colorSwatches.forEach(swatch => {
+            swatch.addEventListener('click', () => {
+                colorSwatches.forEach(s => s.classList.remove('active'));
+                swatch.classList.add('active');
+                selectedColor = swatch.dataset.color || selectedColor;
+            });
+        });
+
+        function getCheckedValue(nodes, fallback) {
+            const checked = Array.from(nodes).find(node => node.checked);
+            return checked ? checked.value : fallback;
+        }
+
+        function buildRequestHeaders() {
+            const headers = {};
+            if (typeof getAuthHeaders === 'function') {
+                Object.assign(headers, getAuthHeaders());
+            } else {
+                const token = sessionStorage.getItem('authToken');
+                if (token) headers['Authorization'] = 'Bearer ' + token;
+            }
+            return headers;
+        }
+
+        async function submitProduct() {
+            const currentUserId = sessionStorage.getItem('currentUserId');
+            if (!currentUserId) {
+                alert('Please login before adding a product.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const name = document.getElementById('productNameInput').value.trim();
+            const priceValue = document.getElementById('productPriceInput').value.trim();
+            const brand = document.getElementById('productBrandInput').value.trim();
+            const description = document.getElementById('productDescriptionInput').value.trim();
+            const flaws = document.getElementById('productFlawNotesInput').value.trim();
+            const status = document.getElementById('productStatusSelect').value;
+
+            if (!name || !priceValue) {
+                alert('Product name and price are required.');
+                return;
+            }
+
+            const price = parseFloat(priceValue.replace(/,/g, ''));
+            if (Number.isNaN(price) || price < 0) {
+                alert('Please enter a valid price.');
+                return;
+            }
+
+            const category = getCheckedValue(categoryRadios, 'Tops');
+            const size = getCheckedValue(sizeRadios, 'M');
+            const itemCondition = getCheckedValue(conditionRadios, 'Like New');
+
+            const productBody = {
+                itemName: name,
+                category,
+                price: price,
+                stockQuantity: 1,
+                description: flaws ? `${description}\nFlaw Notes: ${flaws}` : description,
+                imagePath: '/images/default-product.png',
+                size,
+                itemCondition,
+                status,
+                style: brand
+            };
+
+            const requestUrl = `/api/products/seller/${encodeURIComponent(currentUserId)}`;
+            const formData = new FormData();
+            formData.append('product', JSON.stringify(productBody));
+
+            const selectedFile = productPhotoInput.files && productPhotoInput.files[0];
+            if (selectedFile) {
+                formData.append('image', selectedFile);
+            }
+
+            const requestOptions = {
+                method: 'POST',
+                headers: buildRequestHeaders(),
+                body: formData
+            };
+
+            addProductButton.disabled = true;
+            addProductButton.textContent = 'Saving...';
+
+            try {
+                const response = await fetch(requestUrl, requestOptions);
+
+                if (!response.ok) {
+                    let text = await response.text();
+                    try {
+                        const json = JSON.parse(text);
+                        text = json?.message || json?.error || text;
+                    } catch (_) {
+                        // not JSON
+                    }
+                    throw new Error(text || 'Product save failed');
+                }
+
+                alert('Product saved successfully.');
+                window.location.href = 'inventorymanagement.html';
+            } catch (error) {
+                console.error('Add product failed', error);
+                alert(`Unable to save product: ${error.message}`);
+            } finally {
+                addProductButton.disabled = false;
+                addProductButton.textContent = 'ADD ITEM';
+            }
+        }
+
+        addProductButton.addEventListener('click', submitProduct);
+    </script>
 
 </body>
 </html>
