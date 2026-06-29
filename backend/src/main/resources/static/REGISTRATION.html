@@ -1,82 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register</title>
-  <link rel="stylesheet" href="css/Registrationglobal.css">
-  <link rel="stylesheet" href="css/REGISTRATION.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+
+
+    <link rel="stylesheet" href="css/Registrationglobal.css">
+    <link rel="stylesheet" href="css/REGISTRATION.css">
+
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    >
 </head>
 <body>
 
+
 <form id="registrationForm" class="frame9">
   <section class="frame10">
+
+
     <div class="logo-container">
       <img src="images/LOGO.png" alt="Logo" class="form-logo">
     </div>
 
+
     <div class="form-body">
+
+
       <h2 class="form-title">Create your account</h2>
-      <p class="form-subtitle">Please fill in the details below to register.</p>
+
+
+      <p class="form-subtitle">
+        Please fill in the details below to register.
+      </p>
+
 
       <div class="form-row">
         <label for="firstName">First Name</label>
-        <input id="firstName" name="firstName" type="text" placeholder="Enter your first name" required>
+        <div class="input-with-icon">
+          <input
+            id="firstName"
+            name="firstName"
+            type="text"
+            placeholder="Enter your first name"
+            required
+          />
+          <button type="button" class="validation-icon" id="firstNameError" hidden aria-hidden="true" title=""></button>
+        </div>
       </div>
+
 
       <div class="form-row">
         <label for="middleName">Middle Name</label>
-        <input id="middleName" name="middleName" type="text" placeholder="Optional middle name">
+        <div class="input-with-icon">
+          <input
+            id="middleName"
+            name="middleName"
+            type="text"
+            placeholder="Optional middle name"
+          />
+          <button type="button" class="validation-icon" id="middleNameError" hidden aria-hidden="true" title=""></button>
+        </div>
       </div>
+
 
       <div class="form-row">
         <label for="lastName">Last Name</label>
-        <input id="lastName" name="lastName" type="text" placeholder="Enter your last name" required>
+        <div class="input-with-icon">
+          <input
+            id="lastName"
+            name="lastName"
+            type="text"
+            placeholder="Enter your last name"
+            required
+          />
+          <button type="button" class="validation-icon" id="lastNameError" hidden aria-hidden="true" title=""></button>
+        </div>
       </div>
+
 
       <div class="form-row">
         <label for="suffix">Suffix</label>
-        <input id="suffix" name="suffix" type="text" placeholder="Optional suffix (e.g. Jr., III)">
+        <div class="input-with-icon">
+          <input
+            id="suffix"
+            name="suffix"
+            type="text"
+            placeholder="Optional suffix (e.g. Jr., III)"
+          />
+          <button type="button" class="validation-icon" id="suffixError" hidden aria-hidden="true" title=""></button>
+        </div>
       </div>
+
 
       <div class="form-row">
         <label for="email">Email Address</label>
-        <input id="email" name="email" type="email" placeholder="Enter your email address" required>
+        <div class="input-with-icon">
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="Enter your email address"
+            required
+          />
+          <button type="button" class="validation-icon" id="emailError" hidden aria-hidden="true" title=""></button>
+        </div>
       </div>
+
 
       <div class="form-row">
         <label for="password">Password</label>
-        <input id="password" name="password" type="password" placeholder="Enter your password" required>
+        <div class="input-with-icon">
+          <input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Enter your password"
+            required
+          />
+          <button type="button" class="validation-icon" id="passwordError" hidden aria-hidden="true" title=""></button>
+        </div>
       </div>
+
 
       <div class="password-strength-row">
         <div class="password-strength-bar" id="passwordStrengthBar"></div>
         <div class="password-strength-label" id="passwordStrengthLabel">Enter a password</div>
       </div>
 
+
       <div class="form-row">
         <label for="confirmPassword">Confirm Password</label>
-        <input id="confirmPassword" name="confirmPassword" type="password" placeholder="Confirm your password" required>
+        <div class="input-with-icon">
+          <input
+            id="confirmPassword"
+            name="confirmPassword"
+            type="password"
+            placeholder="Confirm your password"
+            required
+          />
+          <button type="button" class="validation-icon" id="confirmPasswordError" hidden aria-hidden="true" title=""></button>
+        </div>
       </div>
+
 
       <div class="form-row">
         <label for="contactNumber">Contact Number</label>
-        <input id="contactNumber" name="contactNumber" type="tel" inputmode="numeric" pattern="^09\d{9}$" placeholder="Enter your contact number" maxlength="11" required>
+        <div class="input-with-icon">
+          <input
+            id="contactNumber"
+            name="contactNumber"
+            type="tel"
+            inputmode="numeric"
+            pattern="^09\d{9}$"
+            placeholder="Enter your contact number"
+            maxlength="11"
+            required
+          />
+          <button type="button" class="validation-icon" id="contactNumberError" hidden aria-hidden="true" title=""></button>
+        </div>
       </div>
+
 
       <div class="form-row">
         <label for="address">Address</label>
-<<<<<<< HEAD
-        <textarea id="address" name="address" placeholder="Enter your complete address"></textarea>
-=======
         <textarea
           id="address"
           name="address"
           placeholder="Enter your complete address"
         ></textarea>
->>>>>>> origin/main
       </div>
+
 
       <div class="form-row">
         <label for="accountType">Account Type</label>
@@ -88,16 +185,23 @@
         </select>
       </div>
 
-      <div id="seniorNotice" class="senior-notice" style="display:none;">
-        <div class="notice-icon">ID</div>
-        <div>If you are registering as a Senior Citizen or PWD, please upload a valid Senior Citizen ID or PWD ID.</div>
+
+      <div
+        id="seniorNotice"
+        class="senior-notice"
+        style="display:none;"
+      >
+        <div class="notice-icon">👤</div>
+
+
+        <div>
+          If you are registering as a Senior Citizen
+          or PWD, please upload a valid Senior Citizen ID
+          or PWD ID.
+        </div>
       </div>
 
-<<<<<<< HEAD
-      <div id="idUploadSection" class="form-row" style="display:none;">
-        <label for="idUpload">ID Upload</label>
-        <input id="idUpload" name="idUpload" type="file" accept="image/*,.pdf">
-=======
+
       <div
         id="idUploadSection"
         class="form-row"
@@ -105,14 +209,15 @@
       >
         <label for="idUpload">ID Upload</label>
 
+
         <input
           id="idUpload"
           name="idUpload"
           type="file"
           accept="image/*,.pdf"
         />
->>>>>>> origin/main
       </div>
+
 
       <div id="successPopup" class="success-popup" hidden>
         <div class="success-popup-content">
@@ -121,42 +226,28 @@
         </div>
       </div>
 
+
       <div id="registerStatus" class="signup-prompt" style="text-align:center; margin-top:24px; font-size:14px; color:#c0392b;"></div>
+
 
       <div class="signup-prompt" style="text-align:center; margin-top:16px; font-size:14px; color:#333;">
         Already have an account? <a href="./login.html">Log in</a>
       </div>
 
+
       <div class="next-container">
-        <button type="submit" class="frame-2367variant12">NEXT</button>
+        <button type="submit" class="frame-2367variant12">
+          NEXT
+        </button>
       </div>
+
+
     </div>
   </section>
 </form>
 
+
 <script>
-<<<<<<< HEAD
-const accountType = document.getElementById('accountType');
-const idUploadSection = document.getElementById('idUploadSection');
-const seniorNotice = document.getElementById('seniorNotice');
-const registrationForm = document.getElementById('registrationForm');
-const passwordInput = document.getElementById('password');
-const passwordStrengthBar = document.getElementById('passwordStrengthBar');
-const passwordStrengthLabel = document.getElementById('passwordStrengthLabel');
-
-function getPasswordStrength(password) {
-  if (!password) return { label: 'Enter a password', width: '0%', color: '#d1d5db' };
-  let score = 0;
-  if (password.length >= 8) score++;
-  if (/[a-z]/.test(password)) score++;
-  if (/[A-Z]/.test(password)) score++;
-  if (/[0-9]/.test(password)) score++;
-  if (/[^A-Za-z0-9]/.test(password)) score++;
-
-  if (score >= 4) return { label: 'Strong password', width: '100%', color: '#22c55e' };
-  if (score >= 3) return { label: 'Medium password', width: '65%', color: '#f59e0b' };
-  return { label: 'Weak password', width: '30%', color: '#ef4444' };
-=======
 const accountType = document.getElementById("accountType");
 const idUploadSection = document.getElementById("idUploadSection");
 const seniorNotice = document.getElementById("seniorNotice");
@@ -165,6 +256,7 @@ const passwordInput = document.getElementById("password");
 const passwordStrengthBar = document.getElementById("passwordStrengthBar");
 const passwordStrengthLabel = document.getElementById("passwordStrengthLabel");
 let formSubmitted = false;
+
 
 function showValidationError(fieldId, message) {
   const button = document.getElementById(fieldId + "Error");
@@ -179,12 +271,14 @@ function showValidationError(fieldId, message) {
   }
 }
 
+
 function clearValidationErrors() {
   [
     'firstName', 'middleName', 'lastName', 'suffix', 'email',
     'password', 'confirmPassword', 'contactNumber'
   ].forEach(field => showValidationError(field, ''));
 }
+
 
 function validateField(fieldId) {
   const value = document.getElementById(fieldId).value.trim();
@@ -210,8 +304,8 @@ function validateField(fieldId) {
     default:
       break;
   }
->>>>>>> origin/main
 }
+
 
 function setPasswordStrength(password) {
   const result = getPasswordStrength(password);
@@ -220,12 +314,12 @@ function setPasswordStrength(password) {
   passwordStrengthLabel.textContent = result.label;
 }
 
-<<<<<<< HEAD
-=======
+
 function getPasswordStrength(password) {
   if (!password) {
     return { label: 'Enter a password', width: '0%', color: '#d1d5db' };
   }
+
 
   let score = 0;
   if (password.length >= 8) score += 1;
@@ -235,6 +329,7 @@ function getPasswordStrength(password) {
   if (/[0-9]/.test(password)) score += 1;
   if (/[^A-Za-z0-9]/.test(password)) score += 1;
 
+
   if (score >= 5) {
     return { label: 'Strong password', width: '100%', color: '#22c55e' };
   }
@@ -242,15 +337,17 @@ function getPasswordStrength(password) {
     return { label: 'Medium password', width: '65%', color: '#f59e0b' };
   }
 
+
   return { label: 'Weak password', width: '30%', color: '#ef4444' };
 }
+
 
 function isPasswordAcceptable(password) {
   const strength = getPasswordStrength(password);
   return strength.label === 'Medium password' || strength.label === 'Strong password';
 }
 
->>>>>>> origin/main
+
 function combineFullName() {
   const first = document.getElementById('firstName').value.trim();
   const middle = document.getElementById('middleName').value.trim();
@@ -259,12 +356,11 @@ function combineFullName() {
   return [first, middle, last, suffix].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
 }
 
-<<<<<<< HEAD
-passwordInput.addEventListener('input', () => setPasswordStrength(passwordInput.value));
-=======
+
 function validateForm() {
   clearValidationErrors();
   let valid = true;
+
 
   const firstName = document.getElementById('firstName').value.trim();
   const lastName = document.getElementById('lastName').value.trim();
@@ -274,20 +370,24 @@ function validateForm() {
   const contactNumber = document.getElementById('contactNumber').value.trim();
   const accountTypeValue = accountType.value;
 
+
   if (!firstName) {
     showValidationError('firstName', 'First name is required');
     valid = false;
   }
+
 
   if (!lastName) {
     showValidationError('lastName', 'Last name is required');
     valid = false;
   }
 
+
   if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
     showValidationError('email', 'Enter a valid email address');
     valid = false;
   }
+
 
   if (!password) {
     showValidationError('password', 'Password is required');
@@ -297,15 +397,18 @@ function validateForm() {
     valid = false;
   }
 
+
   if (confirmPassword !== password) {
     showValidationError('confirmPassword', 'Passwords do not match');
     valid = false;
   }
 
+
   if (!/^09\d{9}$/.test(contactNumber)) {
     showValidationError('contactNumber', 'Contact number must be 11 digits and start with 09');
     valid = false;
   }
+
 
   if (accountTypeValue === 'Senior' || accountTypeValue === 'PWD') {
     idUploadSection.style.display = 'grid';
@@ -315,18 +418,21 @@ function validateForm() {
     seniorNotice.style.display = 'none';
   }
 
+
   return valid;
 }
+
 
 passwordInput.addEventListener('input', () => {
   setPasswordStrength(passwordInput.value);
 });
->>>>>>> origin/main
+
 
 const contactNumberInput = document.getElementById('contactNumber');
 contactNumberInput.addEventListener('input', () => {
   contactNumberInput.value = contactNumberInput.value.replace(/[^0-9]/g, '').slice(0, 11);
 });
+
 
 accountType.addEventListener('change', () => {
   if (accountType.value === 'Senior' || accountType.value === 'PWD') {
@@ -338,72 +444,88 @@ accountType.addEventListener('change', () => {
   }
 });
 
+
+const validationFields = ['firstName', 'lastName', 'email', 'password', 'confirmPassword', 'contactNumber'];
+validationFields.forEach((fieldId) => {
+  const input = document.getElementById(fieldId);
+  if (!input) return;
+  input.addEventListener('input', () => {
+    if (formSubmitted) {
+      validateField(fieldId);
+    }
+  });
+});
+
+
 registrationForm.addEventListener('submit', async (event) => {
   event.preventDefault();
-  const statusEl = document.getElementById('registerStatus');
-  statusEl.textContent = '';
+  formSubmitted = true;
 
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
-  const confirmPassword = document.getElementById('confirmPassword').value;
-  const contactNo = document.getElementById('contactNumber').value.trim();
-  const fullName = combineFullName();
-  const accountTypeValue = accountType.value;
 
-  if (!fullName) {
-    statusEl.textContent = 'Please fill in your complete name.';
+  if (!validateForm()) {
+    document.getElementById('registerStatus').textContent = 'Please fix highlighted fields before continuing.';
     return;
   }
-  if (!/^\S+@\S+\.\S+$/.test(email)) {
-    statusEl.textContent = 'Please enter a valid email address.';
-    return;
-  }
-  if (password !== confirmPassword) {
-    statusEl.textContent = 'Passwords do not match.';
-    return;
-  }
-  if (!/^09\d{9}$/.test(contactNo)) {
-    statusEl.textContent = 'Contact number must be 11 digits and start with 09.';
-    return;
-  }
+
 
   const payload = {
-    fullName,
-    email,
-    password,
-    contactNo,
-    accountType: accountTypeValue,
-    role: 'buyer',
-    isPwdSenior: accountTypeValue === 'Senior' || accountTypeValue === 'PWD',
-    idNumber: document.getElementById('idUpload').files.length > 0
-      ? document.getElementById('idUpload').files[0].name
-      : null
+    firstName: document.getElementById('firstName').value.trim(),
+    middleName: document.getElementById('middleName').value.trim(),
+    lastName: document.getElementById('lastName').value.trim(),
+    suffix: document.getElementById('suffix').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    password: document.getElementById('password').value,
+    confirmPassword: document.getElementById('confirmPassword').value,
+    contactNo: document.getElementById('contactNumber').value.trim(),
+    accountType: document.getElementById('accountType').value,
+    fullName: combineFullName()
   };
 
-  statusEl.textContent = 'Registering...';
+
+  document.getElementById('registerStatus').textContent = 'Registering...';
+
+
   try {
     const response = await fetch('/api/auth/register', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify(payload)
     });
 
+
     if (!response.ok) {
       const errorText = await response.text();
-      statusEl.textContent = 'Registration failed: ' + errorText;
+      document.getElementById('registerStatus').textContent = 'Registration failed: ' + errorText;
       return;
     }
 
-    statusEl.textContent = '';
-    const popup = document.getElementById('successPopup');
-    popup.hidden = false;
-    popup.classList.add('visible');
-    setTimeout(() => { window.location.href = './login.html'; }, 1800);
+
+    document.getElementById('registerStatus').textContent = '';
+    registrationForm.reset();
+    setPasswordStrength('');
+    showSuccessPopup();
   } catch (error) {
-    statusEl.textContent = 'Registration failed: ' + error.message;
+    document.getElementById('registerStatus').textContent = 'Registration failed: ' + error.message;
   }
 });
+
+
+function showSuccessPopup() {
+  const popup = document.getElementById('successPopup');
+  if (!popup) return;
+  popup.hidden = false;
+  popup.classList.add('visible');
+  setTimeout(() => {
+    window.location.href = './login.html';
+  }, 2000);
+}
 </script>
+
 
 </body>
 </html>
+
+
+

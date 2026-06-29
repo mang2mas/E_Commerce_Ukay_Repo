@@ -1,5 +1,6 @@
 package com.ukayukay.backend.service;
 
+
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -12,12 +13,15 @@ import com.ukayukay.backend.repository.ProductRepository;
 import com.ukayukay.backend.repository.UserRepository;
 import com.ukayukay.backend.util.AppConstants;
 
+
 @Service
 public class CartService {
+
 
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+
 
     public CartService(CartRepository cartRepository, UserRepository userRepository, ProductRepository productRepository) {
         this.cartRepository = cartRepository;
@@ -25,48 +29,46 @@ public class CartService {
         this.productRepository = productRepository;
     }
 
+
     public List<Cart> getCartByUserId(Integer userId) {
         return cartRepository.findByUser_UserId(userId);
     }
+
 
     public Cart addToCart(Integer userId, Integer productId) {
         if (cartRepository.existsByUser_UserIdAndProduct_ProductId(userId, productId)) {
             throw new RuntimeException("This item is already in your cart!");
         }
 
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException(
                     String.format(AppConstants.USER_NOT_FOUND, userId)));
-        
+       
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException(
                     String.format(AppConstants.PRODUCT_NOT_FOUND, productId)));
 
+
         if ("SOLD".equalsIgnoreCase(product.getStatus())) {
             throw new RuntimeException("This item has already been sold!");
         }
+
 
         Cart cartItem = new Cart();
         cartItem.setUser(user);
         cartItem.setProduct(product);
         cartItem.setQuantity(1);
 
+
         return cartRepository.save(cartItem);
     }
+
 
     public void removeFromCart(Integer cartId) {
         cartRepository.deleteById(cartId);
     }
-
-    public Cart updateQuantity(Integer cartId, Integer quantity) {
-        Cart cart = cartRepository.findById(cartId)
-            .orElseThrow(() -> new RuntimeException("Cart item not found with ID: " + cartId));
-
-        int stock = cart.getProduct().getStockQuantity() != null ? cart.getProduct().getStockQuantity() : 1;
-        if (quantity < 1)     quantity = 1;
-        if (quantity > stock) throw new RuntimeException("Requested quantity exceeds available stock ("+stock+").");
-
-        cart.setQuantity(quantity);
-        return cartRepository.save(cart);
-    }
 }
+
+
+

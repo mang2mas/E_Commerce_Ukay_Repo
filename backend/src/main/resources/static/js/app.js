@@ -1,13 +1,13 @@
-let currentUserId   = sessionStorage.getItem("currentUserId")   || null;
+let currentUserId = sessionStorage.getItem("currentUserId") || null;
 let currentUserRole = sessionStorage.getItem("currentUserRole") || null;
-let authToken       = sessionStorage.getItem("authToken")       || null;
+
 
 function getProductContext(target) {
     const card = target?.closest('.masonry-item');
-    const recommendedCard = target?.closest('.recommended-card');
     const button = target?.closest('.btn-add-cart-action');
     const selectedProduct = sessionStorage.getItem('selectedProduct');
     let parsedProduct = null;
+
 
     if (selectedProduct) {
         try {
@@ -17,112 +17,45 @@ function getProductContext(target) {
         }
     }
 
-    const productId =
-        card?.dataset.productId ||
-        recommendedCard?.dataset.productId ||
-        button?.dataset.productId ||
-        parsedProduct?.productId ||
-        new URLSearchParams(window.location.search).get('productId');
 
-    const productName =
-        card?.querySelector('.item-title-badge')?.textContent?.trim() ||
-        recommendedCard?.querySelector('.recommended-label')?.textContent?.trim() ||
-        button?.dataset.productName ||
-        parsedProduct?.productName ||
-        'item';
+    const productId = card?.dataset.productId || button?.dataset.productId || parsedProduct?.productId || new URLSearchParams(window.location.search).get('productId');
+    const productName = card?.querySelector('.item-title-badge')?.textContent?.trim() || button?.dataset.productName || parsedProduct?.productName || 'item';
+    const price = card?.querySelector('.item-price-tag')?.textContent?.trim() || parsedProduct?.price;
+    const imageUrl = card?.querySelector('img')?.src || parsedProduct?.imageUrl;
 
-    const price =
-        card?.querySelector('.item-price-tag')?.textContent?.trim() ||
-        recommendedCard?.querySelector('.recommended-price-pill')?.textContent?.trim() ||
-        parsedProduct?.price;
-
-    const imageUrl = card?.querySelector('img')?.src || recommendedCard?.querySelector('img')?.src || parsedProduct?.imageUrl;
 
     return { productId, productName, price, imageUrl };
 }
 
-function addToCart(productId, productName) {
-    const activeUserId = sessionStorage.getItem('currentUserId');
-    const token = sessionStorage.getItem('authToken');
-
-    if (!activeUserId) {
-        alert('Please login first to add items to cart.');
-        window.location.href = './login.html';
-        return;
-    }
-
-    if (!productId) {
-        alert('Unable to determine product to add to cart.');
-        return;
-    }
-
-    fetch(`/api/cart/add?userId=${encodeURIComponent(activeUserId)}&productId=${encodeURIComponent(productId)}`, {
-        method: 'POST',
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
-    })
-        .then(async (response) => {
-            if (!response.ok) {
-                const text = await response.text();
-                throw new Error(text || 'Add to cart failed.');
-            }
-            return response.json();
-        })
-        .then(() => {
-            alert(`Added ${productName || 'item'} to cart.`);
-        })
-        .catch((error) => {
-            const message = (error?.message || '').toLowerCase();
-            if (message.includes('already in your cart')) {
-                alert(`${productName || 'Item'} is already in your cart.`);
-                return;
-            }
-            alert(error.message || 'Unable to add item to cart.');
-        });
-}
 
 document.addEventListener("DOMContentLoaded", () => {
-
-    // -----------------------------------------------------------------------
-    // GLOBAL: attach JWT Bearer token to every jQuery AJAX request
-    // -----------------------------------------------------------------------
-    $.ajaxSetup({
-        beforeSend: function(xhr) {
-            const token = sessionStorage.getItem("authToken");
-            if (token) {
-                xhr.setRequestHeader("Authorization", "Bearer " + token);
-            }
-        }
-    });
-
+   
 // ==========================================================================
     // 0. GLOBAL GATEWAY INTERCEPTOR (HARD REDIRECT TO LOGIN PAGE)
     // ==========================================================================
     document.body.addEventListener("click", (event) => {
-        const itemCard = event.target.closest('.masonry-item, .recommended-card');
+        const itemCard = event.target.closest('.masonry-item');
         const addCartBtn = event.target.closest('.btn-add-cart-action');
         const checkoutBtn = event.target.closest('.btn-checkout');
         const cartClick = event.target.closest('.cart-trigger');
         const profileClick = event.target.closest('.profile-trigger');
         const homeClick = event.target.closest('.home-trigger');
-        const logoClick = event.target.closest('.brand-logo, .navbar img[src*="logo"], .navbar img[src*="LOGO"], header img[src*="logo"], header img[src*="LOGO"]');
-        const homeIconClick = event.target.closest('.icon-btn i.fa-house, a i.fa-house');
         const protectedTarget = event.target.closest('.profile-trigger, .cart-trigger, .home-trigger, .shop-trigger, .category-card, .view-all, .btn-primary, .btn-outline, .btn-add-cart-action, .btn-checkout');
         const anchor = event.target.closest('a');
-
-        if (homeClick || homeIconClick || logoClick) {
-            event.preventDefault();
-            event.stopPropagation();
-            window.location.href = './index.html';
-            return;
-        }
-        
+       
         // Check session storage directly to be safe
         const isAuthenticated = Boolean(sessionStorage.getItem("currentUserId"));
+
 
         if (itemCard || protectedTarget) {
             if (!isAuthenticated) {
                 event.preventDefault();
                 event.stopPropagation();
+
+
+                const nextUrl = anchor?.href || (itemCard ? './ItemDescription.html' : checkoutBtn ? './checkout.html' : window.location.href);
+                sessionStorage.setItem('pendingRedirect', nextUrl);
+
 
                 const modal = document.getElementById('loginModalOverlay');
                 if (modal) {
@@ -134,12 +67,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
+
             if (cartClick) {
                 event.preventDefault();
                 event.stopPropagation();
                 window.location.href = './shoppingcart.html';
                 return;
             }
+
 
             if (profileClick) {
                 event.preventDefault();
@@ -148,22 +83,54 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
+
+            if (homeClick) {
+                event.preventDefault();
+                event.stopPropagation();
+                window.location.href = './index.html';
+                return;
+            }
+
+
             if (addCartBtn) {
                 event.preventDefault();
                 event.stopPropagation();
                 const { productId, productName } = getProductContext(addCartBtn);
-                addToCart(productId, productName);
+
+
+                if (!productId) {
+                    alert('Unable to determine product to add to cart.');
+                    return;
+                }
+
+
+                fetch(`/api/cart/add?userId=${currentUserId}&productId=${productId}`, {
+                    method: 'POST'
+                })
+                    .then(response => {
+                        if (!response.ok) return response.text().then(text => { throw new Error(text || 'Add to cart failed.'); });
+                        return response.json();
+                    })
+                    .then(() => {
+                        alert(`Added ${productName || 'item'} to cart.`);
+                    })
+                    .catch(error => {
+                        alert(error.message || 'Unable to add item to cart.');
+                    });
                 return;
             }
+
 
             if (itemCard) {
                 event.preventDefault();
                 event.stopPropagation();
                 const { productId, productName, price, imageUrl } = getProductContext(itemCard);
 
+
                 if (!productId) {
                     return;
                 }
+
 
                 const selectedProduct = {
                     productId,
@@ -175,6 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 window.location.href = `./ItemDescription.html?productId=${encodeURIComponent(productId)}`;
                 return;
             }
+
 
             if (checkoutBtn) {
                 event.preventDefault();
@@ -190,8 +158,10 @@ document.addEventListener("DOMContentLoaded", () => {
         statusLabel.textContent = currentUserId ? 'Logged in' : 'Not logged in';
     }
 
+
     refreshLoginStatusIndicator();
     loadProducts();
+
 
     const navbar = document.querySelector(".navbar");
     if (navbar) {
@@ -204,6 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+
     // ==========================================================================
     // 1. NAVBAR TOGGLE STATES
     // ==========================================================================
@@ -213,14 +184,11 @@ document.addEventListener("DOMContentLoaded", () => {
             toggleButtons.forEach(btn => btn.classList.remove("active"));
             button.classList.add("active");
 
+
             // If user selected SELL, enforce authentication and send to registration
             if (button.dataset.view === 'sell') {
                 const target = './sellerregistration.html';
                 if (!currentUserId) {
-<<<<<<< HEAD
-                    // Not authenticated -> send to login first, then user returns to homepage
-                    window.location.href = './login.html';
-=======
                     sessionStorage.setItem('pendingRedirect', target);
                     const modal = document.getElementById('loginModalOverlay');
                     if (modal) {
@@ -229,7 +197,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     } else {
                         window.location.href = `./login.html?next=${encodeURIComponent(target)}`;
                     }
->>>>>>> origin/main
                     return;
                 }
                 // Authenticated -> go to seller registration
@@ -237,6 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     });
+
 
     const loginTrigger = document.querySelector('.login-trigger');
     if (loginTrigger) {
@@ -252,6 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+
     // ==========================================================================
     // 2. HERO CAROUSEL CONTROLLER
     // ==========================================================================
@@ -260,6 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const nextBtn = document.getElementById("nextSlide");
     let currentIdx = 0;
     let slideInterval;
+
 
     function showSlide(index) {
         if (slides.length === 0) return;
@@ -270,9 +240,11 @@ document.addEventListener("DOMContentLoaded", () => {
         slides[currentIdx].classList.add("active");
     }
 
+
     function nextSlide() {
         showSlide(currentIdx + 1);
     }
+
 
     function startAutoplay() {
         if (slides.length > 0) {
@@ -280,36 +252,40 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+
     function resetAutoplay() {
         clearInterval(slideInterval);
         startAutoplay();
     }
 
+
     if (nextBtn && prevBtn) {
-        nextBtn.addEventListener("click", () => { 
-            nextSlide(); 
-            resetAutoplay(); 
+        nextBtn.addEventListener("click", () => {
+            nextSlide();
+            resetAutoplay();
         });
-        prevBtn.addEventListener("click", () => { 
-            showSlide(currentIdx - 1); 
-            resetAutoplay(); 
+        prevBtn.addEventListener("click", () => {
+            showSlide(currentIdx - 1);
+            resetAutoplay();
         });
     }
 
+
     startAutoplay();
+
 
     // ==========================================================================
     // 3. TEAM BACKEND LIFECYCLE CHANNELS
     // ==========================================================================
 function setLoggedIn(user){
-    currentUserId   = user ? user.userId || user.userID || user.id : null;
+    currentUserId = user ? user.userId || user.userID || user.id : null;
     currentUserRole = user ? user.role : null;
-    authToken       = user ? user.token : null;
-
+   
     if(currentUserId){
-        sessionStorage.setItem("currentUserId",   currentUserId);
+        // Add these two lines here to persist the session!
+        sessionStorage.setItem("currentUserId", currentUserId);
         sessionStorage.setItem("currentUserRole", currentUserRole);
-        if (authToken) sessionStorage.setItem("authToken", authToken);
+
 
         $('#loginStatus').text('Logged in as ' + (user.fullName || user.email) + ' (' + (currentUserRole || '') + ')');
         $('#main-app').show();
@@ -321,9 +297,10 @@ function setLoggedIn(user){
         loadProfile();
         loadNotifications();
     } else {
+        // Clear them out if they log out
         sessionStorage.removeItem("currentUserId");
         sessionStorage.removeItem("currentUserRole");
-        sessionStorage.removeItem("authToken");
+
 
         $('#loginStatus').text('Not logged in');
         $('#main-app').hide();
@@ -340,6 +317,7 @@ function setLoggedIn(user){
             .done(renderCart)
             .fail(function(xhr){ $('#cart').text('Failed to load cart: ' + xhr.responseText); });
     }
+
 
     function renderOrders(data){
         const $container = $('#orders').empty();
@@ -364,6 +342,7 @@ function setLoggedIn(user){
         });
     }
 
+
     function loadProducts() {
         const container = $('#newArrivalsContainer');
         if (!container.length) {
@@ -371,8 +350,10 @@ function setLoggedIn(user){
             return;
         }
 
+
         const userId = currentUserId ? Number(currentUserId) : null;
         container.html('<div class="recommended-loading">Loading new arrivals…</div>');
+
 
         const query = userId ? `?userId=${userId}` : '';
         $.get(`/api/products/recommended${query}`)
@@ -385,14 +366,17 @@ function setLoggedIn(user){
             });
     }
 
+
     function renderRecommendedProducts(products) {
         const container = $('#newArrivalsContainer');
         container.empty();
+
 
         if (!products || products.length === 0) {
             container.html('<div class="recommended-loading">No recommended items available right now.</div>');
             return;
         }
+
 
         // Simple CSS-column masonry: append cards directly — columns handled by CSS
         container.empty();
@@ -405,33 +389,29 @@ function setLoggedIn(user){
             const price = product.price != null ? '₱' + product.price : 'Price unavailable';
             const category = product.category || 'Vintage';
 
+
             $card.append(`<div class="recommended-image"><img src="${imageUrl}" alt="${name}"></div>`);
             $card.append(`<div class="recommended-details"><span class="recommended-label">${name}</span></div>`);
             const $actions = $('<div>').addClass('recommended-actions');
             $actions.append($('<button>').addClass('recommended-price-pill').text(price).prop('disabled', true));
-            $card.attr('data-product-id', productId);
-            $actions.append(
-                $('<button>')
-                    .addClass('btn-add-cart-action')
-                    .attr('data-product-id', productId)
-                    .attr('data-product-name', name)
-                    .text('ADD TO CART')
-                    .click(function(event) {
-                        event.preventDefault();
-                        addToCart(productId, name);
-                    })
-            );
+            $actions.append($('<button>').addClass('btn-add-cart-action').text('ADD TO CART').click(function(event) {
+                event.preventDefault();
+                alert('Item added to cart.');
+            }));
             $actions.append($('<button>').addClass('btn-view-item').text('VIEW').click(function(event) {
                 event.preventDefault();
                 window.location.href = `./ItemDescription.html?productId=${productId}`;
             }));
             $card.append($actions);
 
+
             container.append($card);
         });
     }
 
+
     function renderCart() { console.log("Cart render baseline updated"); }
+
 
     function loadOrders(){
         if(!currentUserId){ $('#orders').text('Not logged in.'); return; }
@@ -440,6 +420,7 @@ function setLoggedIn(user){
             .done(function(data){ renderOrders(data); })
             .fail(function(xhr){ $('#orders').text('Failed to load orders: ' + xhr.responseText); });
     }
+
 
     function loadOrderItems(orderId, $container){
         $.get('/api/orders/' + orderId + '/items')
@@ -463,6 +444,7 @@ function setLoggedIn(user){
             .fail(function(xhr){ $container.text('Unable to load order items: ' + xhr.responseText); });
     }
 
+
     function loadShipments(orderId, $container){
         $.get('/api/shipments/order/' + orderId)
             .done(function(shipments){
@@ -482,6 +464,7 @@ function setLoggedIn(user){
             })
             .fail(function(xhr){ $container.text('Unable to load shipments: ' + xhr.responseText); });
     }
+
 
     function showReviewForm(productId, productName){
         const $form = $('<div>').addClass('review-form');
@@ -504,6 +487,7 @@ function setLoggedIn(user){
         $('#orders').prepend($form);
         $('html, body').animate({ scrollTop: $form.offset().top - 50 }, 400);
     }
+
 
     function loadProfile(){
         if(!currentUserId){ $('#profileInfo').text('Not logged in.'); $('#profileForm').hide(); return; }
@@ -528,6 +512,7 @@ function setLoggedIn(user){
             .fail(function(xhr){ $('#profileInfo').text('Failed to load profile: ' + xhr.responseText); $('#profileForm').hide(); });
     }
 
+
     $('#profileForm').on('submit', function(e){
         e.preventDefault();
         if(!currentUserId){ alert('Please login first'); return; }
@@ -542,6 +527,7 @@ function setLoggedIn(user){
             .done(function(){ $('#profileStatus').text('Profile updated.'); loadProfile(); })
             .fail(function(xhr){ $('#profileStatus').text('Update failed: ' + xhr.responseText); });
     });
+
 
     function loadNotifications(){
         if(!currentUserId){ $('#notifications').text('Not logged in.'); return; }
@@ -568,21 +554,22 @@ function setLoggedIn(user){
             .fail(function(xhr){ $('#notifications').text('Unable to load notifications: ' + xhr.responseText); });
     }
 
+
     // --- Login Form Actions ---
     $('#loginForm').on('submit', function(e){
         e.preventDefault();
-        const email    = $('#email').val();
+        const email = $('#email').val();
         const password = $('#password').val();
-        $('#loginStatus').text('Logging in\u2026');
+        $('#loginStatus').text('Logging in…');
         $.ajax({
             url: '/api/auth/login',
             method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ email: email, password: password })
+            data: { email: email, password: password }
         })
             .done(function(user){ setLoggedIn(user); })
             .fail(function(xhr){ $('#loginStatus').text('Login failed: ' + xhr.responseText); });
     });
+
 
     // --- Register Form Actions ---
     $('#registerForm').on('submit', function(e){
@@ -608,6 +595,7 @@ function setLoggedIn(user){
             });
     });
 
+
     $('#adminLink').on('click', function(e){
         e.preventDefault();
         $('.login-wrapper').hide();
@@ -616,6 +604,7 @@ function setLoggedIn(user){
         $('#register-section').addClass('hidden-section').hide();
         loadAdminProducts();
     });
+
 
     // --- Checkout Actions ---
     $('#checkoutForm').on('submit', function(e){
@@ -626,6 +615,7 @@ function setLoggedIn(user){
             .done(function(){ alert('Order placed'); $('#checkoutForm')[0].reset(); loadOrders(); loadCart(); })
             .fail(function(xhr){ alert('Checkout failed: ' + xhr.responseText); });
     });
+
 
     // --- Seller Product Form Actions ---
     function setSellerSection(user){
@@ -639,6 +629,7 @@ function setLoggedIn(user){
             $('#seller-section').hide();
         }
 
+
         const payload = {
             itemName: $('#productName').val(),
             category: $('#productCategory').val(),
@@ -649,6 +640,7 @@ function setLoggedIn(user){
             imagePath: $('#productImagePath').val(),
             description: $('#productDescription').val()
         };
+
 
         $.ajax({
             url: '/api/products/seller/' + currentUserId,
@@ -666,6 +658,7 @@ function setLoggedIn(user){
             });
     }
 
+
     // --- Seller Requests Pipelines ---
     function renderSellerRequests(list){
         const $c = $('#sellerRequests').empty();
@@ -681,6 +674,7 @@ function setLoggedIn(user){
         });
     }
 
+
     function loadSellerRequests(){
         if(!currentUserId){ $('#sellerRequests').text('Not logged in.'); return; }
         $('#sellerRequests').text('Loading requests…');
@@ -688,6 +682,7 @@ function setLoggedIn(user){
             .done(renderSellerRequests)
             .fail(function(xhr){ $('#sellerRequests').text('Failed to load requests: ' + xhr.responseText); });
     }
+
 
     $('#sellerRequestForm').on('submit', function(e){
         e.preventDefault();
@@ -705,6 +700,7 @@ function setLoggedIn(user){
             .fail(function(xhr){ $('#sellerRequestStatus').text('Submit failed: ' + xhr.responseText); });
     });
 
+
     function renderAdminProducts(list){
         const $c = $('#adminProducts').empty();
         if(!list || list.length === 0){ $c.text('No products available.'); return; }
@@ -716,6 +712,7 @@ function setLoggedIn(user){
             $card.append($('<div>').text('Seller: ' + sellerName));
             $card.append($('<div>').text('Category: ' + (p.category || 'N/A')));
             $card.append($('<div>').text('Stock: ' + (p.stockQuantity || 0)));
+
 
             const $select = $('<select>').addClass('admin-moderate-select');
             ['AVAILABLE','REJECTED','PENDING_APPROVAL'].forEach(status => {
@@ -730,6 +727,7 @@ function setLoggedIn(user){
             $c.append($card);
         });
     }
+
 
     function renderAdminRequests(list){
         const $c = $('#adminRequests').empty();
@@ -754,6 +752,7 @@ function setLoggedIn(user){
         });
     }
 
+
     function loadAdminRequests(){
         $('#adminRequests').text('Loading requests…');
         $.get('/api/admin/requests/')
@@ -761,12 +760,14 @@ function setLoggedIn(user){
             .fail(function(xhr){ $('#adminRequests').text('Failed to load requests: ' + xhr.responseText); });
     }
 
+
     function loadAdminProducts(){
         $('#adminProducts').text('Loading admin products…');
         $.get('/api/products/admin')
             .done(renderAdminProducts)
             .fail(function(xhr){ $('#adminProducts').text('Failed to load admin products: ' + xhr.responseText); });
     }
+
 
     function moderateAdminProduct(productId, status){
         $.ajax({
@@ -776,6 +777,7 @@ function setLoggedIn(user){
             .done(function(){ loadAdminProducts(); $('#moderateProductStatus').text('Product moderated successfully.'); loadProductDetails(); })
             .fail(function(xhr){ $('#moderateProductStatus').text('Moderation failed: ' + xhr.responseText); });
     }
+
 
     function loadSellerDetails(){
         const sellerId = $('#adminSellerId').val();
@@ -797,6 +799,7 @@ function setLoggedIn(user){
             .fail(function(xhr){ $('#sellerDetails').text('Failed to load seller details: ' + xhr.responseText); });
     }
 
+
     function loadSellerProducts(sellerId){
         $('#sellerProducts').text('Loading seller products…');
         $.get('/api/products/seller/' + sellerId)
@@ -809,7 +812,10 @@ function setLoggedIn(user){
             });
     }
 
+
     $('#loadSellerDetailsBtn').on('click', loadSellerDetails);
+
+
 
 
     // ==========================================================================
@@ -819,12 +825,13 @@ const loginModal = document.getElementById('loginModalOverlay');
 const closeModalBtn = document.getElementById('closeModalBtn');
 const modalLoginForm = document.getElementById('modalLoginForm');
 
+
 if (closeModalBtn && loginModal) {
     closeModalBtn.addEventListener('click', () => {
         loginModal.classList.remove('active');
         document.body.classList.remove('modal-open');
     });
-    
+   
     // Close if they click the dark background outside the card
     loginModal.addEventListener('click', (e) => {
         if (e.target === loginModal) {
@@ -834,55 +841,33 @@ if (closeModalBtn && loginModal) {
     });
 }
 
+
 if (modalLoginForm) {
     modalLoginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-<<<<<<< HEAD
-        const emailValue    = document.getElementById('modalEmail').value.trim();
-        const passwordInput = document.getElementById('modalPassword');
-        const passwordValue = passwordInput ? passwordInput.value : '';
-
-        if (!emailValue || !passwordValue) {
-            alert('Please enter both your email and password.');
-=======
         const emailValue = document.getElementById('modalEmail').value.trim();
         const passwordValue = document.getElementById('modalPassword').value;
 
+
         if (!emailValue || !passwordValue) {
             alert('Email and password are required.');
->>>>>>> origin/main
             return;
         }
 
+
         try {
-<<<<<<< HEAD
-            const resp = await fetch('/api/auth/login', {
-                method:  'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify({ email: emailValue, password: passwordValue })
-            });
-            if (!resp.ok) {
-                const msg = await resp.text();
-                alert('Login failed: ' + (msg || 'Please check your credentials.'));
-                return;
-            }
-            const user = await resp.json();
-            setLoggedIn(user);
-            if (loginModal) loginModal.classList.remove('active');
-            window.location.href = './index.html';
-        } catch (err) {
-            alert('Login request failed. Please try again.');
-=======
             const response = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: emailValue, password: passwordValue })
             });
 
+
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(errorText || 'Login failed');
             }
+
 
             const data = await response.json();
             sessionStorage.setItem('authToken', data.token);
@@ -890,6 +875,7 @@ if (modalLoginForm) {
             sessionStorage.setItem('currentUserRole', data.role);
             sessionStorage.setItem('currentUserEmail', data.email);
             sessionStorage.setItem('currentUserFullName', data.fullName);
+
 
             const redirectUrl = sessionStorage.getItem('pendingRedirect') || window.location.href;
             sessionStorage.removeItem('pendingRedirect');
@@ -900,19 +886,23 @@ if (modalLoginForm) {
     });
 }
 
+
 function closeLoginModal() {
     if (!loginModal) return;
     loginModal.classList.remove('active');
     document.body.classList.remove('modal-open');
 }
 
+
 // Remove modal open state if login modal is dismissed elsewhere
 if (loginModal) {
     loginModal.addEventListener('transitionend', () => {
         if (!loginModal.classList.contains('active')) {
             document.body.classList.remove('modal-open');
->>>>>>> origin/main
         }
     });
 }
 });
+
+
+

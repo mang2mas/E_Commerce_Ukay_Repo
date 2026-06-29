@@ -1,5 +1,6 @@
 package com.ukayukay.backend.config;
 
+
 import com.ukayukay.backend.security.JwtAuthFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -20,31 +21,39 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+
 import java.util.List;
+
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
+
     private final JwtAuthFilter jwtAuthFilter;
+
 
     @Value("${cors.allowed-origins:http://localhost:3000,http://localhost:8080}")
     private String allowedOrigins;
 
+
     public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
         this.jwtAuthFilter = jwtAuthFilter;
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -75,22 +84,17 @@ public class SecurityConfig {
                 // Admin-only endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/moderation/**").hasRole("ADMIN")
-                // Any authenticated user can submit/view their own seller requests
-                // (buyers need this to apply for a seller account)
-                .requestMatchers(HttpMethod.POST, "/api/seller/request").authenticated()
-                .requestMatchers(HttpMethod.GET,  "/api/seller/requests").authenticated()
-                // Remaining seller endpoints (product management etc.) require seller/admin
+                // Seller endpoints
                 .requestMatchers("/api/seller/**").hasAnyRole("SELLER", "ADMIN")
-                // Inventory and revenue dashboards require seller or admin
-                .requestMatchers("/api/inventory/**").hasAnyRole("SELLER", "ADMIN")
-                .requestMatchers("/api/revenue/**").hasAnyRole("SELLER", "ADMIN")
                 // All other endpoints require authentication
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
+
         return http.build();
     }
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -101,9 +105,14 @@ public class SecurityConfig {
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
     }
 }
+
+
+
+
 
