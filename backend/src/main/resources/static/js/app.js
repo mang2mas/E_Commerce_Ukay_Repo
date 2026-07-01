@@ -193,8 +193,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     refreshLoginStatusIndicator();
+
+    // Logout handler (works on any page with id="logoutBtn")
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            sessionStorage.clear();
+            window.location.href = './login.html';
+        });
+    }
+
+    // Profile trigger: buyers → ordermanagement, sellers → sellerhomeprofile
+    document.body.addEventListener('click', function(e) {
+        const profileTrigger = e.target.closest('.profile-trigger');
+        if (profileTrigger) {
+            const isAuthenticated = Boolean(sessionStorage.getItem('currentUserId'));
+            if (!isAuthenticated) return; // let global interceptor handle login modal
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            const role = sessionStorage.getItem('currentUserRole');
+            if (role === 'ADMIN' || role === 'admin') {
+                window.location.href = './adminuser.html';
+            } else if (role === 'SELLER' || role === 'seller') {
+                window.location.href = './sellerhomeprofile.html';
+            } else {
+                window.location.href = './ordermanagement.html';
+            }
+        }
+    }, true);
+
     loadProducts();
 
+    // Auto-load cart when on the cart page
+    if ($('#cartItemsContainer').length && currentUserId) {
+        loadCart();
+    }
 
     const navbar = document.querySelector(".navbar");
     if (navbar) {
@@ -219,7 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const isSellView = button.dataset.view === 'sell';
 
             if (isSellView && !currentUserId) {
-                const target = './css/SellerRegistration2.html';
+                const target = './sellerregistration.html';
                 sessionStorage.setItem('pendingRedirect', target);
                 const modal = document.getElementById('loginModalOverlay');
                 if (modal) {
@@ -235,8 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
             button.classList.add("active");
 
             if (isSellView) {
-                const target = './css/SellerRegistration2.html';
-                window.location.href = target;
+                window.location.href = './sellerregistration.html';
             }
         });
     });
@@ -415,7 +447,7 @@ function setLoggedIn(user){
 
                     const $itemWrapper = $('<div>').addClass('seller-group');
                     const $itemRow = $('<div>').addClass('cart-item');
-                    $itemRow.append($('<img>').attr('src', imageUrl).attr('alt', product.itemName || 'Cart item'));
+                    $itemRow.append($('<img>').attr('src', imageUrl).attr('alt', product.itemName || 'Cart item').attr('onerror', "this.src='/images/item1.jpg'").css({'width':'80px','height':'80px','object-fit':'cover','border-radius':'4px','margin-right':'12px'}));
 
                     const $info = $('<div>').css('flex', '1');
                     $info.append($('<b>').text(product.itemName || 'Untitled item'));
@@ -530,7 +562,7 @@ function setLoggedIn(user){
             }
             const $actions = $card.find('.recommended-actions');
             $actions.append($('<button>').addClass('recommended-price-pill').text(price).prop('disabled', true));
-            $actions.append($('<button>').addClass('btn-add-cart-action').attr('type', 'button').text('ADD TO CART').click(function(event) {
+            $actions.append($('<button>').addClass('btn-add-cart-action').attr('type', 'button').attr('data-product-id', productId).attr('data-product-name', name).text('ADD TO CART').click(function(event) {
                 event.preventDefault();
                 const userId = sessionStorage.getItem('currentUserId');
                 if (!userId) {
@@ -677,7 +709,7 @@ function setLoggedIn(user){
     }
 
 
-    function renderCart() { console.log("Cart render baseline updated"); }
+    // (duplicate renderCart removed — real implementation is above)
 
 
     function loadOrders(){
@@ -1137,10 +1169,21 @@ if (modalLoginForm) {
             sessionStorage.setItem('currentUserFullName', data.fullName);
 
 
-            const redirectUrl = sessionStorage.getItem('pendingRedirect') || window.location.href;
+            const redirectUrl = sessionStorage.getItem('pendingRedirect');
             sessionStorage.removeItem('pendingRedirect');
             closeLoginModal();
-            window.location.href = redirectUrl;
+            if (redirectUrl) {
+                window.location.href = redirectUrl;
+            } else {
+                const role = data.role;
+                if (role === 'ADMIN' || role === 'admin') {
+                    window.location.href = './adminuser.html';
+                } else if (role === 'SELLER' || role === 'seller') {
+                    window.location.href = './sellerhomeprofile.html';
+                } else {
+                    window.location.href = './index.html';
+                }
+            }
         } catch (error) {
             alert('Login failed: ' + (error.message || 'Invalid credentials'));
         }

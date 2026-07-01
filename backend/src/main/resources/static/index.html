@@ -30,7 +30,7 @@
                 <button class="toggle-btn active" data-view="buy">BUY</button>
                 <button class="toggle-btn" id="sellToggle" data-view="sell">SELL</button>
             </div>
-            <button class="icon-btn"><i class="fa-solid fa-house"></i></button>
+            <button class="icon-btn home-trigger"><i class="fa-solid fa-house"></i></button>
             <a href="./ordermanagement.html" class="icon-btn profile-trigger" aria-label="Order Management"><i class="fa-regular fa-user"></i></a>
             <button class="icon-btn cart-trigger"><i class="fa-solid fa-bag-shopping"></i></button>
             <button class="logout-btn" id="logoutBtn" type="button">LOG OUT</button>
@@ -84,16 +84,16 @@
     <section class="section-container">
         <div class="section-header">
             <h2>SHOP BY CATEGORY</h2>
-            <a href="#" class="view-all">VIEW ALL ➔</a>
+            <a href="./discoverypage.html" class="view-all">VIEW ALL ➔</a>
         </div>
         <div class="category-grid">
-            <div class="category-card"><img src="/images/tops.jpg" alt="Tops"><span>TOPS</span></div>
-            <div class="category-card"><img src="/images/bottoms.jpg" alt="Bottoms"><span>BOTTOMS</span></div>
-            <div class="category-card"><img src="/images/outerwear.jpg" alt="Outerwear"><span>OUTERWEAR</span></div>
-            <div class="category-card"><img src="/images/bags.jpg" alt="Bags"><span>BAGS</span></div>
-            <div class="category-card"><img src="/images/accessories.jpg" alt="Accesories"><span>ACCESORIES</span></div>
-            <div class="category-card"><img src="/images/shirts.jpg" alt="Shirts"><span>SHIRTS</span></div>
-            <div class="category-card"><img src="/images/sale.jpg" alt="Sale"><span>SALE</span></div>
+            <div class="category-card" onclick="window.location.href='./discoverypage.html?category=TOPS'"><img src="/images/tops.jpg" alt="Tops"><span>TOPS</span></div>
+            <div class="category-card" onclick="window.location.href='./discoverypage.html?category=BOTTOMS'"><img src="/images/bottoms.jpg" alt="Bottoms"><span>BOTTOMS</span></div>
+            <div class="category-card" onclick="window.location.href='./discoverypage.html?category=OUTERWEAR'"><img src="/images/outerwear.jpg" alt="Outerwear"><span>OUTERWEAR</span></div>
+            <div class="category-card" onclick="window.location.href='./discoverypage.html?category=BAGS'"><img src="/images/bags.jpg" alt="Bags"><span>BAGS</span></div>
+            <div class="category-card" onclick="window.location.href='./discoverypage.html?category=ACCESSORIES'"><img src="/images/accessories.jpg" alt="Accesories"><span>ACCESORIES</span></div>
+            <div class="category-card" onclick="window.location.href='./discoverypage.html?category=SHIRTS'"><img src="/images/shirts.jpg" alt="Shirts"><span>SHIRTS</span></div>
+            <div class="category-card" onclick="window.location.href='./discoverypage.html?category=SALE'"><img src="/images/sale.jpg" alt="Sale"><span>SALE</span></div>
         </div>
     </section>
 
@@ -103,7 +103,7 @@
     <section class="section-container" id="newArrivalsSection">
         <div class="section-header">
             <h2>NEW ARRIVALS</h2>
-            <a href="#" class="view-all">VIEW ALL ➔</a>
+            <a href="./discoverypage.html" class="view-all">VIEW ALL ➔</a>
         </div>
 
         <div id="newArrivalsContainer" class="masonry-grid">

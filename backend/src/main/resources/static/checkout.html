@@ -1,390 +1,467 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<html lang="en">
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="initial-scale=1, width=device-width" />
+    <title>Checkout - Ukay Ukay</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #faf9ee; padding-top: 90px; }
 
-    <link rel="stylesheet" href="./css/checkoutglobal.css" />
-    <link rel="stylesheet" href="./css/checkout.css" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
-    />
-  </head>
-  <body>
-    <div class="customer-checkout-page">
-      <header class="occasions"></header>
-      <div class="header">
-        <img class="home-1-icon" alt="" src="./images/checkoutImages/home-1@2x.png" />
+        /* Navbar */
+        header { background-color: rgba(36,36,36,0.50); backdrop-filter: blur(8px); position: fixed; top: 0; left: 0; width: 100%; height: 90px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; z-index: 9999; }
+        .nav-btn { background:none; border:none; color:white; font-size:20px; cursor:pointer; }
+        .toggle-wrap { display:flex; background-color:rgba(255,255,255,0.2); padding:3px; border-radius:30px; border:1px solid rgba(255,255,255,0.3); }
+        .toggle-btn { background:none; color:rgba(255,255,255,0.7); border:none; padding:6px 20px; font-size:11px; font-weight:800; border-radius:20px; cursor:pointer; }
+        .toggle-btn.active { background:#fff; color:#000; }
 
-        <button class="rectangle-parent">
-          <img class="group-child" alt="" src="./images/checkoutImages/Rectangle-286.svg" />
+        /* Layout */
+        .checkout-wrap { display:flex; gap:30px; max-width:1200px; margin:40px auto; padding:0 20px; align-items:flex-start; }
+        .checkout-left { flex:2; display:flex; flex-direction:column; gap:24px; }
+        .checkout-right { flex:1; position:sticky; top:110px; }
 
-          <div class="sell">SELL</div>
-          <div class="rectangle-group">
-            <img class="group-child" alt="" src="./images/checkoutImages/Rectangle-286.svg" />
+        /* Sections */
+        .section-card { background:white; border:1px solid #e5e5e5; border-radius:6px; padding:24px; }
+        .section-title { font-size:14px; font-weight:800; letter-spacing:0.05em; margin-bottom:16px; text-transform:uppercase; }
 
-            <div class="buy">BUY</div>
-          </div>
-        </button>
-        <img class="user-1-1" alt="" src="./images/checkoutImages/user-1-1@2x.png" />
+        /* Address */
+        .address-row { display:flex; align-items:flex-start; gap:16px; }
+        .address-row i { margin-top:3px; color:#666; }
+        .address-info { flex:1; }
+        .address-name { font-weight:700; font-size:15px; }
+        .address-phone { font-size:13px; color:#555; margin:4px 0; }
+        .address-full { font-size:13px; color:#555; }
+        .address-select { margin-top:12px; width:100%; padding:10px; border:1px solid #ddd; border-radius:4px; font-family:'Inter'; font-size:13px; }
+        .address-form { margin-top:14px; display:none; flex-direction:column; gap:10px; }
+        .address-form input { padding:10px; border:1px solid #ddd; border-radius:4px; font-family:'Inter'; font-size:13px; }
+        .btn-sm { padding:8px 16px; border:none; border-radius:4px; font-size:12px; font-weight:700; cursor:pointer; }
+        .btn-yellow { background:#fbce60; color:#000; }
+        .btn-outline { background:white; border:1px solid #ccc; color:#333; }
 
-        <img
-          class="shopping-cart-1-1"
-          alt=""
-          src="./images/checkoutImages/shopping-cart-1-1@2x.png"
-        />
+        /* Items */
+        .item-row { display:flex; gap:16px; padding:16px 0; border-top:1px solid #eee; align-items:flex-start; }
+        .item-row:first-of-type { border-top:none; }
+        .item-row img { width:90px; height:90px; object-fit:cover; background:#f5f5f5; flex-shrink:0; }
+        .item-meta { flex:1; }
+        .item-name { font-weight:700; font-size:14px; }
+        .item-detail { font-size:12px; color:#666; margin-top:4px; }
+        .item-price { color:#f47a55; font-weight:700; margin-top:8px; }
+        .item-remove { background:none; border:none; color:#f47a55; font-size:12px; text-decoration:underline; cursor:pointer; }
 
-        <img class="header-child" alt="" src="./images/checkoutImages/Group-18@2x.png" />
+        /* Shipping */
+        .shipping-option { display:flex; align-items:center; gap:12px; padding:12px; border:1px solid #e5e5e5; border-radius:4px; cursor:pointer; }
+        .shipping-option input[type=radio] { accent-color:#fbce60; }
+        .shipping-label { flex:1; }
+        .shipping-fee { font-weight:700; }
 
-        <img
-          class="untitled-design-3-removebg-p-icon"
-          loading="lazy"
-          alt=""
-          src="./images/checkoutImages/Untitled-design-3-removebg-preview-1@2x.png"
-          id="untitledDesign3RemovebgPImage"
-        />
+        /* Payment */
+        .payment-option { display:flex; align-items:center; gap:12px; padding:12px; border:1px solid #e5e5e5; border-radius:4px; cursor:pointer; margin-bottom:8px; }
+        .payment-option input[type=radio] { accent-color:#fbce60; }
+        .payment-name { flex:1; font-size:14px; font-weight:600; }
 
-        <div class="header-item"></div>
-      </div>
-      <div class="frame-parent">
-        <div class="frame">
-          <div class="frame-child"></div>
-          <div class="frame-child"></div>
+        /* Promo */
+        .promo-row { display:flex; gap:8px; }
+        .promo-row input { flex:1; padding:10px; border:1px solid #ddd; border-radius:4px; font-size:13px; }
+        .promo-msg { font-size:12px; margin-top:6px; }
+        .promo-msg.success { color:#2e7d32; }
+        .promo-msg.error { color:#c62828; }
+
+        /* Summary */
+        .summary-line { display:flex; justify-content:space-between; font-size:14px; margin-bottom:12px; }
+        .summary-total { display:flex; justify-content:space-between; font-size:16px; font-weight:800; margin-top:16px; padding-top:16px; border-top:2px solid #e5e5e5; }
+        .btn-place-order { width:100%; padding:15px; background:#fbce60; border:none; font-weight:800; font-size:14px; cursor:pointer; margin-top:16px; border-radius:4px; letter-spacing:0.05em; }
+        .btn-place-order:hover { background:#e0b034; }
+        .btn-place-order:disabled { background:#ccc; cursor:not-allowed; }
+        .secure-note { display:flex; align-items:center; gap:8px; font-size:11px; color:#666; margin-top:10px; }
+
+        .loader { text-align:center; padding:30px; color:#666; }
+        .empty-cart { text-align:center; padding:40px; }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header>
+        <div style="display:flex;align-items:center;gap:20px;">
+            <button class="nav-btn" onclick="window.location.href='./index.html'"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <img src="/images/logo.png" style="height:36px;cursor:pointer;" alt="Logo" onclick="window.location.href='./index.html'">
         </div>
-        <div class="shipping-fast-1-1-parent">
-          <img
-            class="box-return-1-icon"
-            alt=""
-            src="./images/checkoutImages/shipping-fast-1-1@2x.png"
-          />
-
-          <div class="fast-shipping">FAST SHIPPING</div>
+        <div style="display:flex;align-items:center;gap:20px;">
+            <div class="toggle-wrap">
+                <button class="toggle-btn active" onclick="window.location.href='./index.html'">BUY</button>
+                <button class="toggle-btn" onclick="window.location.href='./sellerregistration.html'">SELL</button>
+            </div>
+            <button class="nav-btn" onclick="window.location.href='./index.html'"><i class="fa-solid fa-house"></i></button>
+            <button class="nav-btn" onclick="window.location.href='./ordermanagement.html'"><i class="fa-regular fa-user"></i></button>
+            <button class="nav-btn" onclick="window.location.href='./shoppingcart.html'"><i class="fa-solid fa-bag-shopping"></i></button>
+            <button onclick="sessionStorage.clear();window.location.href='./login.html';" style="color:white;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);padding:6px 14px;font-size:12px;font-weight:700;border-radius:4px;cursor:pointer;">LOG OUT</button>
+            <span id="loginStatus" style="color:#000;font-size:12px;font-weight:600;background:rgba(255,255,255,0.7);padding:4px 8px;border-radius:4px;">Not logged in</span>
         </div>
-        <div class="slogan"></div>
-        <div class="box-return-1-parent">
-          <img
-            class="box-return-1-icon"
-            alt=""
-            src="./images/checkoutImages/box-return-1@2x.png"
-          />
+    </header>
 
-          <div class="fast-shipping">7-DAY RETURNS</div>
-        </div>
-        <div class="slogan"></div>
-        <div class="shield-check-1-parent">
-          <img
-            class="box-return-1-icon"
-            alt=""
-            src="./images/checkoutImages/shield-check-1@2x.png"
-          />
+    <div class="checkout-wrap">
 
-          <div class="fast-shipping">SECURE CHECKOUTS</div>
-        </div>
-        <div class="slogan"></div>
-        <div class="sparkles-1-parent">
-          <img
-            class="box-return-1-icon"
-            alt=""
-            src="./images/checkoutImages/sparkles-1@2x.png"
-          />
+        <!-- LEFT COLUMN -->
+        <div class="checkout-left">
 
-          <div class="new-drops-weekly">NEW DROPS WEEKLY</div>
-        </div>
-      </div>
-      <main class="checkout-body">
-        <section class="checkout-left-column">
-          <section class="shipping-address-section">
-            <h3 class="shipping-address">SHIPPING ADDRESS</h3>
-            <div class="shipping-address-section-inner">
-              <div class="instance-parent">
-                <img
-                  class="marker-1-icon"
-                  alt="Location"
-                  src="./images/checkoutImages/marker-1@2x.png"
-                />
-                <div class="address-info-col">
-                  <div class="address-name-row">
-                    <b class="aleyami-sumile">Aleyami Sumile</b>
-                    <div class="rectangle-container">
-                      <div class="default">Default</div>
+            <!-- Shipping Address -->
+            <div class="section-card">
+                <div class="section-title"><i class="fa-solid fa-location-dot"></i> Shipping Address</div>
+                <div id="addressDisplay">
+                    <div class="loader"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading address...</div>
+                </div>
+                <div id="newAddressForm" class="address-form">
+                    <input type="text" id="addrName" placeholder="Full Name">
+                    <input type="text" id="addrPhone" placeholder="Phone Number">
+                    <input type="text" id="addrStreet" placeholder="Street, Barangay, City, Province">
+                    <input type="text" id="addrZip" placeholder="ZIP Code">
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn-sm btn-yellow" onclick="saveNewAddress()">Save Address</button>
+                        <button class="btn-sm btn-outline" onclick="document.getElementById('newAddressForm').style.display='none'">Cancel</button>
                     </div>
-                  </div>
-                  <div class="div">0912 334 5567</div>
-                  <div class="sampaguita-st-brgy">
-                    123 Sampaguita St., Brgy. Pitipiwpiw,<br />Biringan City,
-                    Laguna 4023
-                  </div>
                 </div>
-                <div class="change-address">Change Address</div>
-              </div>
             </div>
-          </section>
-          <section class="items-checkout-section">
-            <h3 class="shipping-address">ITEMS YOU CHECKED OUT</h3>
-            <div class="group-parent">
-              <!-- Seller header -->
-              <div class="items-seller-header">
-                <b class="sold-by-archivefinds">Sold by @archivefinds</b>
-                <div class="view-seller-parent">
-                  <div class="view-seller2">View Seller</div>
-                  <img
-                    class="arrow-left-2-icon"
-                    loading="lazy"
-                    alt=""
-                    src="./images/checkoutImages/arrow-left-2@2x.png"
-                  />
-                </div>
-              </div>
 
-              <!-- Item 1 -->
-              <div class="item-row-flex">
-                <img
-                  class="image-10-icon"
-                  loading="lazy"
-                  alt="Vintage Plaid Button Down"
-                  src="./images/checkoutImages/image-10@2x.png"
-                />
-                <div class="item-details-flex">
-                  <div>
-                    <b class="vintage-plaid-button"
-                      >VINTAGE PLAID BUTTON DOWN</b
-                    >
-                    <div class="size-l-container">
-                      <span>Size: </span><b>L</b
-                      ><span class="span"> · Condition: </span><b>10/10</b>
+            <!-- Items -->
+            <div class="section-card">
+                <div class="section-title"><i class="fa-solid fa-box"></i> Items You Checked Out</div>
+                <div id="checkoutItems">
+                    <div class="loader"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading cart items...</div>
+                </div>
+            </div>
+
+            <!-- Shipping Option -->
+            <div class="section-card">
+                <div class="section-title"><i class="fa-solid fa-truck"></i> Shipping Option</div>
+                <label class="shipping-option">
+                    <input type="radio" name="shipping" value="standard" checked>
+                    <div class="shipping-label">
+                        <div style="font-weight:700;">Standard Shipping</div>
+                        <div style="font-size:12px;color:#666;">Ships within 1-2 days</div>
                     </div>
-                    <div class="div3">₱499.00</div>
-                    <button class="rectangle-button">
-                      <div class="group-child4"></div>
-                      <div class="only-1-available">Only 1 available</div>
-                    </button>
-                  </div>
-                  <button class="remove-parent">
-                    <div class="remove">Remove</div>
-                    <img
-                      class="cross-1-icon"
-                      loading="lazy"
-                      alt=""
-                      src="./images/checkoutImages/cross-1@2x.png"
-                    />
-                  </button>
-                </div>
-              </div>
-
-              <div class="line-div"></div>
-
-              <!-- Item 2 -->
-              <div class="item-row-flex">
-                <img
-                  class="image-8-icon"
-                  loading="lazy"
-                  alt="Plaid Wrap Blouse"
-                  src="./images/checkoutImages/image-8@2x.png"
-                />
-                <div class="item-details-flex">
-                  <div>
-                    <b class="plaid-wrap-blouse">PLAID WRAP BLOUSE</b>
-                    <div class="size-l-container2">
-                      <span>Size: </span><b>L</b
-                      ><span class="span"> · Condition: </span><b>10/10</b>
+                    <div class="shipping-fee">₱49.00</div>
+                </label>
+                <label class="shipping-option" style="margin-top:8px;">
+                    <input type="radio" name="shipping" value="express">
+                    <div class="shipping-label">
+                        <div style="font-weight:700;">Express Shipping</div>
+                        <div style="font-size:12px;color:#666;">Ships same day</div>
                     </div>
-                    <div class="div2">₱499.00</div>
-                    <button class="group-child3">
-                      <div class="instance-item"></div>
-                      <div class="only-1-available2">Only 1 available</div>
-                    </button>
-                  </div>
-                  <button class="remove-group">
-                    <div class="remove">Remove</div>
-                    <img
-                      class="cross-1-icon"
-                      loading="lazy"
-                      alt=""
-                      src="./images/checkoutImages/cross-1@2x.png"
-                    />
-                  </button>
+                    <div class="shipping-fee">₱99.00</div>
+                </label>
+            </div>
+
+            <!-- Payment Method -->
+            <div class="section-card">
+                <div class="section-title"><i class="fa-solid fa-credit-card"></i> Payment Method</div>
+                <label class="payment-option">
+                    <input type="radio" name="payment" value="GCash" id="payGcash">
+                    <span class="payment-name">GCash</span>
+                    <i class="fa-solid fa-mobile-screen" style="font-size:18px;color:#007aff;"></i>
+                </label>
+                <label class="payment-option">
+                    <input type="radio" name="payment" value="PayMaya" id="payMaya">
+                    <span class="payment-name">PayMaya</span>
+                    <i class="fa-solid fa-wallet" style="font-size:18px;color:#00a650;"></i>
+                </label>
+                <label class="payment-option">
+                    <input type="radio" name="payment" value="Card" id="payCard">
+                    <span class="payment-name">Credit / Debit Card</span>
+                    <i class="fa-solid fa-credit-card" style="font-size:18px;color:#555;"></i>
+                </label>
+                <label class="payment-option">
+                    <input type="radio" name="payment" value="Cash on Delivery" id="payCod" checked>
+                    <span class="payment-name">Cash on Delivery</span>
+                    <i class="fa-solid fa-money-bill-wave" style="font-size:18px;color:#4caf50;"></i>
+                </label>
+            </div>
+
+            <!-- Promo Code -->
+            <div class="section-card">
+                <div class="section-title"><i class="fa-solid fa-tag"></i> Promo Code</div>
+                <div class="promo-row">
+                    <input type="text" id="promoInput" placeholder="Enter promo code">
+                    <button class="btn-sm btn-yellow" onclick="applyPromo()">Apply</button>
                 </div>
-              </div>
+                <div id="promoMsg" class="promo-msg"></div>
             </div>
-          </section>
-          <section class="shipping-option-section">
-            <h3 class="shipping-address">SHIPPING OPTION</h3>
-            <div class="shipping-option-section-inner">
-              <div class="instance-group">
-                <input class="checkbox" type="checkbox" />
-                <div class="shipping-info-col">
-                  <b class="standard-shipping">Standard Shipping</b>
-                  <div class="ships-within-1-2">Ships within 1-2 days</div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: Summary -->
+        <div class="checkout-right">
+            <div class="section-card">
+                <div class="section-title">Order Summary</div>
+                <div class="summary-line"><span>Items (<span id="summaryCount">0</span>)</span><span id="summaryItems">₱0.00</span></div>
+                <div class="summary-line"><span>Shipping</span><span id="summaryShipping">₱49.00</span></div>
+                <div class="summary-line" id="discountRow" style="display:none;"><span>Discount</span><span id="summaryDiscount" style="color:#2e7d32;">-₱0.00</span></div>
+                <div class="summary-total">
+                    <span>ESTIMATED TOTAL</span><span id="summaryTotal">₱0.00</span>
                 </div>
-                <div class="shipping-fee-col">
-                  <div class="shipping-fee">Shipping fee:</div>
-                  <div class="div4">₱49.00</div>
-                </div>
-              </div>
-            </div>
-            <div class="shipping-notice-banner">
-              <img
-                class="shipping-fast-2-icon"
-                alt="Shipping"
-                src="./images/checkoutImages/shipping-fast-2@2x.png"
-              />
-              <div class="shipping-fee-will">
-                Shipping fee will be calculated based on your address.
-              </div>
-            </div>
-          </section>
-          <section class="payment-methods-section">
-            <h3 class="shipping-address">PAYMENT METHODS</h3>
-            <div class="rectangle-parent2">
-              <label class="payment-option-row">
-                <input
-                  class="payment-radio"
-                  type="radio"
-                  name="payment"
-                  value="gcash"
-                />
-                <div class="gcash">GCash</div>
-                <img
-                  class="group-icon"
-                  loading="lazy"
-                  alt="GCash"
-                  src="./images/checkoutImages/Group-2245@2x.png"
-                />
-              </label>
-              <label class="payment-option-row">
-                <input
-                  class="payment-radio"
-                  type="radio"
-                  name="payment"
-                  value="maya"
-                />
-                <div class="pay-maya">Pay Maya</div>
-                <img
-                  class="instance-child7"
-                  loading="lazy"
-                  alt="Maya"
-                  src="./images/checkoutImages/Group-2246@2x.png"
-                />
-              </label>
-              <label class="payment-option-row">
-                <input
-                  class="payment-radio"
-                  type="radio"
-                  name="payment"
-                  value="card"
-                />
-                <div class="creditdebit-card">Credit/Debit Card</div>
-                <img
-                  class="instance-child8"
-                  loading="lazy"
-                  alt="Card"
-                  src="./images/checkoutImages/Group-2247@2x.png"
-                />
-              </label>
-              <label class="payment-option-row">
-                <input
-                  class="payment-radio"
-                  type="radio"
-                  name="payment"
-                  value="cod"
-                />
-                <div class="cash-on-delivery">Cash on Delivery</div>
-                <img
-                  class="instance-child9"
-                  loading="lazy"
-                  alt="COD"
-                  src="./images/checkoutImages/Group-2248@2x.png"
-                />
-              </label>
-            </div>
-          </section>
-        </section>
-        <section class="order-summary">
-          <div class="order-summary2">
-            <h3 class="order-summary3">ORDER SUMMARY</h3>
-
-            <div class="summary-line">
-              <span class="items2">Items(2)</span>
-              <span class="div5">₱998.00</span>
-            </div>
-            <div class="summary-line">
-              <span class="shipping">Shipping</span>
-              <span class="calculated-at-checkout">Calculated at checkout</span>
+                <button id="placeOrderBtn" class="btn-place-order" onclick="placeOrder()">
+                    <i class="fa-solid fa-bag-shopping"></i> PLACE ORDER
+                </button>
+                <div class="secure-note"><i class="fa-solid fa-lock"></i> Secure checkouts · Safe &amp; encrypted payments</div>
             </div>
 
-            <div class="order-summary-inner"></div>
-
-            <div class="total-row">
-              <b class="estimated-total">ESTIMATED TOTAL</b>
-              <b class="b">₱998.00</b>
+            <div class="section-card" style="margin-top:16px;">
+                <p style="font-weight:700;font-size:13px;"><i class="fa-regular fa-bookmark"></i> SAVE MORE PIECES</p>
+                <p style="font-size:12px;color:#666;margin-top:8px;">Items in your cart are not reserved. Checkout now before they're gone.</p>
             </div>
+        </div>
 
-            <button class="group-button">
-              <div class="place-order-parent">
-                <b class="place-order">PLACE ORDER</b>
-                <img
-                  class="shopping-cart-checkout-1-icon"
-                  alt=""
-                  src="./images/checkoutImages/shopping-cart-checkout-1@2x.png"
-                />
-              </div>
-            </button>
-
-            <div class="secure-checkouts-safe-encr-parent">
-              <img
-                class="shield-check-3-icon"
-                loading="lazy"
-                alt=""
-                src="./images/checkoutImages/shield-check-3@2x.png"
-              />
-              <div class="secure-checkouts2">
-                Secure checkouts · Safe &amp; encrypted payments
-              </div>
-            </div>
-          </div>
-
-          <div class="save-more-card">
-            <div class="save-more-header-row">
-              <img
-                class="bookmark-1"
-                alt="Bookmark"
-                src="./images/checkoutImages/bookmark-1@2x.png"
-              />
-              <b class="save-more-pieces">SAVE MORE PIECES</b>
-            </div>
-            <div class="items-in-your">
-              Items in your cart are not reserved. Checkout now before they're
-              gone.
-            </div>
-          </div>
-        </section>
-      </main>
-      <div class="customer-checkout-page-child"></div>
-      <img
-        class="shipping-fast-2-icon"
-        alt=""
-        src="./images/checkoutImages/shipping-fast-2@2x.png"
-      />
     </div>
 
-    <script>
-      if (!sessionStorage.getItem('currentUserId')) {
-        window.location.href = './login.html?next=./checkout.html';
-      }
-
-      var untitledDesign3RemovebgPImage = document.getElementById(
-        "untitledDesign3RemovebgPImage"
-      );
-      if (untitledDesign3RemovebgPImage) {
-        untitledDesign3RemovebgPImage.addEventListener("click", function (e) {
-          window.location.href = "./index.html";
-        });
-      }
-    </script>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/jquery-3.6.0.min.js"></script>
     <script src="/js/app.js"></script>
-  </body>
-</html>
+    <script>
+        if (!sessionStorage.getItem('currentUserId')) {
+            window.location.href = './login.html?next=./checkout.html';
+        }
 
+        const userId = sessionStorage.getItem('currentUserId');
+        const token = sessionStorage.getItem('authToken');
+        const fullName = sessionStorage.getItem('currentUserFullName');
+        if (fullName) document.getElementById('loginStatus').textContent = fullName;
+
+        function authHeader() { return token ? { 'Authorization': 'Bearer ' + token } : {}; }
+
+        let cartItems = [];
+        let addresses = [];
+        let selectedAddressId = null;
+        let discountAmount = 0;
+        let appliedPromoCode = null;
+        let shippingFee = 49;
+
+        // Update summary totals
+        function updateSummary() {
+            const subtotal = cartItems.reduce((sum, item) => {
+                return sum + (parseFloat(item.product?.price || 0) * (item.quantity || 1));
+            }, 0);
+            const total = subtotal + shippingFee - discountAmount;
+            document.getElementById('summaryCount').textContent = cartItems.length;
+            document.getElementById('summaryItems').textContent = '₱' + subtotal.toFixed(2);
+            document.getElementById('summaryShipping').textContent = '₱' + shippingFee.toFixed(2);
+            document.getElementById('summaryTotal').textContent = '₱' + Math.max(0, total).toFixed(2);
+        }
+
+        // Shipping option change
+        document.querySelectorAll('input[name="shipping"]').forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                shippingFee = this.value === 'express' ? 99 : 49;
+                updateSummary();
+            });
+        });
+
+        // Load addresses
+        fetch('/api/addresses/user/' + userId, { headers: authHeader() })
+            .then(r => r.ok ? r.json() : [])
+            .then(data => {
+                addresses = data || [];
+                renderAddresses();
+            })
+            .catch(() => renderAddresses());
+
+        function renderAddresses() {
+            const container = document.getElementById('addressDisplay');
+            if (!addresses || addresses.length === 0) {
+                container.innerHTML = `
+                    <p style="color:#666;font-size:13px;margin-bottom:12px;">No saved address found.</p>
+                    <button class="btn-sm btn-yellow" onclick="showNewAddressForm()"><i class="fa-solid fa-plus"></i> Add Address</button>
+                `;
+                return;
+            }
+            const defaultAddr = addresses.find(a => a.isDefault) || addresses[0];
+            selectedAddressId = defaultAddr.addressId || defaultAddr.id;
+
+            let html = '';
+            addresses.forEach(function(addr) {
+                const isSelected = (addr.addressId || addr.id) === selectedAddressId;
+                html += `
+                    <div class="address-row" style="margin-bottom:12px;padding:10px;border:1px solid ${isSelected ? '#fbce60' : '#e5e5e5'};border-radius:4px;cursor:pointer;" onclick="selectAddress(${addr.addressId || addr.id})">
+                        <i class="fa-solid fa-location-dot" style="margin-top:3px;color:${isSelected ? '#fbce60' : '#666'};"></i>
+                        <div class="address-info">
+                            <div class="address-name">${addr.recipientName || fullName || 'User'} ${isSelected ? '<span style="background:#fbce60;padding:2px 6px;font-size:10px;border-radius:3px;margin-left:6px;">Selected</span>' : ''}</div>
+                            <div class="address-phone">${addr.phone || addr.contactNo || ''}</div>
+                            <div class="address-full">${addr.streetAddress || addr.fullAddress || addr.address || ''}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `<button class="btn-sm btn-outline" style="margin-top:8px;" onclick="showNewAddressForm()"><i class="fa-solid fa-plus"></i> Add New Address</button>`;
+            container.innerHTML = html;
+        }
+
+        function selectAddress(id) {
+            selectedAddressId = id;
+            renderAddresses();
+        }
+
+        function showNewAddressForm() {
+            document.getElementById('newAddressForm').style.display = 'flex';
+        }
+
+        function saveNewAddress() {
+            const body = {
+                userId: userId,
+                recipientName: document.getElementById('addrName').value,
+                phone: document.getElementById('addrPhone').value,
+                streetAddress: document.getElementById('addrStreet').value,
+                zipCode: document.getElementById('addrZip').value,
+                isDefault: addresses.length === 0
+            };
+            if (!body.streetAddress) { alert('Please enter a street address.'); return; }
+            fetch('/api/addresses/user/' + userId, {
+                method: 'POST',
+                headers: Object.assign({ 'Content-Type': 'application/json' }, authHeader()),
+                body: JSON.stringify(body)
+            })
+            .then(r => r.ok ? r.json() : Promise.reject('Failed to save address'))
+            .then(addr => {
+                addresses.push(addr);
+                selectedAddressId = addr.addressId || addr.id;
+                document.getElementById('newAddressForm').style.display = 'none';
+                renderAddresses();
+            })
+            .catch(() => alert('Could not save address. Please try again.'));
+        }
+
+        // Load cart items
+        fetch('/api/cart/user/' + userId, { headers: authHeader() })
+            .then(r => r.ok ? r.json() : [])
+            .then(data => {
+                cartItems = data || [];
+                renderCheckoutItems();
+                updateSummary();
+            })
+            .catch(() => {
+                document.getElementById('checkoutItems').innerHTML = '<div class="empty-cart">Could not load cart items.</div>';
+            });
+
+        function renderCheckoutItems() {
+            const container = document.getElementById('checkoutItems');
+            if (!cartItems || cartItems.length === 0) {
+                container.innerHTML = '<div class="empty-cart"><i class="fa-solid fa-cart-shopping" style="font-size:32px;color:#ccc;"></i><p style="margin-top:10px;">Your cart is empty. <a href="./index.html">Continue shopping</a></p></div>';
+                document.getElementById('placeOrderBtn').disabled = true;
+                return;
+            }
+            let html = '';
+            cartItems.forEach(function(item) {
+                const product = item.product || {};
+                const imageUrl = product.imagePath || '/images/item1.jpg';
+                const price = parseFloat(product.price || 0);
+                html += `
+                    <div class="item-row">
+                        <img src="${imageUrl}" alt="${product.itemName || 'Item'}" onerror="this.src='/images/item1.jpg'">
+                        <div class="item-meta">
+                            <div class="item-name">${product.itemName || 'Item'}</div>
+                            <div class="item-detail">Size: ${product.size || '—'} · Condition: ${product.itemCondition || '—'}</div>
+                            <div class="item-detail">Qty: ${item.quantity || 1}</div>
+                            <div class="item-price">₱${price.toFixed(2)}</div>
+                            <button class="item-remove" onclick="removeFromCart(${item.cartId})">Remove</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function removeFromCart(cartId) {
+            if (!confirm('Remove this item from your cart?')) return;
+            fetch('/api/cart/' + cartId, { method: 'DELETE', headers: authHeader() })
+                .then(r => {
+                    if (!r.ok) throw new Error('Remove failed');
+                    cartItems = cartItems.filter(i => i.cartId !== cartId);
+                    renderCheckoutItems();
+                    updateSummary();
+                })
+                .catch(() => alert('Could not remove item. Please try again.'));
+        }
+
+        // Apply promo code
+        function applyPromo() {
+            const code = document.getElementById('promoInput').value.trim();
+            if (!code) return;
+            const subtotal = cartItems.reduce((s, i) => s + parseFloat(i.product?.price || 0) * (i.quantity || 1), 0);
+            fetch('/api/promo-codes/validate', {
+                method: 'POST',
+                headers: Object.assign({ 'Content-Type': 'application/json' }, authHeader()),
+                body: JSON.stringify({ code: code, orderAmount: subtotal })
+            })
+            .then(r => r.ok ? r.json() : Promise.reject('Invalid promo code'))
+            .then(result => {
+                discountAmount = parseFloat(result.discountAmount || 0);
+                appliedPromoCode = code;
+                document.getElementById('discountRow').style.display = 'flex';
+                document.getElementById('summaryDiscount').textContent = '-₱' + discountAmount.toFixed(2);
+                document.getElementById('promoMsg').textContent = 'Promo applied! You save ₱' + discountAmount.toFixed(2);
+                document.getElementById('promoMsg').className = 'promo-msg success';
+                updateSummary();
+            })
+            .catch(() => {
+                document.getElementById('promoMsg').textContent = 'Invalid or expired promo code.';
+                document.getElementById('promoMsg').className = 'promo-msg error';
+                discountAmount = 0;
+                updateSummary();
+            });
+        }
+
+        // Place order
+        function placeOrder() {
+            if (!cartItems || cartItems.length === 0) { alert('Your cart is empty.'); return; }
+
+            const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value || 'Cash on Delivery';
+            const shippingOption = document.querySelector('input[name="shipping"]:checked')?.value || 'standard';
+
+            let shippingAddress = '';
+            if (selectedAddressId && addresses.length > 0) {
+                const addr = addresses.find(a => (a.addressId || a.id) === selectedAddressId);
+                if (addr) {
+                    shippingAddress = [addr.recipientName || '', addr.phone || '', addr.streetAddress || addr.fullAddress || addr.address || ''].filter(Boolean).join(', ');
+                }
+            }
+
+            if (!shippingAddress) {
+                const manualAddr = document.getElementById('addrStreet')?.value?.trim();
+                if (manualAddr) {
+                    shippingAddress = manualAddr;
+                } else {
+                    alert('Please select or add a shipping address.');
+                    return;
+                }
+            }
+
+            const btn = document.getElementById('placeOrderBtn');
+            btn.disabled = true;
+            btn.textContent = 'Placing Order...';
+
+            const payload = {
+                shippingAddress: shippingAddress,
+                paymentMethod: paymentMethod,
+                promoCode: appliedPromoCode || null
+            };
+
+            fetch('/api/orders/checkout/' + userId, {
+                method: 'POST',
+                headers: Object.assign({ 'Content-Type': 'application/json' }, authHeader()),
+                body: JSON.stringify(payload)
+            })
+            .then(r => {
+                if (!r.ok) return r.text().then(t => { throw new Error(t || 'Order failed'); });
+                return r.json();
+            })
+            .then(order => {
+                alert('Order placed successfully! Order #' + (order.orderId || order.id || ''));
+                window.location.href = './ordermanagement.html';
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-bag-shopping"></i> PLACE ORDER';
+                alert('Could not place order: ' + (err.message || 'Please try again.'));
+            });
+        }
+    </script>
+</body>
+</html>

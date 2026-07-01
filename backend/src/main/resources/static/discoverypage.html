@@ -21,23 +21,25 @@
                 <button class="toggle-btn active" data-view="buy">BUY</button>
                 <button class="toggle-btn" id="sellToggle" data-view="sell">SELL</button>
             </div>
-            <button class="icon-btn home-trigger"><i class="fa-solid fa-house"></i></button>
-            <button class="icon-btn profile-trigger"><i class="fa-regular fa-user"></i></button>
-            <button class="icon-btn cart-trigger"><i class="fa-solid fa-bag-shopping"></i></button>
-            <span class="login-status" id="loginStatus" style="color: #ffffff;">Logged in</span>
+            <button class="icon-btn home-trigger" onclick="window.location.href='./index.html'"><i class="fa-solid fa-house"></i></button>
+            <button class="icon-btn profile-trigger" onclick="window.location.href='./ordermanagement.html'"><i class="fa-regular fa-user"></i></button>
+            <button class="icon-btn cart-trigger" onclick="window.location.href='./shoppingcart.html'"><i class="fa-solid fa-bag-shopping"></i></button>
+            <span class="login-status" id="loginStatus" style="color: #ffffff;">Not logged in</span>
         </div>
     </header>      
       
     <!-- Search Section -->
     <section class="hero-search-section" style="margin-top: 90px;">
-      <h1 class="discover">DISCOVER</h1>
+      <h1 class="discover" id="discoveryTitle">DISCOVER</h1>
       <div class="search-bar">
         <div class="frame2">
-          <input class="search" placeholder="Search" type="text" />
-          <i class="fa-solid fa-magnifying-glass search-icon" aria-hidden="true"></i>
+          <input class="search" id="discoverySearch" placeholder="Search items..." type="text" />
+          <i class="fa-solid fa-magnifying-glass search-icon" aria-hidden="true" style="cursor:pointer;" onclick="runSearch()"></i>
           <i class="fa-solid fa-sliders search-icon" aria-hidden="true"></i>
         </div>
       </div>
+      <!-- Category filter chips -->
+      <div id="categoryChips" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px;"></div>
     </section>
 
     <!-- Dynamic Masonry Grid -->
@@ -50,7 +52,6 @@
         </div>
     </section>
 
-    <!-- Updated Footer (Matches image_dc09c0.png) -->
     <footer style="background-color: #111111; color: #ffffff; padding: 60px 0; text-align: center; font-family: 'Inter', sans-serif;">
       <div style="display: flex; justify-content: center; gap: 40px; margin-bottom: 20px;">
         <b style="font-size: 14px; letter-spacing: 0.05em;">PRIVACY POLICY</b>
@@ -65,5 +66,164 @@
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/js/app.js"></script>
+    <script>
+        const userId = sessionStorage.getItem('currentUserId');
+        const token = sessionStorage.getItem('authToken');
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryParam = urlParams.get('category') || '';
+
+        function authHeader() { 
+            return token ? { 'Authorization': 'Bearer ' + token } : {}; 
+        }
+
+        // Update login status display
+        const fullName = sessionStorage.getItem('currentUserFullName');
+        if (fullName) {
+            const statusEl = document.getElementById('loginStatus');
+            if (statusEl) statusEl.textContent = fullName;
+        }
+
+        // Show category title if filtered
+        if (categoryParam) {
+            document.getElementById('discoveryTitle').textContent = categoryParam.toUpperCase();
+            document.getElementById('discoverySearch').placeholder = 'Search in ' + categoryParam + '...';
+        }
+
+        // Category chips
+        const categories = ['TOPS','BOTTOMS','OUTERWEAR','BAGS','ACCESSORIES','SHIRTS','SALE'];
+        const chipsContainer = document.getElementById('categoryChips');
+        categories.forEach(function(cat) {
+            const chip = document.createElement('button');
+            chip.textContent = cat;
+            chip.style.cssText = 'padding:8px 18px;border-radius:20px;border:1px solid #ddd;background:' + (categoryParam.toUpperCase() === cat ? '#fbce60' : 'white') + ';font-weight:700;font-size:12px;cursor:pointer;letter-spacing:0.05em;';
+            chip.addEventListener('click', function() {
+                window.location.href = './discoverypage.html?category=' + encodeURIComponent(cat);
+            });
+            chipsContainer.appendChild(chip);
+        });
+        
+        // "All" chip
+        const allChip = document.createElement('button');
+        allChip.textContent = 'ALL';
+        allChip.style.cssText = 'padding:8px 18px;border-radius:20px;border:1px solid #ddd;background:' + (!categoryParam ? '#fbce60' : 'white') + ';font-weight:700;font-size:12px;cursor:pointer;letter-spacing:0.05em;';
+        allChip.addEventListener('click', function() { window.location.href = './discoverypage.html'; });
+        chipsContainer.prepend(allChip);
+
+        let allProducts = [];
+
+        function normalizeImg(path) {
+            if (!path || typeof path !== 'string' || path.trim() === '') return '/images/item1.jpg';
+            if (/^https?:\/\//i.test(path.trim())) return path.trim();
+            return path.trim().startsWith('/') ? path.trim() : '/' + path.trim();
+        }
+
+        function renderProducts(products) {
+            const container = document.getElementById('dynamicMasonryContainer');
+            if (!products || products.length === 0) {
+                container.innerHTML = '<div style="text-align:center;padding:60px;color:#666;"><i class="fa-solid fa-box-open" style="font-size:48px;color:#ccc;margin-bottom:15px;display:block;"></i><p>No items found.</p></div>';
+                return;
+            }
+            container.innerHTML = '';
+            
+            // Partition products across a dynamic 4-column viewport layout
+            const columns = [[], [], [], []];
+            products.forEach((p, i) => columns[i % 4].push(p));
+            
+            columns.forEach(function(col) {
+                if (col.length === 0) return;
+                const colDiv = document.createElement('div');
+                colDiv.style.cssText = 'display:flex;flex-direction:column;flex:1;gap:16px;';
+                
+                col.forEach(function(p) {
+                    const pid = p.productId || p.id;
+                    const img = normalizeImg(p.imagePath || p.imageUrl);
+                    const name = p.itemName || 'Item';
+                    const price = parseFloat(p.price || 0).toFixed(2);
+                    const itemDiv = document.createElement('div');
+                    itemDiv.style.cssText = 'position:relative;overflow:hidden;cursor:pointer;margin-bottom:16px;';
+                    itemDiv.innerHTML = `
+                        <img src="${img}" alt="${name}" style="width:100%;height:auto;display:block;" onerror="this.src='/images/item1.jpg'">
+                        <div class="item-hover-overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.15);opacity:0;transition:opacity 0.3s;display:flex;flex-direction:column;justify-content:space-between;padding:12px;box-sizing:border-box;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;">
+                                <div style="background:#1a1a1a;color:#fff;font-size:10px;font-weight:700;padding:6px 10px;text-transform:uppercase;">${name}</div>
+                                <div style="background:#fff;width:28px;height:28px;border-radius:50%;display:flex;justify-content:center;align-items:center;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,0.1);"><i class="fa-solid fa-magnifying-glass"></i></div>
+                            </div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;box-shadow:0 4px 10px rgba(0,0,0,0.15);">
+                                <div style="background:#1a1a1a;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:8px;">₱${price}</div>
+                                <button class="btn-add-cart-action" data-product-id="${pid}" data-product-name="${name}" style="background:#fff;color:#000;border:1px solid #1a1a1a;font-size:10px;font-weight:700;text-transform:uppercase;cursor:pointer;padding:8px;">ADD TO CART</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Interaction listeners
+                    const overlay = itemDiv.querySelector('.item-hover-overlay');
+                    itemDiv.addEventListener('mouseenter', () => overlay.style.opacity = '1');
+                    itemDiv.addEventListener('mouseleave', () => overlay.style.opacity = '0');
+                    
+                    // Deep item details routing
+                    itemDiv.addEventListener('click', function(e) {
+                        if (e.target.closest('.btn-add-cart-action')) return;
+                        window.location.href = './ItemDescription.html?productId=' + pid;
+                    });
+                    
+                    // Add to cart execution
+                    const cartBtn = itemDiv.querySelector('.btn-add-cart-action');
+                    cartBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        if (!userId || !token) {
+                            alert("Authentication required before modifying shopping carts.");
+                            window.location.href = './login.html?next=' + encodeURIComponent(window.location.href);
+                            return;
+                        }
+                        
+                        // Integrated headers payload prevents the 401/403 connection blocks
+                        fetch('/api/cart/add?userId=' + encodeURIComponent(userId) + '&productId=' + encodeURIComponent(pid), {
+                            method: 'POST', 
+                            headers: Object.assign({ 'Content-Type': 'application/json' }, authHeader())
+                        })
+                        .then(response => { 
+                            if (!response.ok) return response.text().then(t => { throw new Error(t); });
+                            alert('Successfully added ' + name + ' to your cart!'); 
+                        })
+                        .catch(err => alert('Cart addition failed: ' + (err.message || 'Please try again.')));
+                    });
+                    
+                    colDiv.appendChild(itemDiv);
+                });
+                container.appendChild(colDiv);
+            });
+        }
+
+        function runSearch() {
+            const query = document.getElementById('discoverySearch').value.trim().toLowerCase();
+            if (!query) { renderProducts(allProducts); return; }
+            const filtered = allProducts.filter(function(p) {
+                return (p.itemName || '').toLowerCase().includes(query) ||
+                        (p.category || '').toLowerCase().includes(query) ||
+                        (p.description || '').toLowerCase().includes(query);
+            });
+            renderProducts(filtered);
+        }
+
+        document.getElementById('discoverySearch').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') runSearch();
+        });
+
+        // Load targeted data views based on parameters
+        const apiUrl = categoryParam
+            ? '/api/products?category=' + encodeURIComponent(categoryParam)
+            : '/api/products';
+
+        fetch(apiUrl)
+            .then(r => r.ok ? r.json() : [])
+            .then(products => {
+                allProducts = products || [];
+                renderProducts(allProducts);
+            })
+            .catch(() => {
+                document.getElementById('dynamicMasonryContainer').innerHTML =
+                    '<div style="text-align:center;padding:60px;color:#666;"><p>Could not load products. Please try again.</p></div>';
+            });
+    </script>
   </body>
 </html>

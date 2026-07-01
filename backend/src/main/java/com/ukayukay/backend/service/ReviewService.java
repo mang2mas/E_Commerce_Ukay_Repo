@@ -20,16 +20,13 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final OrderItemRepository orderItemRepository;
-    private final NotificationService notificationService;
 
     public ReviewService(ReviewRepository reviewRepository, UserRepository userRepository,
-                         ProductRepository productRepository, OrderItemRepository orderItemRepository,
-                         NotificationService notificationService) {
+                         ProductRepository productRepository, OrderItemRepository orderItemRepository) {
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.orderItemRepository = orderItemRepository;
-        this.notificationService = notificationService;
     }
 
     public Review createReview(Integer buyerId, Integer productId, Integer rating, String comment) {
@@ -50,16 +47,7 @@ public class ReviewService {
         review.setIsVerifiedPurchase(orderItemRepository.existsByOrder_Customer_UserIdAndProduct_ProductId(buyerId, productId));
         review.setStatus("PENDING");
 
-        Review savedReview = reviewRepository.save(review);
-
-        notificationService.createNotification(buyerId,
-                "REVIEW_SUBMITTED",
-                "Review submitted successfully",
-                String.format("Your review for %s has been sent and is pending approval.", product.getItemName()),
-                null,
-                productId);
-
-        return savedReview;
+        return reviewRepository.save(review);
     }
 
     public List<Review> getReviewsByBuyer(Integer buyerId) {

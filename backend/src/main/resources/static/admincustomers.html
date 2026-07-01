@@ -68,12 +68,15 @@
     <header>
         <div style="color: white; font-weight: 800; font-size: 20px; letter-spacing: 1px;">ADMIN PORTAL</div>
         <div class="header-actions">
-            <a href="adminseller.html" class="header-btn">Sellers</a>
-            <a href="adminuser.html" class="header-btn">Verifications</a>
+            <a href="adminseller.html" class="header-btn">Seller Verifications</a>
+            <a href="adminuser.html" class="header-btn">User Verifications</a>
+            <a href="adminauditlogs.html" class="header-btn">Audit Logs</a>
+            <a href="contentmoderation.html" class="header-btn">Moderation</a>
             <div style="display: flex; align-items: center; gap: 10px; color: white; margin-left: 15px;">
                 <i class="fa-solid fa-user-circle" style="font-size: 18px;"></i>
-                <span style="font-size: 14px;">Administrator</span>
+                <span id="loginStatus" style="color: #000; background: rgba(255, 255, 255, 0.9); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;">Logged in</span>
             </div>
+            <a href="#" class="header-btn" onclick="sessionStorage.clear();window.location.href='./login.html';return false;">Logout</a>
         </div>
     </header>
 
@@ -203,20 +206,152 @@
     </div>
 
     <script>
-        // Modal Logic to switch between Add/Edit and Delete
+        const adminId = sessionStorage.getItem('currentUserId');
+        const token = sessionStorage.getItem('authToken');
+        if (!adminId) window.location.href = './login.html';
+
+        function authHeader() { return token ? { 'Authorization': 'Bearer ' + token } : {}; }
+
+        const loginStatusEl = document.getElementById('loginStatus');
+        const adminName = sessionStorage.getItem('currentUserFullName');
+        if (loginStatusEl && adminName) loginStatusEl.textContent = adminName;
+
+        let allUsers = [];
+        let selectedUser = null;
+
         function openCustomerModal(type) {
             document.getElementById('customerFormModal').style.display = 'flex';
             document.getElementById('modalTitle').innerText = type === 'add' ? 'Add New Customer' : 'Edit Customer Details';
         }
-
-        function openDeleteModal() {
-            document.getElementById('deleteModal').style.display = 'flex';
-        }
-
+        function openDeleteModal() { document.getElementById('deleteModal').style.display = 'flex'; }
         function closeModals() {
             document.getElementById('customerFormModal').style.display = 'none';
             document.getElementById('deleteModal').style.display = 'none';
         }
+
+        // Search filter
+        document.querySelector('.search-box').addEventListener('input', function() {
+            const q = this.value.toLowerCase();
+            const filtered = allUsers.filter(u =>
+                (u.fullName || '').toLowerCase().includes(q) ||
+                (u.email || '').toLowerCase().includes(q) ||
+                (u.contactNo || '').toLowerCase().includes(q)
+            );
+            renderTable(filtered);
+        });
+
+        function renderTable(users) {
+            const tbody = document.querySelector('table tbody');
+            if (!users || users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#666;padding:30px;">No customers found.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = '';
+            users.forEach(function(user) {
+                const uid = user.userId || user.id;
+                const isActive = user.isActive !== false;
+                const statusClass = isActive ? 'status-active' : 'status-inactive';
+                const statusLabel = isActive ? 'Active' : 'Inactive';
+                tbody.innerHTML += `
+                    <tr style="cursor:pointer;" onclick="selectUser(${uid})">
+                        <td>U${uid}</td>
+                        <td class="user-info">
+                            <img src="/images/profile-placeholder.jpg" alt="Profile">
+                            <div><b>${user.fullName || 'Unknown'}</b><br><small style="color:#666;">${user.email || ''}</small></div>
+                        </td>
+                        <td>${user.contactNo || '—'}</td>
+                        <td><span class="${statusClass}">${statusLabel}</span></td>
+                        <td class="action-btns">
+                            <button onclick="event.stopPropagation();toggleUserStatus(${uid}, ${!isActive})" title="${isActive ? 'Deactivate' : 'Activate'}">
+                                <i class="fa-solid ${isActive ? 'fa-user-slash' : 'fa-user-check'}"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function selectUser(uid) {
+            selectedUser = allUsers.find(u => (u.userId || u.id) === uid);
+            if (!selectedUser) return;
+            const isActive = selectedUser.isActive !== false;
+            const detailsHeader = document.querySelector('.details-header');
+            if (detailsHeader) {
+                detailsHeader.innerHTML = `
+                    <img src="/images/profile-placeholder.jpg" alt="Profile">
+                    <div>
+                        <b style="font-size:18px;">${selectedUser.fullName || 'Unknown'}</b><br>
+                        <span style="color:#666;font-size:13px;">${selectedUser.email || ''}</span>
+                    </div>
+                `;
+            }
+            const detailRows = document.querySelectorAll('.detail-row');
+            if (detailRows[0]) detailRows[0].innerHTML = '<label>Phone</label>' + (selectedUser.contactNo || '—');
+            if (detailRows[1]) detailRows[1].innerHTML = '<label>Address</label>' + (selectedUser.address || '—');
+            if (detailRows[2]) detailRows[2].innerHTML = '<label>Date Joined</label>' + (selectedUser.createdAt ? new Date(selectedUser.createdAt).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }) : '—');
+            if (detailRows[3]) detailRows[3].innerHTML = '<label>Status</label><span class="' + (isActive ? 'status-active' : 'status-inactive') + '">' + (isActive ? 'Active' : 'Inactive') + '</span>';
+
+            // Load user orders
+            fetch('/api/orders/customer/' + (selectedUser.userId || selectedUser.id), { headers: authHeader() })
+                .then(r => r.ok ? r.json() : [])
+                .then(orders => {
+                    const totalOrders = orders.length;
+                    const totalSpent = orders.reduce((s, o) => s + parseFloat(o.totalAmount || 0), 0);
+                    const statsDiv = document.querySelector('.admin-layout aside > div[style*="display: flex; gap: 20px"]') ||
+                        document.querySelector('.admin-layout aside > div[style]');
+                    if (statsDiv) {
+                        statsDiv.innerHTML = `
+                            <div><label style="font-size:11px;color:#888;text-transform:uppercase;">Total Orders</label><br><b>${totalOrders}</b></div>
+                            <div><label style="font-size:11px;color:#888;text-transform:uppercase;">Total Spent</label><br><b>₱${totalSpent.toFixed(2)}</b></div>
+                        `;
+                    }
+                    const orderHistory = document.querySelector('.order-history');
+                    if (orderHistory) {
+                        let html = '<label style="font-size:11px;color:#888;text-transform:uppercase;margin-bottom:10px;display:block;">Recent Orders</label>';
+                        orders.slice(0, 5).forEach(o => {
+                            const status = o.orderStatus || o.status || 'N/A';
+                            const statusColor = status === 'DELIVERED' ? '#2e7d32' : (status === 'PENDING' ? '#d4a32b' : '#333');
+                            html += `<div class="order-item"><div><b>#${o.orderId || o.id}</b><br><small style="color:${statusColor};">${status}</small></div><div>₱${parseFloat(o.totalAmount || 0).toFixed(2)}</div></div>`;
+                        });
+                        if (orders.length === 0) html += '<p style="color:#999;font-size:12px;">No orders yet.</p>';
+                        orderHistory.innerHTML = html;
+                    }
+                })
+                .catch(() => {});
+        }
+
+        function toggleUserStatus(uid, makeActive) {
+            if (!confirm('Are you sure you want to ' + (makeActive ? 'activate' : 'deactivate') + ' this user?')) return;
+            fetch('/api/admin/users/' + uid + '/status?isActive=' + makeActive + '&adminId=' + adminId, {
+                method: 'PUT', headers: authHeader()
+            })
+            .then(r => { if (!r.ok) throw new Error('Action failed'); return r.json(); })
+            .then(() => { alert('User status updated.'); loadUsers(); })
+            .catch(err => alert('Error: ' + err.message));
+        }
+
+        function loadUsers() {
+            // Fetch all users via profile endpoint; use admin products endpoint as proxy if needed
+            fetch('/api/admin/requests/', { headers: authHeader() })
+                .then(r => r.ok ? r.json() : [])
+                .then(requests => {
+                    // Extract unique users from requests
+                    const userMap = {};
+                    (requests || []).forEach(r => {
+                        const u = r.user;
+                        if (u && (u.userId || u.id)) userMap[u.userId || u.id] = u;
+                    });
+                    allUsers = Object.values(userMap);
+                    renderTable(allUsers);
+                    if (allUsers.length > 0) selectUser(allUsers[0].userId || allUsers[0].id);
+                })
+                .catch(() => {
+                    const tbody = document.querySelector('table tbody');
+                    if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#c62828;padding:30px;">Could not load customers.</td></tr>';
+                });
+        }
+
+        loadUsers();
     </script>
 </body>
 </html>

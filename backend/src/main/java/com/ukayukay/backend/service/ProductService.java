@@ -197,17 +197,11 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    // 🆕 ADDED: Moderation method to handle Admin approvals/rejections
     public Product moderateProduct(Integer productId, String newStatus, Integer adminId) {
         Product product = getProductById(productId);
-        
-        // Update the operational state (e.g., "AVAILABLE" or "REJECTED")
-        product.setStatus(newStatus.toUpperCase());
+        product.setStatus(newStatus.toUpperCase()); 
         Product updatedProduct = productRepository.save(product);
-        
-        // Push a fresh log footprint into your audit table
         auditLogService.logAction(adminId, "PRODUCT_MODERATION_" + newStatus.toUpperCase(), "products");
-        
         return updatedProduct;
     }
 
