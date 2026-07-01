@@ -69,6 +69,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                 .requestMatchers(HttpMethod.PUT, "/api/products/**").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/api/products/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/profile/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/shops/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/reviews/product/**").permitAll()

@@ -34,6 +34,13 @@ public class ImagePathUpdater implements CommandLineRunner {
 
         for (Product p : productRepository.findAll()) {
             String current = p.getImagePath();
+
+            // Preserve any existing explicit image path (especially uploaded files).
+            // This runner should only backfill missing image paths.
+            if (current != null && !current.trim().isEmpty()) {
+                continue;
+            }
+
             String itemName = p.getItemName() == null ? "" : p.getItemName().toLowerCase();
             String category = p.getCategory() == null ? "" : p.getCategory().toLowerCase();
 
@@ -67,10 +74,8 @@ public class ImagePathUpdater implements CommandLineRunner {
             }
 
             String newPath = "/images/" + chosen;
-            if (current == null || !current.equals(newPath)) {
-                p.setImagePath(newPath);
-                productRepository.save(p);
-            }
+            p.setImagePath(newPath);
+            productRepository.save(p);
         }
     }
 }

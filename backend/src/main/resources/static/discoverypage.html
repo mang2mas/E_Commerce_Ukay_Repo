@@ -19,7 +19,7 @@
         <div class="nav-right">
             <div class="toggle-container">
                 <button class="toggle-btn active" data-view="buy">BUY</button>
-                <button class="toggle-btn" id="sellToggle" data-view="sell">SELL</button>
+                <button class="toggle-btn" id="sellToggle" data-view="sell" onclick="return window.handleSellEntryAction && window.handleSellEntryAction(event)">SELL</button>
             </div>
             <button class="icon-btn home-trigger" onclick="window.location.href='./index.html'"><i class="fa-solid fa-house"></i></button>
             <button class="icon-btn profile-trigger" onclick="window.location.href='./ordermanagement.html'"><i class="fa-regular fa-user"></i></button>

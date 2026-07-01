@@ -28,7 +28,7 @@
         <div class="nav-right">
             <div class="toggle-container">
                 <button class="toggle-btn active" data-view="buy">BUY</button>
-                <button class="toggle-btn" id="sellToggle" data-view="sell">SELL</button>
+                <button class="toggle-btn" id="sellToggle" data-view="sell" onclick="return window.handleSellEntryAction && window.handleSellEntryAction(event)">SELL</button>
             </div>
             <button class="icon-btn home-trigger"><i class="fa-solid fa-house"></i></button>
             <a href="./ordermanagement.html" class="icon-btn profile-trigger" aria-label="Order Management"><i class="fa-regular fa-user"></i></a>
@@ -281,23 +281,6 @@
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('modal') === 'login') {
             openLoginModal('./index.html');
-        }
-
-        if (sellToggle) {
-            sellToggle.addEventListener('click', function (event) {
-                event.preventDefault();
-                // Check if user is logged in
-                const currentUserId = sessionStorage.getItem('currentUserId');
-                const targetUrl = './sellerregistration.html';
-                
-                if (!currentUserId) {
-                    // Redirect to login if not logged in
-                    openLoginModal(targetUrl);
-                } else {
-                    // Redirect to SellerRegistration.html
-                    window.location.href = targetUrl;
-                }
-            });
         }
 
         // ==========================================

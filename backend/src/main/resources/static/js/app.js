@@ -55,6 +55,82 @@ function getProductContext(target) {
     return { productId, productName, price, imageUrl };
 }
 
+function getSellerEntryTarget() {
+    const role = (sessionStorage.getItem('currentUserRole') || '').toLowerCase();
+    if (role === 'admin') return './admin.html';
+    if (role === 'seller') return './sellerhomeprofile.html';
+    const approved = sessionStorage.getItem('currentUserSellerApproved') === 'true';
+    const verificationStatus = (sessionStorage.getItem('currentUserVerificationStatus') || '').toUpperCase();
+    if (approved && verificationStatus === 'APPROVED') return './sellerhomeprofile.html';
+    return './sellerregistration.html';
+}
+
+function cacheSellerProfileFlags(profile) {
+    if (!profile || typeof profile !== 'object') return;
+    const approved = profile.sellerApproved === true;
+    const verificationStatus = (profile.verificationStatus || '').toUpperCase();
+    sessionStorage.setItem('currentUserSellerApproved', approved ? 'true' : 'false');
+    if (verificationStatus) {
+        sessionStorage.setItem('currentUserVerificationStatus', verificationStatus);
+    }
+}
+
+async function resolveSellerEntryTarget() {
+    const role = (sessionStorage.getItem('currentUserRole') || '').toLowerCase();
+    if (role === 'admin') return './admin.html';
+    if (role === 'seller') return './sellerhomeprofile.html';
+
+    const currentUserId = sessionStorage.getItem('currentUserId');
+    if (!currentUserId) return './sellerregistration.html';
+
+    const approved = sessionStorage.getItem('currentUserSellerApproved') === 'true';
+    const verificationStatus = (sessionStorage.getItem('currentUserVerificationStatus') || '').toUpperCase();
+    if (approved && verificationStatus === 'APPROVED') {
+        return './sellerhomeprofile.html';
+    }
+
+    try {
+        const response = await authFetch(`/api/profile/${encodeURIComponent(currentUserId)}`);
+        if (!response.ok) return './sellerregistration.html';
+        const profile = await response.json();
+        cacheSellerProfileFlags(profile);
+        const isApproved = profile?.sellerApproved === true && (profile?.verificationStatus || '').toUpperCase() === 'APPROVED';
+        return isApproved ? './sellerhomeprofile.html' : './sellerregistration.html';
+    } catch (error) {
+        console.error('Unable to resolve seller entry target:', error);
+        return './sellerregistration.html';
+    }
+}
+
+function handleSellEntryAction(event) {
+    const isAuthenticated = Boolean(sessionStorage.getItem('currentUserId'));
+    const loginModal = document.getElementById('loginModalOverlay');
+
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    if (!isAuthenticated) {
+        const targetUrl = getSellerEntryTarget();
+        sessionStorage.setItem('pendingRedirect', targetUrl);
+        if (loginModal) {
+            loginModal.classList.add('active');
+            document.body.classList.add('modal-open');
+        } else {
+            window.location.href = './login.html?next=' + encodeURIComponent(targetUrl);
+        }
+        return true;
+    }
+
+    resolveSellerEntryTarget().then((targetUrl) => {
+        window.location.href = targetUrl;
+    });
+    return true;
+}
+
+window.handleSellEntryAction = handleSellEntryAction;
+
 
 document.addEventListener("DOMContentLoaded", () => {
    
@@ -68,6 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const cartClick = event.target.closest('.cart-trigger');
         const profileClick = event.target.closest('.profile-trigger');
         const homeClick = event.target.closest('.home-trigger');
+        const sellClick = event.target.closest('[data-view="sell"], .sell-trigger, .sell-toggle');
         const protectedTarget = event.target.closest('.profile-trigger, .cart-trigger, .home-trigger, .shop-trigger, .category-card, .view-all, .btn-primary, .btn-outline, .btn-add-cart-action, .btn-checkout');
         const anchor = event.target.closest('a');
        
@@ -184,6 +261,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
         }
+
+        if (sellClick) {
+            handleSellEntryAction(event);
+        }
     }, true);
     function refreshLoginStatusIndicator() {
         const statusLabel = document.getElementById('loginStatus');
@@ -263,19 +344,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================================================
     const toggleButtons = document.querySelectorAll(".toggle-btn");
     toggleButtons.forEach(button => {
-        button.addEventListener("click", () => {
+        button.addEventListener("click", (event) => {
             const isSellView = button.dataset.view === 'sell';
 
-            if (isSellView && !currentUserId) {
-                const target = './sellerregistration.html';
-                sessionStorage.setItem('pendingRedirect', target);
-                const modal = document.getElementById('loginModalOverlay');
-                if (modal) {
-                    modal.classList.add('active');
-                    document.body.classList.add('modal-open');
-                } else {
-                    window.location.href = `./login.html?next=${encodeURIComponent(target)}`;
-                }
+            if (isSellView && handleSellEntryAction(event)) {
                 return;
             }
 
@@ -283,7 +355,7 @@ document.addEventListener("DOMContentLoaded", () => {
             button.classList.add("active");
 
             if (isSellView) {
-                window.location.href = './sellerregistration.html';
+                window.location.href = getSellerEntryTarget();
             }
         });
     });
@@ -535,21 +607,31 @@ function setLoggedIn(user){
     function loadProducts() {
         const container = $('#newArrivalsContainer');
         if (!container.length) {
-            console.warn('New arrivals container not found');
             return;
         }
 
-        const userId = currentUserId ? Number(currentUserId) : null;
         container.html('<div class="recommended-loading">Loading new arrivals…</div>');
-        const query = userId ? `?userId=${userId}` : '';
 
-        $.get(`/api/products/recommended${query}`)
+        $.get('/api/products')
             .done(function(products) {
-                renderRecommendedProducts(products, '#newArrivalsContainer');
+                const sorted = (products || []).slice().sort(function(a, b) {
+                    const dateA = a && a.dateAdded ? new Date(a.dateAdded).getTime() : 0;
+                    const dateB = b && b.dateAdded ? new Date(b.dateAdded).getTime() : 0;
+
+                    if (dateB !== dateA) {
+                        return dateB - dateA;
+                    }
+
+                    const idA = Number((a && (a.productId || a.id)) || 0);
+                    const idB = Number((b && (b.productId || b.id)) || 0);
+                    return idB - idA;
+                });
+
+                renderRecommendedProducts(sorted, '#newArrivalsContainer');
             })
             .fail(function(xhr) {
-                console.error('Failed to load recommended products:', xhr.responseText);
-                container.html('<div class="recommended-loading">Unable to load recommendations.</div>');
+                console.error('Failed to load new arrivals:', xhr.responseText);
+                container.html('<div class="recommended-loading">Unable to load new arrivals.</div>');
             });
     }
 
@@ -1183,6 +1265,16 @@ if (modalLoginForm) {
             sessionStorage.setItem('currentUserEmail', data.email);
             sessionStorage.setItem('currentUserFullName', data.fullName);
 
+            try {
+                const profileResponse = await authFetch(`/api/profile/${encodeURIComponent(data.userId)}`);
+                if (profileResponse.ok) {
+                    const profile = await profileResponse.json();
+                    cacheSellerProfileFlags(profile);
+                }
+            } catch (_) {
+                // Ignore profile hydration failures; role-based fallback remains.
+            }
+
 
             const redirectUrl = sessionStorage.getItem('pendingRedirect');
             sessionStorage.removeItem('pendingRedirect');
@@ -1191,9 +1283,11 @@ if (modalLoginForm) {
                 window.location.href = redirectUrl;
             } else {
                 const role = data.role;
+                const sellerApproved = sessionStorage.getItem('currentUserSellerApproved') === 'true'
+                    && (sessionStorage.getItem('currentUserVerificationStatus') || '').toUpperCase() === 'APPROVED';
                 if (role === 'ADMIN' || role === 'admin') {
                     window.location.href = './admin.html';
-                } else if (role === 'SELLER' || role === 'seller') {
+                } else if (role === 'SELLER' || role === 'seller' || sellerApproved) {
                     window.location.href = './sellerhomeprofile.html';
                 } else {
                     window.location.href = './index.html';

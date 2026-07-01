@@ -63,6 +63,25 @@
             return response.json();
         }
 
+        async function hydrateSellerFlags(userId, token) {
+            if (!userId) return;
+            try {
+                const response = await fetch(`/api/profile/${encodeURIComponent(userId)}`, {
+                    headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+                });
+                if (!response.ok) return;
+                const profile = await response.json();
+                const approved = profile?.sellerApproved === true;
+                const verification = (profile?.verificationStatus || '').toUpperCase();
+                sessionStorage.setItem('currentUserSellerApproved', approved ? 'true' : 'false');
+                if (verification) {
+                    sessionStorage.setItem('currentUserVerificationStatus', verification);
+                }
+            } catch (_) {
+                // Ignore profile hydration failures; role-based fallback remains.
+            }
+        }
+
 
         function showMessage(text, type = 'error') {
             const messageElement = document.getElementById('message');
@@ -97,13 +116,16 @@
                 sessionStorage.setItem('currentUserRole', data.role);
                 sessionStorage.setItem('currentUserEmail', data.email);
                 sessionStorage.setItem('currentUserFullName', data.fullName);
+                await hydrateSellerFlags(data.userId, data.token);
                 // Role-based redirect: only use nextUrl if it was actually set by a redirect
                 const isDefaultUrl = (nextUrl === './index.html' || nextUrl === '/' || nextUrl === '/index.html');
+                const sellerApproved = sessionStorage.getItem('currentUserSellerApproved') === 'true'
+                    && (sessionStorage.getItem('currentUserVerificationStatus') || '').toUpperCase() === 'APPROVED';
                 if (!isDefaultUrl) {
                     window.location.href = nextUrl;
                 } else if (data.role === 'ADMIN' || data.role === 'admin') {
                     window.location.href = './admin.html';
-                } else if (data.role === 'SELLER' || data.role === 'seller') {
+                } else if (data.role === 'SELLER' || data.role === 'seller' || sellerApproved) {
                     window.location.href = './sellerhomeprofile.html';
                 } else {
                     window.location.href = './index.html';

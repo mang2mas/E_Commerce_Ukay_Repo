@@ -106,8 +106,7 @@ public class ProductController {
     }
 
     private String saveProductImage(MultipartFile imageFile) throws IOException {
-        String storageDir = "src/main/resources/static/images/uploaded";
-        Path uploadDir = Paths.get(storageDir);
+        Path uploadDir = Paths.get("uploads", "product-images");
         if (!Files.exists(uploadDir)) {
             Files.createDirectories(uploadDir);
         }
@@ -115,7 +114,7 @@ public class ProductController {
         String extension = "jpg";
         String originalName = imageFile.getOriginalFilename();
         if (originalName != null && originalName.contains(".")) {
-            extension = originalName.substring(originalName.lastIndexOf('.') + 1);
+            extension = originalName.substring(originalName.lastIndexOf('.') + 1).toLowerCase();
         }
 
         String imageName = UUID.randomUUID().toString() + "." + extension;
@@ -132,6 +131,20 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable Integer id, @RequestBody Product product) {
         return ResponseEntity.ok(productService.updateProduct(id, product));
+    }
+
+    @PutMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Product> updateProductImage(
+            @PathVariable Integer id,
+            @RequestPart(value = "image", required = false) MultipartFile imageFile) throws IOException {
+
+        if (imageFile == null || imageFile.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Product update = new Product();
+        update.setImagePath(saveProductImage(imageFile));
+        return ResponseEntity.ok(productService.updateProduct(id, update));
     }
 
 

@@ -71,10 +71,10 @@
 
         <main class="main-content">
             <div class="metrics-grid">
-                <div class="card stat-card"><div class="stat-label">TOTAL ITEMS</div><div class="stat-value">8</div></div>
-                <div class="card stat-card"><div class="stat-label">AVAILABLE</div><div class="stat-value">6</div></div>
-                <div class="card stat-card"><div class="stat-label">SOLD</div><div class="stat-value">13</div></div>
-                <div class="card stat-card"><div class="stat-label">ARCHIVED</div><div class="stat-value">2</div></div>
+                <div class="card stat-card"><div class="stat-label">TOTAL ITEMS</div><div class="stat-value" id="metricTotalItems">0</div></div>
+                <div class="card stat-card"><div class="stat-label">AVAILABLE</div><div class="stat-value" id="metricAvailable">0</div></div>
+                <div class="card stat-card"><div class="stat-label">SOLD</div><div class="stat-value" id="metricSold">0</div></div>
+                <div class="card stat-card"><div class="stat-label">ARCHIVED</div><div class="stat-value" id="metricArchived">0</div></div>
             </div>
 
             <section class="card">
@@ -132,6 +132,8 @@
     </div>
 
     <script>
+        const currentUserId = sessionStorage.getItem('currentUserId');
+        const authToken = sessionStorage.getItem('authToken');
         const editModalOverlay = document.getElementById('editModalOverlay');
         const editProductName = document.getElementById('editProductName');
         const editCategory = document.getElementById('editCategory');
@@ -142,6 +144,41 @@
         const inventoryTableBody = document.getElementById('inventoryTableBody');
         let activeRow = null;
         let activeProductId = null;
+
+        function authHeaders() {
+            return authToken ? { 'Authorization': 'Bearer ' + authToken } : {};
+        }
+
+        async function ensureSellerAccess() {
+            if (!currentUserId) {
+                window.location.href = './login.html?next=./sellerhomeprofile.html';
+                return false;
+            }
+
+            try {
+                const response = await fetch(`/api/profile/${encodeURIComponent(currentUserId)}`, { headers: authHeaders() });
+                if (!response.ok) {
+                    window.location.href = './login.html?next=./sellerregistration.html';
+                    return false;
+                }
+
+                const profile = await response.json();
+                const approved = profile?.sellerApproved === true;
+                const verification = (profile?.verificationStatus || '').toUpperCase();
+                sessionStorage.setItem('currentUserSellerApproved', approved ? 'true' : 'false');
+                sessionStorage.setItem('currentUserVerificationStatus', verification);
+
+                if (!approved || verification !== 'APPROVED') {
+                    window.location.href = './sellerregistration.html';
+                    return false;
+                }
+                return true;
+            } catch (error) {
+                console.error(error);
+                window.location.href = './sellerregistration.html';
+                return false;
+            }
+        }
 
         function mapDisplayStatus(status) {
             if (status === 'AVAILABLE') return 'Active';
@@ -187,11 +224,26 @@
         async function loadInventory() {
             inventoryTableBody.innerHTML = '<tr><td colspan="5">Loading inventory...</td></tr>';
             try {
-                const response = await fetch('/api/products/admin');
-                if (!response.ok) {
+                const productsResponse = await fetch(`/api/products/seller/${encodeURIComponent(currentUserId)}`, { headers: authHeaders() });
+
+                if (!productsResponse.ok) {
                     throw new Error('Unable to load products from server');
                 }
-                const products = await response.json();
+
+                const products = await productsResponse.json();
+
+                const total = Array.isArray(products) ? products.length : 0;
+                const available = Array.isArray(products) ? products.filter(product => (product.status || '').toUpperCase() === 'AVAILABLE').length : 0;
+                const archived = Array.isArray(products) ? products.filter(product => (product.status || '').toUpperCase() === 'ARCHIVED').length : 0;
+                const sold = Array.isArray(products)
+                    ? products.filter(product => (product.status || '').toUpperCase() === 'SOLD').length
+                    : 0;
+
+                document.getElementById('metricTotalItems').textContent = String(total);
+                document.getElementById('metricAvailable').textContent = String(available);
+                document.getElementById('metricArchived').textContent = String(archived);
+                document.getElementById('metricSold').textContent = String(Number.isFinite(sold) ? sold : 0);
+
                 if (!Array.isArray(products) || products.length === 0) {
                     inventoryTableBody.innerHTML = '<tr><td colspan="5">No inventory items found.</td></tr>';
                     return;
@@ -260,7 +312,11 @@
         });
 
         attachInventoryEvents();
-        loadInventory();
+        ensureSellerAccess().then((allowed) => {
+            if (allowed) {
+                loadInventory();
+            }
+        });
     </script>
 </body>
 </html>

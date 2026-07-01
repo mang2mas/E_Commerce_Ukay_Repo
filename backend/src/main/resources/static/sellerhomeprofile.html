@@ -4,450 +4,690 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seller Dashboard - Ukay Ukay</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Base Styles */
-        body { font-family: 'Inter', sans-serif; margin: 0; padding-top: 110px; background-color: #faf9ee; color: #333; }
+        :root {
+            --bg: #f7f2e7;
+            --panel: #ffffff;
+            --ink: #151515;
+            --muted: #6d6558;
+            --accent: #f6c453;
+            --line: #eadfca;
+            --soft: #fffaf0;
+        }
+
         * { box-sizing: border-box; }
-        
-        /* Dashboard Layout Container */
-        .dashboard-container { max-width: 1400px; margin: 0 auto; padding: 20px 40px; display: flex; gap: 40px; }
-        
-        /* Sidebar Navigation */
-        .sidebar { flex: 0 0 220px; display: flex; flex-direction: column; gap: 10px; position: sticky; top: 130px; height: fit-content; }
-        .nav-item { display: flex; align-items: center; gap: 15px; padding: 12px 20px; font-size: 16px; font-weight: 600; color: #555; text-decoration: none; border-radius: 8px; transition: 0.2s; }
-        .nav-item:hover, .nav-item.active { background-color: #e5e5e5; color: #000; }
-        .nav-item i { font-size: 18px; width: 24px; text-align: center; }
 
-        /* Main Content Area */
-        .main-content { flex: 1; display: flex; flex-direction: column; gap: 30px; }
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(246, 196, 83, 0.18), transparent 28%),
+                linear-gradient(180deg, #fbf7ef 0%, #f3ead9 100%);
+            color: var(--ink);
+            min-height: 100vh;
+            padding-top: 96px;
+        }
 
-        /* Card Base Style */
-        .card { background: white; border: 1px solid #e5e5e5; border-radius: 8px; padding: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        
-        /* Profile Header */
-        .profile-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; }
-        .about-section { flex: 1; }
-        .about-section h2 { margin: 0 0 15px 0; font-size: 24px; font-weight: 700; text-transform: uppercase; }
-        .about-section p { font-size: 14px; line-height: 1.6; color: #555; margin-bottom: 10px; }
-        .profile-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 15px; min-width: 200px; }
-        .profile-actions h1 { margin: 0; font-size: 28px; font-weight: 700; color: #000; }
-        .btn-group { display: flex; gap: 10px; }
-        .btn { padding: 10px 20px; font-weight: 700; font-size: 13px; cursor: pointer; border-radius: 4px; transition: all 0.2s; border: none; }
-        .btn-follow { background: #fbce60; color: #000; }
-        .btn-follow:hover { background: #e0b034; }
-        .btn-contact { background: #e5e5e5; color: #000; border: 1px solid #ccc; }
+        .topbar {
+            position: fixed;
+            inset: 0 0 auto 0;
+            z-index: 1000;
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            background: rgba(22, 22, 22, 0.88);
+            backdrop-filter: blur(14px);
+            color: #fff;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
 
-        /* Stats & Analytics Row */
-    
-        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .metric-card { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 25px 15px; }
-        .metric-card i { font-size: 24px; color: #888; margin-bottom: 10px; }
-        .metric-value { font-size: 28px; font-weight: 700; color: #000; margin-bottom: 5px; }
-        .metric-label { font-size: 11px; font-weight: 700; color: #666; text-transform: uppercase; letter-spacing: 0.05em; }
+        .topbar-left, .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
 
-        /* Active Listings Section */
-        .listings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
-        .listings-header h2 { margin: 0; font-size: 20px; font-weight: 700; }
-        .btn-add-product { background: #000; color: #fff; padding: 10px 20px; font-size: 13px; font-weight: 700; border: none; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
-        .btn-add-product:hover { background: #333; }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
 
-        /* Filters */
-        .filters-row { display: flex; gap: 15px; margin-bottom: 30px; }
-        .filter-select { padding: 10px 15px; font-size: 13px; border: 1px solid #ddd; border-radius: 4px; background: #fff; color: #333; cursor: pointer; outline: none; flex: 1; font-family: 'Inter', sans-serif; font-weight: 600; }
-        
-        /* =========================================
-           MASONRY GRID & HOVER OVERLAY CSS
-           ========================================= */
-        .masonry-grid { display: flex; justify-content: space-between; align-items: stretch; gap: 16px; width: 100%; }
-        .masonry-column { display: flex; flex-direction: column; flex: 1; justify-content: flex-start; gap: 16px; }
-        .masonry-item { position: relative; background-color: transparent; border: none; overflow: hidden; cursor: pointer; width: 100%; display: block; }
-        .masonry-item img { width: 100%; height: auto; display: block; object-fit: cover; transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
-        .masonry-item:hover img { transform: scale(1.03); }
-        .item-hover-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.15); opacity: 0; transition: opacity 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; padding: 12px; box-sizing: border-box; z-index: 10; }
-        .masonry-item:hover .item-hover-overlay { opacity: 1; }
-        .overlay-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; }
-        .item-title-badge { background-color: #1a1a1a; color: #ffffff; font-size: 10px; font-weight: 700; letter-spacing: 0.03em; padding: 6px 10px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 82%; }
-        .zoom-icon-circle { background-color: #ffffff; width: 28px; height: 28px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 13px; color: #000000; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-        .overlay-bottom { display: grid; grid-template-columns: 1fr 1fr; width: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
-        .item-price-tag { background-color: #1a1a1a; color: #ffffff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; padding: 8px 4px; }
-        .item-price-tag span { color: #888888; font-size: 9px; margin-left: 3px; }
-        .btn-add-cart-action { background-color: #ffffff; color: #000000; border: 1px solid #1a1a1a; font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s, color 0.2s; }
-        .btn-add-cart-action:hover { background-color: #fbce60; color: #000000; }
+        .brand img {
+            height: 34px;
+            width: auto;
+            display: block;
+        }
 
-        /* Responsive */
-        @media (max-width: 900px) {
-            .dashboard-container { flex-direction: column; }
-            .sidebar { position: relative; top: 0; flex-direction: row; justify-content: center; }
-            .profile-header { flex-direction: column; align-items: center; text-align: center; }
-            .profile-actions { align-items: center; }
-            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
-            .filters-row { flex-wrap: wrap; }
-            .masonry-grid { flex-direction: column; }
+        .pill-toggle {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 999px;
+            padding: 3px;
+        }
+
+        .pill-toggle button,
+        .icon-link,
+        .logout-btn {
+            border: 0;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .pill-toggle button {
+            padding: 8px 18px;
+            border-radius: 999px;
+            background: transparent;
+            color: rgba(255,255,255,0.72);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+        }
+
+        .pill-toggle button.active {
+            background: #fff;
+            color: #111;
+        }
+
+        .icon-link {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            opacity: 0.92;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.12);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.03em;
+        }
+
+        .login-status {
+            font-size: 12px;
+            font-weight: 700;
+            color: #111;
+            background: rgba(255,255,255,0.82);
+            padding: 5px 10px;
+            border-radius: 999px;
+        }
+
+        .page {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 26px 24px 56px;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1.8fr 1fr;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            box-shadow: 0 12px 32px rgba(60, 47, 18, 0.08);
+        }
+
+        .hero-card {
+            padding: 28px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .avatar {
+            width: 96px;
+            height: 96px;
+            border-radius: 24px;
+            background: linear-gradient(145deg, #fff4d5, #f3d98a);
+            border: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .hero-copy h1 {
+            margin: 0 0 8px;
+            font-size: 30px;
+            line-height: 1.05;
+            letter-spacing: -0.04em;
+        }
+
+        .hero-copy p {
+            margin: 0 0 14px;
+            color: var(--muted);
+            line-height: 1.6;
+            max-width: 720px;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+        }
+
+        .btn:hover { transform: translateY(-1px); }
+
+        .btn.primary {
+            background: var(--ink);
+            color: #fff;
+            box-shadow: 0 10px 22px rgba(0,0,0,0.14);
+        }
+
+        .btn.secondary {
+            background: #fff;
+            color: var(--ink);
+            border: 1px solid var(--line);
+        }
+
+        .status-card {
+            padding: 20px;
+            background: linear-gradient(180deg, #fffdf7 0%, #fff7df 100%);
+        }
+
+        .status-card h3 {
+            margin: 0 0 8px;
+            font-size: 18px;
+        }
+
+        .status-card p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .stat {
+            padding: 18px;
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+        }
+
+        .sections {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 18px;
+        }
+
+        .section-card {
+            padding: 22px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: 18px;
+            letter-spacing: -0.02em;
+        }
+
+        .section-header .subtext {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .empty-state {
+            border: 1px dashed #d7c7a8;
+            border-radius: 16px;
+            background: var(--soft);
+            padding: 28px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .empty-state i {
+            font-size: 30px;
+            color: #b89b51;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .empty-state h3 {
+            margin: 0 0 8px;
+            color: var(--ink);
+            font-size: 18px;
+        }
+
+        .empty-state p {
+            margin: 0 auto;
+            max-width: 520px;
+            line-height: 1.6;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 16px;
+        }
+
+        .product-card {
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            overflow: hidden;
+            background: #fff;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.04);
+        }
+
+        .product-card img {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            background: #f3efe6;
+        }
+
+        .product-card-body {
+            padding: 14px;
+        }
+
+        .product-card h4 {
+            margin: 0 0 6px;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .product-card .price {
+            font-size: 14px;
+            font-weight: 800;
+            color: #aa7a00;
+            margin-bottom: 6px;
+        }
+
+        .product-card .meta {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.45;
+        }
+
+        .side-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .side-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid var(--line);
+            background: #fff;
+        }
+
+        .side-item strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .side-item span {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .side-item .value {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--ink);
+        }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 1100px) {
+            .hero, .sections { grid-template-columns: 1fr; }
+            .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+
+        @media (max-width: 720px) {
+            body { padding-top: 90px; }
+            .topbar { padding: 0 14px; }
+            .page { padding: 18px 14px 40px; }
+            .hero-card { flex-direction: column; }
+            .stats { grid-template-columns: 1fr; }
+            .topbar-right { gap: 10px; }
+            .login-status { display: none; }
+            .pill-toggle { display: none; }
         }
     </style>
 </head>
 <body>
-
-    <!-- UNIFORM NAVBAR -->
-    <header style="background-color: rgba(36, 36, 36, 0.50); backdrop-filter: blur(8px); position: fixed; top: 0; left: 0; width: 100%; height: 90px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 9999;">
-        <div style="display: flex; align-items: center; gap: 30px;">
-            <button style="background:none; border:none; color:white; font-size:20px; cursor:pointer;"><i class="fa-solid fa-magnifying-glass"></i></button>
-            <img src="/images/logo.png" style="height: 36px; width: auto;" alt="Ukay Ukay">
+    <header class="topbar">
+        <div class="topbar-left">
+            <div class="brand">
+                <img src="/images/logo.png" alt="Ukay Ukay">
+                <span>Seller Portal</span>
+            </div>
         </div>
-        
-        <div style="display: flex; align-items: center; gap: 24px; position: relative; z-index: 10000;">
-            <!-- Buy/Sell Toggle -->
-            <div style="display: flex; background-color: rgba(255,255,255,0.2); padding: 3px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.3); margin-right: 12px; backdrop-filter: blur(8px);">
-                <button onclick="window.location.href='./index.html'" style="background: none; color: rgba(255,255,255,0.7); border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">BUY</button>
-                <button style="background-color: #ffffff; color: #000000; border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">SELL</button>
+        <div class="topbar-right">
+            <div class="pill-toggle">
+                <button type="button" onclick="window.location.href='./index.html'">BUY</button>
+                <button type="button" class="active">SELL</button>
             </div>
-    
-            <a href="index.html" style="color:white; text-decoration:none; font-size:20px;"><i class="fa-solid fa-house"></i></a>
-            <a href="sellerhomeprofile.html" style="color:white; text-decoration:none; font-size:20px;"><i class="fa-regular fa-user"></i></a>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <a href="shoppingcart.html" style="color:white; text-decoration:none; font-size:20px;"><i class="fa-solid fa-bag-shopping"></i></a>
-                <button onclick="sessionStorage.removeItem('pendingRedirect');sessionStorage.clear();window.location.replace('./login.html?loggedOut=1');" style="color:white;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);padding:6px 14px;font-size:12px;font-weight:700;border-radius:4px;cursor:pointer;">LOG OUT</button>
-                <span id="loginStatus" style="color: #000000; font-size: 12px; font-weight: 600; background-color: rgba(255, 255, 255, 0.7); padding: 4px 8px; border-radius: 4px;">Not logged in</span>
-            </div>
+            <a class="icon-link" href="./index.html" aria-label="Home"><i class="fa-solid fa-house"></i></a>
+            <a class="icon-link" href="./sellerhomeprofile.html" aria-label="Seller dashboard"><i class="fa-regular fa-user"></i></a>
+            <a class="icon-link" href="./shoppingcart.html" aria-label="Cart"><i class="fa-solid fa-bag-shopping"></i></a>
+            <button class="logout-btn" id="logoutBtn" type="button">LOG OUT</button>
+            <span class="login-status" id="loginStatus">Not logged in</span>
         </div>
     </header>
 
-    <div class="dashboard-container">
-        
-        <!-- SIDEBAR -->
-        <aside class="sidebar">
-            <a href="./sellerhomeprofile.html" class="nav-item active"><i class="fa-solid fa-house"></i> Home</a>
-            <a href="./inventorymanagement.html" class="nav-item"><i class="fa-solid fa-box"></i> Inventory</a>
-            <a href="./revenue.html" class="nav-item"><i class="fa-solid fa-chart-simple"></i> Analytics</a>
-            <a href="./addproduct.html" class="nav-item"><i class="fa-solid fa-plus"></i> Add Product</a>
-            <a href="#" class="nav-item" onclick="sessionStorage.removeItem('pendingRedirect');sessionStorage.clear();window.location.replace('./login.html?loggedOut=1');return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
-        </aside>
-
-        <!-- MAIN DASHBOARD CONTENT -->
-        <main class="main-content">
-
-            <div id="sellerStatusBanner" class="card" style="display:none; border-left: 6px solid #fbce60;">
-                <h3 id="sellerStatusTitle" style="margin:0 0 8px 0; font-size:18px;">Seller Verification Pending</h3>
-                <p id="sellerStatusMessage" style="margin:0; color:#555; line-height:1.5;">
-                    Your seller profile is under review. Product posting is temporarily disabled until approval.
-                </p>
-            </div>
-            
-           <!-- Profile Info Card -->
-            <div class="card profile-header">
-                <div class="about-section">
-                    <h2>ABOUT @aestheThrift</h2>
-                    <p>Welcome to @aestheThrift!</p>
-                    <p>We specialize in handpicked thrifted clothing that combines style, affordability, and sustainability. From vintage gems to everyday essentials, our collection is perfect for fashion lovers who want unique pieces without breaking the bank.</p>
-                    <p>Every purchase supports a more eco-friendly future while helping you build a wardrobe that's truly your own.</p>
+    <main class="page">
+        <section class="hero">
+            <article class="card hero-card">
+                <div class="avatar">
+                    <img id="sellerAvatar" src="/images/profile-placeholder.jpg" alt="Seller profile">
                 </div>
-                <div class="profile-actions">
-                    <img src="/images/profile-placeholder.jpg" alt="@aestheThrift" class="seller-profile-img">
-                    <h1>@aestheThrift</h1>
-                </div>
-            </div>
-
-            <!-- Metrics Grid -->
-            <!-- Metrics Grid -->
-            <div class="metrics-grid">
-                <div class="card metric-card">
-                    <i class="fa-solid fa-star" style="color: #fbce60;"></i>
-                    <div class="metric-value">4.7</div>
-                    <div class="metric-label">Based on 67 Reviews</div>
-                </div>
-                <div class="card metric-card">
-                    <i class="fa-solid fa-peso-sign"></i>
-                    <div class="metric-value">3,240</div>
-                    <div class="metric-label">Revenue This Month</div>
-                </div>
-                <div class="card metric-card">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <div class="metric-value">₱249</div>
-                    <div class="metric-label">Average Sale Price</div>
-                </div>
-                
-                <div class="card metric-card">
-                    <i class="fa-solid fa-bag-shopping"></i>
-                    <div class="metric-value">67</div>
-                    <div class="metric-label">Items Sold</div>
-                </div>
-                <div class="card metric-card">
-                    <i class="fa-solid fa-tags"></i>
-                    <div class="metric-value">67</div>
-                    <div class="metric-label">Active Listings</div>
-                </div>
-                <div class="card metric-card">
-                    <i class="fa-solid fa-truck-fast"></i>
-                    <div class="metric-value">1 - 2</div>
-                    <div class="metric-label">Days to Ship Avg</div>
-                </div>
-            </div>
-
-            <!-- Active Listings & Grid -->
-            <div class="card">
-                <div class="listings-header">
-                    <h2>ACTIVE LISTINGS</h2>
-                    <button class="btn-add-product" onclick="window.location.href='addproduct.html'">
-                        <i class="fa-solid fa-square-plus"></i> ADD PRODUCT
-                    </button>
-                </div>
-
-                <!-- Filters -->
-                <div class="filters-row">
-                    <select class="filter-select">
-                        <option>Categories</option>
-                        <option>Tops</option>
-                        <option>Bottoms</option>
-                        <option>Outerwear</option>
-                        <option>Bags</option>
-                        <option>Accessories</option>
-                    </select>
-                    <select class="filter-select">
-                        <option>Size</option>
-                        <option>Small</option>
-                        <option>Medium</option>
-                        <option>Large</option>
-                    </select>
-                    <select class="filter-select">
-                        <option>Condition</option>
-                        <option>New</option>
-                        <option>Like New</option>
-                        <option>Good</option>
-                    </select>
-                    <select class="filter-select">
-                        <option>Sort By</option>
-                        <option>Newest</option>
-                        <option>Price: Low to High</option>
-                        <option>Price: High to Low</option>
-                    </select>
-                </div>
-
-                <!-- Masonry Grid -->
-                <div class="masonry-grid">
-                    <!-- COLUMN 1 -->
-                    <div class="masonry-column">
-                        <div class="masonry-item">
-                            <img src="/images/item1.jpg" alt="Vintage Top">
-                            <div class="item-hover-overlay">
-                                <div class="overlay-top">
-                                    <div class="item-title-badge">VINTAGE TOP</div>
-                                    <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                                </div>
-                                <div class="overlay-bottom">
-                                    <div class="item-price-tag">₱390.00 <span>PHP</span></div>
-                                    <button class="btn-add-cart-action">ADD TO CART</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="masonry-item">
-                            <img src="/images/item2.jpg" alt="Retro Blouse">
-                            <div class="item-hover-overlay">
-                                <div class="overlay-top">
-                                    <div class="item-title-badge">RETRO BLOUSE</div>
-                                    <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                                </div>
-                                <div class="overlay-bottom">
-                                    <div class="item-price-tag">₱450.00 <span>PHP</span></div>
-                                    <button class="btn-add-cart-action">ADD TO CART</button>
-                                </div>
-                            </div>
-                        </div>
+                <div class="hero-copy">
+                    <h1 id="welcomeTitle">Your seller dashboard is ready</h1>
+                    <p id="welcomeText">This space starts clean for new approved sellers. Add your first product, set up your shop details, and begin building your storefront.</p>
+                    <div class="hero-actions">
+                        <a class="btn primary" id="addProductCta" href="./addproduct.html"><i class="fa-solid fa-plus"></i> Add Product</a>
+                        <a class="btn secondary" href="./inventorymanagement.html"><i class="fa-solid fa-boxes-stacked"></i> Inventory</a>
+                        <a class="btn secondary" href="./revenue.html"><i class="fa-solid fa-chart-line"></i> Analytics</a>
                     </div>
+                </div>
+            </article>
 
-                    <!-- COLUMN 2 -->
-                    <div class="masonry-column">
-                        <div class="masonry-item">
-                            <img src="/images/item4.jpg" alt="Brown Jacket">
-                            <div class="item-hover-overlay">
-                                <div class="overlay-top">
-                                    <div class="item-title-badge">BROWN JACKET</div>
-                                    <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                                </div>
-                                <div class="overlay-bottom">
-                                    <div class="item-price-tag">₱550.00 <span>PHP</span></div>
-                                    <button class="btn-add-cart-action">ADD TO CART</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="masonry-item">
-                            <img src="/images/item5.jpg" alt="Denim Skirt">
-                            <div class="item-hover-overlay">
-                                <div class="overlay-top">
-                                    <div class="item-title-badge">DENIM SKIRT</div>
-                                    <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                                </div>
-                                <div class="overlay-bottom">
-                                    <div class="item-price-tag">₱380.00 <span>PHP</span></div>
-                                    <button class="btn-add-cart-action">ADD TO CART</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <aside class="card status-card" id="sellerStatusBanner" style="display:none;">
+                <h3 id="sellerStatusTitle">Seller Verification Pending</h3>
+                <p id="sellerStatusMessage">Your seller profile is under review. Product posting is temporarily disabled until approval.</p>
+            </aside>
+        </section>
 
-                    <!-- COLUMN 3 -->
-                    <div class="masonry-column">
-                        <div class="masonry-item">
-                            <img src="/images/item7.jpg" alt="Pleated Pants">
-                            <div class="item-hover-overlay">
-                                <div class="overlay-top">
-                                    <div class="item-title-badge">PLEATED PANTS</div>
-                                    <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                                </div>
-                                <div class="overlay-bottom">
-                                    <div class="item-price-tag">₱490.00 <span>PHP</span></div>
-                                    <button class="btn-add-cart-action">ADD TO CART</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="masonry-item">
-                            <img src="/images/item8.jpg" alt="Lace Dress">
-                            <div class="item-hover-overlay">
-                                <div class="overlay-top">
-                                    <div class="item-title-badge">LACE DRESS</div>
-                                    <div class="zoom-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
-                                </div>
-                                <div class="overlay-bottom">
-                                    <div class="item-price-tag">₱620.00 <span>PHP</span></div>
-                                    <button class="btn-add-cart-action">ADD TO CART</button>
-                                </div>
-                            </div>
-                        </div>
+        <section class="stats">
+            <article class="card stat">
+                <div class="stat-label">Products listed</div>
+                <div class="stat-value" id="statProducts">0</div>
+            </article>
+            <article class="card stat">
+                <div class="stat-label">Active listings</div>
+                <div class="stat-value" id="statActiveListings">0</div>
+            </article>
+            <article class="card stat">
+                <div class="stat-label">Orders completed</div>
+                <div class="stat-value" id="statOrders">0</div>
+            </article>
+            <article class="card stat">
+                <div class="stat-label">Revenue this month</div>
+                <div class="stat-value" id="statRevenue">₱0</div>
+            </article>
+        </section>
+
+        <section class="sections">
+            <article class="card section-card">
+                <div class="section-header">
+                    <div>
+                        <h2>Shop overview</h2>
+                        <div class="subtext" id="shopSummary">No shop details yet.</div>
                     </div>
                 </div>
 
+                <div class="empty-state" id="shopEmptyState">
+                    <i class="fa-solid fa-store"></i>
+                    <h3>Nothing here yet</h3>
+                    <p>As a new seller, your dashboard starts empty. Add shop details and product listings to make this area come alive.</p>
+                </div>
+            </article>
+
+            <article class="card section-card">
+                <div class="section-header">
+                    <div>
+                        <h2>Next steps</h2>
+                        <div class="subtext">The fastest way to get started</div>
+                    </div>
+                </div>
+                <div class="side-list">
+                    <div class="side-item">
+                        <div>
+                            <strong>1. Complete your shop profile</strong>
+                            <span>Add your shop name, description, and banner image.</span>
+                        </div>
+                    </div>
+                    <div class="side-item">
+                        <div>
+                            <strong>2. Upload your first product</strong>
+                            <span>Use the Add Product page to publish an item.</span>
+                        </div>
+                    </div>
+                    <div class="side-item">
+                        <div>
+                            <strong>3. Check revenue and inventory</strong>
+                            <span>Track listings, orders, and sales from the side pages.</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="card section-card" style="margin-top:18px;">
+            <div class="section-header">
+                <div>
+                    <h2>Your products</h2>
+                    <div class="subtext">Only live product cards appear here.</div>
+                </div>
+                <a id="addProductSecondaryCta" class="btn secondary" href="./addproduct.html"><i class="fa-solid fa-plus"></i> Add Product</a>
             </div>
-        </main>
-    </div>
+            <div id="productGrid" class="product-grid"></div>
+            <div id="productEmptyState" class="empty-state">
+                <i class="fa-solid fa-box-open"></i>
+                <h3>No products listed yet</h3>
+                <p>Start with your first listing. Once products are added, they will appear here automatically with live edit links.</p>
+            </div>
+        </section>
+    </main>
 
-<script src="/js/jquery-3.6.0.min.js"></script>
-<script>
-    const userId = sessionStorage.getItem('currentUserId');
-    const token = sessionStorage.getItem('authToken');
-    const role = sessionStorage.getItem('currentUserRole');
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <script>
+        const userId = sessionStorage.getItem('currentUserId');
+        const token = sessionStorage.getItem('authToken');
+        const role = (sessionStorage.getItem('currentUserRole') || '').toLowerCase();
+        const sessionApproved = sessionStorage.getItem('currentUserSellerApproved') === 'true';
+        const sessionVerification = (sessionStorage.getItem('currentUserVerificationStatus') || '').toUpperCase();
+        const fullName = sessionStorage.getItem('currentUserFullName') || 'Seller';
 
-    if (!userId) { window.location.href = './login.html?next=./sellerhomeprofile.html'; }
-
-    function authHeader() { return token ? { 'Authorization': 'Bearer ' + token } : {}; }
-
-    const fullName = sessionStorage.getItem('currentUserFullName');
-    if (fullName) document.getElementById('loginStatus').textContent = fullName;
-
-    function toggleSellerActionAvailability(allowPosting) {
-        const addProductBtn = document.querySelector('.btn-add-product');
-        const addProductNav = document.querySelector('a[href="./addproduct.html"]');
-
-        if (addProductBtn) {
-            addProductBtn.disabled = !allowPosting;
-            addProductBtn.style.opacity = allowPosting ? '1' : '0.5';
-            addProductBtn.style.cursor = allowPosting ? 'pointer' : 'not-allowed';
+        if (!userId) {
+            window.location.href = './login.html?next=./sellerhomeprofile.html';
         }
-        if (addProductNav) {
-            addProductNav.style.pointerEvents = allowPosting ? 'auto' : 'none';
-            addProductNav.style.opacity = allowPosting ? '1' : '0.5';
+
+        if (role !== 'seller' && role !== 'admin' && !(sessionApproved && sessionVerification === 'APPROVED')) {
+            window.location.href = './login.html?next=./sellerregistration.html';
         }
-    }
 
-    fetch('/api/profile/' + userId, { headers: authHeader() })
-        .then(r => r.ok ? r.json() : null)
-        .then(profile => {
-            if (!profile) return;
-            const banner = document.getElementById('sellerStatusBanner');
-            const title = document.getElementById('sellerStatusTitle');
-            const message = document.getElementById('sellerStatusMessage');
-            const status = (profile.verificationStatus || 'PENDING').toUpperCase();
+        function authHeader() {
+            return token ? { 'Authorization': 'Bearer ' + token } : {};
+        }
 
-            if (status === 'APPROVED' && profile.sellerApproved === true) {
-                toggleSellerActionAvailability(true);
+        function logout() {
+            sessionStorage.removeItem('pendingRedirect');
+            sessionStorage.clear();
+            window.location.replace('./login.html?loggedOut=1');
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+        document.getElementById('loginStatus').textContent = fullName;
+
+        function setAddProductEnabled(enabled) {
+            const ctas = [document.getElementById('addProductCta'), document.getElementById('addProductSecondaryCta')];
+            ctas.forEach((cta) => {
+                if (!cta) return;
+                cta.style.pointerEvents = enabled ? 'auto' : 'none';
+                cta.style.opacity = enabled ? '1' : '0.55';
+                cta.style.filter = enabled ? 'none' : 'grayscale(0.2)';
+            });
+        }
+
+        function formatCurrency(value) {
+            const amount = Number(value || 0);
+            return `₱${Number.isNaN(amount) ? 0 : amount.toFixed(0)}`;
+        }
+
+        function renderProducts(products) {
+            const grid = document.getElementById('productGrid');
+            const empty = document.getElementById('productEmptyState');
+            grid.innerHTML = '';
+
+            if (!products || products.length === 0) {
+                empty.style.display = 'block';
+                document.getElementById('statProducts').textContent = '0';
+                document.getElementById('statActiveListings').textContent = '0';
                 return;
             }
 
-            banner.style.display = 'block';
-            if (status === 'REJECTED') {
-                banner.style.borderLeftColor = '#d9534f';
-                title.textContent = 'Seller Verification Rejected';
-                message.textContent = 'Your registration was rejected. Please update your documents and submit a new request.';
-            } else {
-                banner.style.borderLeftColor = '#fbce60';
-                title.textContent = 'Seller Verification Pending';
-                message.textContent = 'Your seller profile is under review. Product posting is temporarily disabled until approval.';
-            }
-            toggleSellerActionAvailability(false);
-        })
-        .catch(() => {
-            toggleSellerActionAvailability(false);
-        });
+            empty.style.display = 'none';
+            document.getElementById('statProducts').textContent = String(products.length);
+            document.getElementById('statActiveListings').textContent = String(products.length);
 
-    // Load seller shop data
-    fetch('/api/shops/seller/' + userId, { headers: authHeader() })
-        .then(r => r.ok ? r.json() : null)
-        .then(shop => {
-            if (shop) {
-                const aboutEl = document.querySelector('.about-section h2');
-                const descEls = document.querySelectorAll('.about-section p');
-                if (aboutEl && shop.shopName) aboutEl.textContent = 'ABOUT @' + shop.shopName;
-                if (descEls[0] && shop.description) descEls[0].textContent = shop.description;
-                const nameEl = document.querySelector('.profile-actions h1');
-                if (nameEl && shop.shopName) nameEl.textContent = '@' + shop.shopName;
-            }
-        })
-        .catch(() => {});
-
-    // Load seller dashboard metrics
-    fetch('/api/shops/seller/' + userId + '/dashboard', { headers: authHeader() })
-        .then(r => r.ok ? r.json() : null)
-        .then(data => {
-            if (!data) return;
-            const metricValues = document.querySelectorAll('.metric-value');
-            if (metricValues[0] && data.averageRating != null) metricValues[0].textContent = parseFloat(data.averageRating).toFixed(1);
-            if (metricValues[1] && data.revenueThisMonth != null) metricValues[1].textContent = '₱' + parseFloat(data.revenueThisMonth).toFixed(0);
-            if (metricValues[2] && data.averageSalePrice != null) metricValues[2].textContent = '₱' + parseFloat(data.averageSalePrice).toFixed(0);
-            if (metricValues[3] && data.totalItemsSold != null) metricValues[3].textContent = data.totalItemsSold;
-            if (metricValues[4] && data.activeListings != null) metricValues[4].textContent = data.activeListings;
-        })
-        .catch(() => {});
-
-    // Load seller products into the masonry grid
-    fetch('/api/products/seller/' + userId, { headers: authHeader() })
-        .then(r => r.ok ? r.json() : [])
-        .then(products => {
-            if (!products || products.length === 0) return;
-            const grid = document.querySelector('.masonry-grid');
-            if (!grid) return;
-            grid.innerHTML = '';
-            const columns = [[], [], []];
-            products.forEach((p, i) => columns[i % 3].push(p));
-            columns.forEach(function(col) {
-                if (col.length === 0) return;
-                const colDiv = document.createElement('div');
-                colDiv.className = 'masonry-column';
-                col.forEach(function(p) {
-                    const pid = p.productId || p.id;
-                    const img = p.imagePath || '/images/item1.jpg';
-                    const name = p.itemName || 'Item';
-                    const price = parseFloat(p.price || 0).toFixed(2);
-                    colDiv.innerHTML += `
-                        <div class="masonry-item" onclick="window.location.href='./editproduct.html?productId=${pid}'">
-                            <img src="${img}" alt="${name}" onerror="this.src='/images/item1.jpg'">
-                            <div class="item-hover-overlay">
-                                <div class="overlay-top">
-                                    <div class="item-title-badge">${name}</div>
-                                    <div class="zoom-icon-circle"><i class="fa-solid fa-pen"></i></div>
-                                </div>
-                                <div class="overlay-bottom">
-                                    <div class="item-price-tag">₱${price} <span>PHP</span></div>
-                                    <button class="btn-add-cart-action" onclick="event.stopPropagation();window.location.href='./editproduct.html?productId=${pid}'">EDIT</button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+            products.forEach((product) => {
+                const productId = product.productId || product.id;
+                const title = product.itemName || 'Untitled product';
+                const price = formatCurrency(product.price);
+                const imagePath = product.imagePath || '/images/item1.jpg';
+                const description = (product.description || 'No description yet.').trim();
+                const card = document.createElement('article');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${imagePath}" alt="${title}" onerror="this.src='/images/item1.jpg'">
+                    <div class="product-card-body">
+                        <h4>${title}</h4>
+                        <div class="price">${price}</div>
+                        <div class="meta">${description.length > 110 ? description.slice(0, 110) + '…' : description}</div>
+                    </div>
+                `;
+                card.addEventListener('click', () => {
+                    window.location.href = `./editproduct.html?productId=${encodeURIComponent(productId)}`;
                 });
-                grid.appendChild(colDiv);
+                grid.appendChild(card);
             });
-        })
-        .catch(() => {});
-</script>
+        }
 
+        async function loadSellerData() {
+            try {
+                const profileResponse = await fetch(`/api/profile/${encodeURIComponent(userId)}`, { headers: authHeader() });
+                if (!profileResponse.ok) {
+                    document.getElementById('sellerStatusBanner').style.display = 'block';
+                    document.getElementById('sellerStatusTitle').textContent = 'Seller profile unavailable';
+                    document.getElementById('sellerStatusMessage').textContent = 'We could not load your seller profile. Please sign in again and refresh the page.';
+                    setAddProductEnabled(false);
+                    renderProducts([]);
+                    return;
+                }
+
+                const profile = await profileResponse.json();
+                const status = (profile?.verificationStatus || 'PENDING').toUpperCase();
+                const approved = profile?.sellerApproved === true && status === 'APPROVED';
+                sessionStorage.setItem('currentUserSellerApproved', approved ? 'true' : 'false');
+                sessionStorage.setItem('currentUserVerificationStatus', status);
+                const displayName = profile?.businessName || fullName || profile?.fullName || 'Seller';
+                const welcomeTitle = document.getElementById('welcomeTitle');
+                const welcomeText = document.getElementById('welcomeText');
+                const shopSummary = document.getElementById('shopSummary');
+                const sellerAvatar = document.getElementById('sellerAvatar');
+
+                if (welcomeTitle) welcomeTitle.textContent = `${displayName}'s dashboard`;
+                if (welcomeText) {
+                    welcomeText.textContent = approved
+                        ? 'Your seller account is approved. Start by adding your first product and setting up your shop profile.'
+                        : 'Your seller account is awaiting approval. Finish setup now so you can start selling as soon as review is complete.';
+                }
+                if (shopSummary) {
+                    shopSummary.textContent = approved
+                        ? 'Approved seller account. Ready for your first listings.'
+                        : 'Verification pending. Shop actions are limited until approval.';
+                }
+                if (sellerAvatar && profile?.businessPermitUrl) {
+                    sellerAvatar.src = profile.businessPermitUrl;
+                }
+
+                if (!approved) {
+                    document.getElementById('sellerStatusBanner').style.display = 'block';
+                    document.getElementById('sellerStatusTitle').textContent = 'Seller Verification Pending';
+                    document.getElementById('sellerStatusMessage').textContent = 'Your seller profile is under review. Product posting is disabled until approval.';
+                }
+
+                setAddProductEnabled(approved);
+
+                const productResponse = await fetch(`/api/products/seller/${encodeURIComponent(userId)}`, { headers: authHeader() });
+                const products = productResponse.ok ? await productResponse.json() : [];
+
+                renderProducts(products || []);
+            } catch (error) {
+                console.error('Seller dashboard load error:', error);
+                renderProducts([]);
+                setAddProductEnabled(false);
+                document.getElementById('sellerStatusBanner').style.display = 'block';
+                document.getElementById('sellerStatusTitle').textContent = 'Dashboard unavailable';
+                document.getElementById('sellerStatusMessage').textContent = 'Unable to load seller data right now. Please refresh the page.';
+            }
+        }
+
+        loadSellerData();
+    </script>
 </body>
 </html>

@@ -1,421 +1,608 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="initial-scale=1, width=device-width" />
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product - Ukay Ukay</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/globals.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; margin: 0; padding-top: 110px; background-color: #faf9ee; color: #333; }
+        * { box-sizing: border-box; }
 
-    <link rel="stylesheet" href="./css/globals.css" />
-    <link rel="stylesheet" href="./css/editproduct.css" />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap"
-    />
-  </head>
-  <body>
-    <div class="edit-product">
-      <img
-        class="image-27-icon"
-        loading="lazy"
-        alt=""
-        src="./public/image-274@2x.png"
-      />
+        .layout-container { max-width: 1200px; margin: 0 auto; display: flex; gap: 40px; padding: 20px; align-items: start; }
+        .preview-section { flex: 1; background: #fff; padding: 25px; border-radius: 6px; border: 1px solid #e5e5e5; }
+        .preview-box {
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            height: 320px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fdfdfd;
+            color: #666;
+            margin-bottom: 14px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .preview-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .preview-note { margin: 0; font-size: 12px; color: #666; }
 
-      <main class="main-area">
-        <div class="header-seller">
-          <img class="home-1-icon" alt="" src="./public/home-1@2x.png" />
+        .form-section { flex: 2; background: #fff; padding: 40px; border-radius: 6px; border: 1px solid #e5e5e5; }
+        .form-section h3 { margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 18px; }
 
-          <button class="rectangle-parent">
-            <img class="group-child" alt="" src="./public/Rectangle-286.svg" />
+        .form-row { display: flex; gap: 20px; margin-bottom: 20px; }
+        .form-group { flex: 1; display: flex; flex-direction: column; }
+        .form-group label { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+        .form-group input[type="text"], .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            outline: none;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #fbce60; }
 
-            <img class="group-item" alt="" src="./public/Rectangle-286.svg" />
+        .pill-group { display: flex; flex-wrap: wrap; gap: 10px; }
+        .pill-label { display: block; position: relative; cursor: pointer; }
+        .pill-label input { position: absolute; opacity: 0; cursor: pointer; }
+        .pill-text { display: block; padding: 8px 16px; background: #f5f5f5; border: 1px solid #e5e5e5; border-radius: 20px; font-size: 13px; transition: all 0.2s; }
+        .pill-label input:checked ~ .pill-text { background: #fbce60; border-color: #f7b92c; font-weight: 600; }
 
-            <div class="sell">SELL</div>
-            <div class="buy-wrapper">
-              <div class="buy">BUY</div>
-            </div>
-          </button>
-          <img
-            class="header-seller-child"
-            loading="lazy"
-            alt=""
-            src="./public/Group-182@2x.png"
-          />
+        .color-group { display: flex; flex-wrap: wrap; gap: 12px; }
+        .color-swatch { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #ddd; cursor: pointer; display: inline-block; }
+        .color-swatch.active { border: 2px solid #333; transform: scale(1.1); }
+        .bg-black { background: #000; } .bg-white { background: #fff; } .bg-red { background: #ff4d4d; } .bg-orange { background: #ffa64d; }
+        .bg-yellow { background: #ffd24d; } .bg-green { background: #4dff4d; } .bg-blue { background: #4d4dff; } .bg-purple { background: #b34dff; }
+        .bg-pink { background: #ff4da6; } .bg-brown { background: #8b4513; } .bg-gray { background: #808080; }
 
-          <img
-            class="untitled-design-3-removebg-p-icon"
-            loading="lazy"
-            alt=""
-            src="./public/Untitled-design-3-removebg-preview-1@2x.png"
-          />
+        .tag-input-row { display: flex; gap: 10px; align-items: center; }
+        .tag-input-row input { flex: 1; }
+        .btn-tag-add { border: 1px solid #d9d9d9; background: #fff; border-radius: 6px; padding: 10px 14px; font-size: 12px; font-weight: 700; cursor: pointer; }
+        .btn-tag-add:hover { background: #fafafa; }
+        .tags-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .tag-chip { background: #f5f5f5; padding: 6px 10px; border-radius: 16px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+        .tag-remove { border: none; background: transparent; padding: 0; line-height: 1; font-size: 14px; cursor: pointer; color: #666; }
+        .tag-remove:hover { color: #222; }
 
-          <div class="header-seller-item"></div>
+        .action-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; gap: 12px; }
+        .action-buttons { display: flex; gap: 10px; }
+        .btn-primary { background: #fbce60; border: none; padding: 12px 26px; font-weight: 700; font-size: 14px; border-radius: 4px; cursor: pointer; }
+        .btn-primary:hover { background: #f7b92c; }
+        .btn-danger { background: #fff; border: 1px solid #df4c4c; color: #df4c4c; padding: 12px 20px; font-weight: 700; font-size: 14px; border-radius: 4px; cursor: pointer; }
+        .btn-danger:hover { background: #fff5f5; }
+
+        .status-line { min-height: 18px; font-size: 13px; margin-top: 8px; }
+        .status-line.error { color: #b42318; }
+        .status-line.success { color: #067647; }
+
+        @media (max-width: 980px) {
+            .layout-container { flex-direction: column; }
+            .form-row { flex-direction: column; }
+            .action-row { flex-direction: column; align-items: stretch; }
+            .action-buttons { width: 100%; }
+            .action-buttons button { flex: 1; }
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar" style="background-color: rgba(36, 36, 36, 0.50); backdrop-filter: blur(8px); position: fixed; top: 0; left: 0; width: 100%; height: 90px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 9999;">
+        <div class="nav-left" style="display: flex; align-items: center; gap: 30px;">
+            <button style="background:none; border:none; color:white; font-size:20px; cursor:pointer;"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <img src="/images/logo.png" style="height: 36px; width: auto;" alt="Ukay Ukay">
         </div>
-        <section class="form-content">
-          <div class="form-content2">
-            <div class="form-content3">
-              <section class="frame">
-                <div class="frame2">
-                  <h3 class="basic-product-information">
-                    Basic Product Information
-                  </h3>
-                  <div class="form-columns">
-                    <div class="left-column">
-                      <div class="product-name-field">
-                        <div class="product-name">Product Name</div>
-                        <input class="product-name-field-child" type="text" />
-                      </div>
-                      <div class="brand-name-field">
-                        <div class="product-name">Brand Name</div>
-                        <input class="product-name-field-child" type="text" />
-                      </div>
-                      <div class="product-description-field">
-                        <div class="product-name">Product Description</div>
-                        <div class="product-description-field-child"></div>
-                      </div>
-                    </div>
-                    <div class="right-column">
-                      <div class="price-field">
-                        <div class="product-name">Price</div>
-                        <input class="price-field-child" type="text" />
+        <div class="nav-right" style="display: flex; align-items: center; gap: 24px;">
+            <div class="toggle-container" style="display: flex; background-color: rgba(255,255,255,0.2); padding: 3px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.3); margin-right: 12px;">
+                <button class="toggle-btn" style="background-color: #ffffff; color: #000000; border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">BUY</button>
+                <button class="toggle-btn" onclick="if (!(window.handleSellEntryAction && window.handleSellEntryAction(event))) { const r=(sessionStorage.getItem('currentUserRole')||'').toLowerCase(); if (r==='admin') { window.location.href='./admin.html'; } else if (r==='seller') { window.location.href='./sellerhomeprofile.html'; } else { window.location.href='./sellerregistration.html'; } }" style="background: none; color: rgba(255,255,255,0.7); border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">SELL</button>
+            </div>
+            <a href="index.html" style="color:white; text-decoration:none; font-size:20px; cursor:pointer;"><i class="fa-solid fa-house"></i></a>
+            <a href="sellerhomeprofile.html" style="color:white; text-decoration:none; font-size:20px; cursor:pointer;"><i class="fa-regular fa-user"></i></a>
+            <a href="shoppingcart.html" style="color:white; text-decoration:none; font-size:20px; cursor:pointer;"><i class="fa-solid fa-bag-shopping"></i></a>
+            <span style="color: #ffffff; font-size: 14px;">Edit Product</span>
+        </div>
+    </header>
 
-                        <div class="discount-field">
-                          <div class="add-discount-wrapper">
-                            <div class="add-discount">Add Discount</div>
-                          </div>
-                          <div class="discount-input-row">
-                            <div class="checks">
-                              <div class="checkbox-1"></div>
-                              <img
-                                class="square-1-icon"
-                                alt=""
-                                src="./public/square-1.svg"
-                              />
-                            </div>
-                            <div class="frame3">
-                              <div class="div">%</div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="categories-field">
-                        <div class="product-name">Categories</div>
-                        <div class="single-select-component">
-                          <div class="radio-button-option">
-                            <input class="radio-button" type="radio" />
+    <main class="layout-container">
+        <aside class="preview-section">
+            <input type="file" id="productPhotoInput" accept="image/*" style="display:none;">
+            <div class="preview-box" id="imagePreviewBox">No image</div>
+            <p class="preview-note">Click the image area to upload a new photo, then press Save Changes.</p>
+        </aside>
 
-                            <div class="radio-button-option2">Tops</div>
-                          </div>
-                          <div class="radio-button-option">
-                            <input class="radio-button" type="radio" />
-
-                            <div class="radio-button-option2">Bottoms</div>
-                          </div>
-                          <div class="radio-button-option">
-                            <input class="radio-button" type="radio" />
-
-                            <div class="radio-button-option2">Outerwear</div>
-                          </div>
-                          <div class="radio-button-option">
-                            <input class="radio-button" type="radio" />
-
-                            <div class="radio-button-option2">Bags</div>
-                          </div>
-                          <div class="radio-button-option">
-                            <input class="radio-button" type="radio" />
-
-                            <div class="radio-button-option2">Accessories</div>
-                          </div>
-                          <div class="radio-button-option11">
-                            <div class="radio-button6">
-                              <div class="radio-button-child"></div>
-                            </div>
-                            <div class="radio-button-option2">
-                              Radio button option
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+        <section class="form-section">
+            <h3>Edit Product</h3>
+            <div class="form-row">
+                <div class="form-group" style="flex: 2;">
+                    <label>Product Name</label>
+                    <input type="text" id="productNameInput" placeholder="Product name">
                 </div>
-              </section>
-              <section class="frame4">
-                <div class="frame5">
-                  <h3 class="basic-product-information">Product Details</h3>
-                  <div class="details-columns">
-                    <div class="color-column">
-                      <div class="product-name">Color</div>
-                      <div class="color-options-group">
-                        <div class="color-col-left">
-                          <div class="color-col-left-inner">
-                            <div class="component-1-parent">
-                              <div class="component-1">
-                                <img
-                                  class="vector-icon"
-                                  loading="lazy"
-                                  alt=""
-                                />
-                              </div>
-                              <div class="black">Black</div>
-                            </div>
-                          </div>
-                          <div class="component-17">
-                            <div class="component-172">
-                              <div class="white">White</div>
-                              <div class="component-7">
-                                <img class="vector-icon" alt="" />
-                              </div>
-                            </div>
-                          </div>
-                          <div class="component-18">
-                            <div class="component-172">
-                              <div class="red">Red</div>
-                              <div class="component-8">
-                                <img class="vector-icon" alt="" />
-                              </div>
-                            </div>
-                          </div>
-                          <div class="component-19">
-                            <div class="orange">Orange</div>
-                            <div class="component-9">
-                              <img class="vector-icon" alt="" />
-                            </div>
-                          </div>
-                          <div class="component-20">
-                            <div class="yellow">Yellow</div>
-                            <div class="component-10">
-                              <img class="vector-icon" alt="" />
-                            </div>
-                          </div>
-                          <div class="component-21">
-                            <div class="green">Green</div>
-                            <div class="component-11">
-                              <img class="vector-icon" alt="" />
-                            </div>
-                          </div>
-                        </div>
-                        <div class="color-col-right">
-                          <div class="component-22">
-                            <div class="blue">Blue</div>
-                            <div class="component-12">
-                              <img class="vector-icon" alt="" />
-                            </div>
-                          </div>
-                          <div class="component-19">
-                            <div class="purple">Purple</div>
-                            <div class="component-13">
-                              <img class="vector-icon" alt="" />
-                            </div>
-                          </div>
-                          <div class="component-24">
-                            <div class="pink">Pink</div>
-                            <div class="component-14">
-                              <img class="vector-icon" alt="" />
-                            </div>
-                          </div>
-                          <div class="component-19">
-                            <div class="brown">Brown</div>
-                            <div class="component-15">
-                              <img class="vector-icon" alt="" />
-                            </div>
-                          </div>
-                          <div class="component-26">
-                            <div class="gray">Gray</div>
-                            <div class="component-16">
-                              <img class="vector-icon" alt="" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="size-column">
-                      <div class="product-name">Size</div>
-                      <div class="single-select-component2">
-                        <div class="radio-button-option13">
-                          <input class="radio-button" type="radio" />
-
-                          <div class="radio-button-option2">XS</div>
-                        </div>
-                        <div class="radio-button-option13">
-                          <input class="radio-button" type="radio" />
-
-                          <div class="radio-button-option2">S</div>
-                        </div>
-                        <div class="radio-button-option13">
-                          <input class="radio-button" type="radio" />
-
-                          <div class="radio-button-option2">M</div>
-                        </div>
-                        <div class="radio-button-option13">
-                          <input class="radio-button" type="radio" />
-
-                          <div class="radio-button-option2">L</div>
-                        </div>
-                        <div class="radio-button-option13">
-                          <input class="radio-button" type="radio" />
-
-                          <div class="radio-button-option2">XL</div>
-                        </div>
-                        <div class="radio-button-option11">
-                          <div class="radio-button6">
-                            <div class="radio-button-child"></div>
-                          </div>
-                          <div class="radio-button-option2">
-                            Radio button option
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="dimensions-column">
-                      <div class="product-name">Dimensions</div>
-                      <div class="dimension-rows">
-                        <div class="pit-to-pit-row">
-                          <div class="pit-to-pit">Pit to pit:</div>
-                          <input class="pit-to-pit-row-child" type="text" />
-                        </div>
-                        <div class="length-row">
-                          <div class="pit-to-pit">Length:</div>
-                          <input class="pit-to-pit-row-child" type="text" />
-                        </div>
-                        <div class="shoulder-row">
-                          <div class="pit-to-pit">Shoulder:</div>
-                          <input class="shoulder-row-child" type="text" />
-                        </div>
-                        <div class="sleeve-row">
-                          <div class="sleeve">Sleeve:</div>
-                          <input class="sleeve-row-child" type="text" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Price (PHP)</label>
+                    <input type="text" id="productPriceInput" placeholder="0.00">
                 </div>
-              </section>
-              <section class="frame6">
-                <h3 class="basic-product-information">Condition Section</h3>
-                <div class="condition-columns">
-                  <div class="condition-rating-field">
-                    <div class="product-name">Condition Rating</div>
-                    <div class="single-select-component3">
-                      <div class="radio-button-option">
-                        <input class="radio-button" type="radio" />
+            </div>
 
-                        <div class="radio-button-option2">Like New</div>
-                      </div>
-                      <div class="radio-button-option">
-                        <input class="radio-button" type="radio" />
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Brand Name</label>
+                <input type="text" id="productBrandInput" placeholder="Brand">
+            </div>
 
-                        <div class="radio-button-option2">Excellent</div>
-                      </div>
-                      <div class="radio-button-option">
-                        <input class="radio-button" type="radio" />
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Product Description</label>
+                <textarea id="productDescriptionInput" rows="4" placeholder="Describe the item..."></textarea>
+            </div>
 
-                        <div class="radio-button-option2">Good</div>
-                      </div>
-                      <div class="radio-button-option">
-                        <input class="radio-button" type="radio" />
-
-                        <div class="radio-button-option2">Fair</div>
-                      </div>
-                      <div class="radio-button-option33">
-                        <div class="radio-button17">
-                          <div class="radio-button-child"></div>
-                        </div>
-                        <div class="radio-button-option34">Accessories</div>
-                      </div>
-                      <div class="radio-button-option11">
-                        <div class="radio-button6">
-                          <div class="radio-button-child"></div>
-                        </div>
-                        <div class="radio-button-option2">
-                          Radio button option
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="flaw-notes-field">
-                    <div class="product-name">Flaw Notes</div>
-                    <div class="flaw-notes-field-child"></div>
-                  </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Category</label>
+                <div class="pill-group">
+                    <label class="pill-label"><input type="radio" name="category" value="Tops"><span class="pill-text">Tops</span></label>
+                    <label class="pill-label"><input type="radio" name="category" value="Bottoms"><span class="pill-text">Bottoms</span></label>
+                    <label class="pill-label"><input type="radio" name="category" value="Outerwear"><span class="pill-text">Outerwear</span></label>
+                    <label class="pill-label"><input type="radio" name="category" value="Bags"><span class="pill-text">Bags</span></label>
+                    <label class="pill-label"><input type="radio" name="category" value="Accessories"><span class="pill-text">Accessories</span></label>
                 </div>
-              </section>
-              <div class="bottom-actions-row">
-                <div class="frame-parent">
-                  <div class="status-parent">
-                    <div class="add-discount">Status</div>
-                    <img
-                      class="angle-small-down-2-1"
-                      alt=""
-                      src="./public/angle-small-down-2-1.svg"
-                    />
-                  </div>
-                  <div class="items">
-                    <div class="tops">Tops</div>
-                    <div class="tops">Bottoms</div>
-                    <div class="tops">Outerwear</div>
-                    <div class="tops">Bags</div>
-                    <div class="tops">Accessories</div>
-                    <div class="tops">Shirts</div>
-                  </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Size</label>
+                <div class="pill-group">
+                    <label class="pill-label"><input type="radio" name="size" value="XS"><span class="pill-text">XS</span></label>
+                    <label class="pill-label"><input type="radio" name="size" value="S"><span class="pill-text">S</span></label>
+                    <label class="pill-label"><input type="radio" name="size" value="M"><span class="pill-text">M</span></label>
+                    <label class="pill-label"><input type="radio" name="size" value="L"><span class="pill-text">L</span></label>
+                    <label class="pill-label"><input type="radio" name="size" value="XL"><span class="pill-text">XL</span></label>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Condition</label>
+                <div class="pill-group">
+                    <label class="pill-label"><input type="radio" name="condition" value="Like New"><span class="pill-text">Like New</span></label>
+                    <label class="pill-label"><input type="radio" name="condition" value="Excellent"><span class="pill-text">Excellent</span></label>
+                    <label class="pill-label"><input type="radio" name="condition" value="Good"><span class="pill-text">Good</span></label>
+                    <label class="pill-label"><input type="radio" name="condition" value="Fair"><span class="pill-text">Fair</span></label>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Color</label>
+                <div class="color-group" id="productColorGroup">
+                    <span class="color-swatch bg-black" data-color="Black"></span>
+                    <span class="color-swatch bg-white" data-color="White"></span>
+                    <span class="color-swatch bg-red" data-color="Red"></span>
+                    <span class="color-swatch bg-orange" data-color="Orange"></span>
+                    <span class="color-swatch bg-yellow" data-color="Yellow"></span>
+                    <span class="color-swatch bg-green" data-color="Green"></span>
+                    <span class="color-swatch bg-blue" data-color="Blue"></span>
+                    <span class="color-swatch bg-purple" data-color="Purple"></span>
+                    <span class="color-swatch bg-pink" data-color="Pink"></span>
+                    <span class="color-swatch bg-brown" data-color="Brown"></span>
+                    <span class="color-swatch bg-gray" data-color="Gray"></span>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Flaw Notes</label>
+                <textarea id="productFlawNotesInput" rows="2" placeholder="List any flaws..."></textarea>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label>Product Tags</label>
+                <div class="tag-input-row">
+                    <input type="text" id="productTagInput" placeholder="Type a tag and press Enter">
+                    <button type="button" class="btn-tag-add" id="addTagButton">Add Tag</button>
+                </div>
+                <div id="productTagsContainer" class="tags-container"></div>
+            </div>
+
+            <div class="action-row">
+                <div class="form-group" style="max-width: 260px;">
+                    <label>Status</label>
+                    <select id="productStatusSelect">
+                        <option value="AVAILABLE">Active / Published</option>
+                        <option value="DRAFT">Draft</option>
+                    </select>
+                    <div class="status-line" id="statusLine"></div>
                 </div>
                 <div class="action-buttons">
-                  <button class="component-28">
-                    <button class="update-changes-parent">
-                      <b class="update-changes">UPDATE CHANGES</b>
-                      <img
-                        class="frame-child"
-                        alt=""
-                        src="./public/Rectangle-286.svg"
-                      />
-
-                      <img class="check-circle-1-1" alt="" />
-                    </button>
-                  </button>
-                  <button class="preview-wrapper">
-                    <b class="update-changes">PREVIEW</b>
-                  </button>
+                    <button type="button" id="deleteProductButton" class="btn-danger">DELETE PRODUCT</button>
+                    <button type="button" id="saveProductButton" class="btn-primary">SAVE CHANGES</button>
                 </div>
-              </div>
             </div>
-          </div>
         </section>
-      </main>
-      <header class="edit-product-child"></header>
-      <section class="component-6">
-        <div class="icons-nav">
-          <div class="vector-parent">
-            <img
-              class="inventory-alt-1-icon"
-              alt=""
-              src="./public/Vector.svg"
-            />
+    </main>
 
-            <div class="home">Home</div>
-          </div>
-          <div class="vector-parent">
-            <img
-              class="inventory-alt-1-icon"
-              loading="lazy"
-              alt=""
-              src="./public/inventory-alt-1.svg"
-            />
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get('productId');
 
-            <div class="home">Inventory</div>
-          </div>
-          <div class="vector-parent">
-            <img
-              class="inventory-alt-1-icon"
-              alt=""
-              src="./public/Vector1.svg"
-            />
+        const imagePreviewBox = document.getElementById('imagePreviewBox');
+        const productPhotoInput = document.getElementById('productPhotoInput');
+        const productNameInput = document.getElementById('productNameInput');
+        const productPriceInput = document.getElementById('productPriceInput');
+        const productBrandInput = document.getElementById('productBrandInput');
+        const productDescriptionInput = document.getElementById('productDescriptionInput');
+        const productFlawNotesInput = document.getElementById('productFlawNotesInput');
+        const productStatusSelect = document.getElementById('productStatusSelect');
+        const saveProductButton = document.getElementById('saveProductButton');
+        const deleteProductButton = document.getElementById('deleteProductButton');
+        const productTagInput = document.getElementById('productTagInput');
+        const addTagButton = document.getElementById('addTagButton');
+        const productTagsContainer = document.getElementById('productTagsContainer');
+        const colorSwatches = document.querySelectorAll('.color-swatch');
+        const statusLine = document.getElementById('statusLine');
 
-            <div class="home">Analytics</div>
-          </div>
-        </div>
-      </section>
-    </div>
-  </body>
+        let loadedProduct = null;
+        let productTags = [];
+        let selectedColor = 'Black';
+        let selectedImageFile = null;
+
+        function setStatus(message, type) {
+            statusLine.textContent = message || '';
+            statusLine.className = 'status-line' + (type ? (' ' + type) : '');
+        }
+
+        function buildRequestHeaders() {
+            if (typeof getAuthHeaders === 'function') {
+                return getAuthHeaders();
+            }
+            const token = sessionStorage.getItem('authToken');
+            return token ? { Authorization: 'Bearer ' + token } : {};
+        }
+
+        function setRadioValue(name, value, fallback) {
+            const radios = document.querySelectorAll(`input[name="${name}"]`);
+            const selected = String(value || fallback || '').toLowerCase();
+            let matched = false;
+            radios.forEach(radio => {
+                const isMatch = radio.value.toLowerCase() === selected;
+                radio.checked = isMatch;
+                if (isMatch) matched = true;
+            });
+            if (!matched && radios.length > 0) {
+                radios[0].checked = true;
+            }
+        }
+
+        function getCheckedValue(name, fallback) {
+            const selected = document.querySelector(`input[name="${name}"]:checked`);
+            return selected ? selected.value : fallback;
+        }
+
+        function splitDescriptionFields(description) {
+            const lines = String(description || '').split(/\r?\n/).map(v => v.trim()).filter(Boolean);
+            let flawNotes = '';
+            const tags = [];
+            const baseLines = [];
+
+            lines.forEach(line => {
+                const lower = line.toLowerCase();
+                if (lower.startsWith('flaw notes:')) {
+                    flawNotes = line.slice(11).trim();
+                    return;
+                }
+                if (lower.startsWith('tags:')) {
+                    line.slice(5).split(',').map(v => v.trim()).filter(Boolean).forEach(tag => tags.push(tag));
+                    return;
+                }
+                baseLines.push(line);
+            });
+
+            return {
+                description: baseLines.join('\n'),
+                flawNotes,
+                tags
+            };
+        }
+
+        function buildMergedDescription(description, flawNotes, tags) {
+            const parts = [];
+            const core = String(description || '').trim();
+            if (core) parts.push(core);
+            const flaws = String(flawNotes || '').trim();
+            if (flaws) parts.push('Flaw Notes: ' + flaws);
+            if (Array.isArray(tags) && tags.length) parts.push('Tags: ' + tags.join(', '));
+            return parts.join('\n');
+        }
+
+        function renderTags() {
+            productTagsContainer.innerHTML = '';
+            productTags.forEach((tag, index) => {
+                const chip = document.createElement('span');
+                chip.className = 'tag-chip';
+                chip.innerHTML = `<span>${tag}</span><button type="button" class="tag-remove" aria-label="Remove ${tag}" data-index="${index}">x</button>`;
+                productTagsContainer.appendChild(chip);
+            });
+        }
+
+        function addTagsFromText(rawText) {
+            const candidates = String(rawText || '')
+                .split(',')
+                .map(v => v.trim())
+                .filter(Boolean)
+                .map(v => v.slice(0, 30));
+
+            candidates.forEach(tag => {
+                if (!productTags.some(existing => existing.toLowerCase() === tag.toLowerCase())) {
+                    productTags.push(tag);
+                }
+            });
+
+            renderTags();
+        }
+
+        function setImagePreview(src) {
+            if (!src) {
+                imagePreviewBox.textContent = 'No image';
+                return;
+            }
+            imagePreviewBox.innerHTML = `<img src="${src}" alt="Product image">`;
+        }
+
+        imagePreviewBox.addEventListener('click', () => {
+            productPhotoInput.click();
+        });
+
+        productPhotoInput.addEventListener('change', () => {
+            const file = productPhotoInput.files && productPhotoInput.files[0];
+            if (!file) return;
+            selectedImageFile = file;
+
+            const reader = new FileReader();
+            reader.onload = event => {
+                setImagePreview(event.target.result);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function ensureSellerSession() {
+            const currentUserId = sessionStorage.getItem('currentUserId');
+            if (!currentUserId) {
+                window.location.href = 'login.html';
+                return false;
+            }
+            return true;
+        }
+
+        async function loadProduct() {
+            if (!productId) {
+                setStatus('Missing productId in URL.', 'error');
+                saveProductButton.disabled = true;
+                deleteProductButton.disabled = true;
+                return;
+            }
+
+            if (!ensureSellerSession()) return;
+
+            try {
+                const response = await fetch(`/api/products/${encodeURIComponent(productId)}`, {
+                    headers: buildRequestHeaders()
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load product details.');
+                }
+
+                loadedProduct = await response.json();
+
+                const currentUserId = sessionStorage.getItem('currentUserId');
+                if (loadedProduct.sellerId && String(loadedProduct.sellerId) !== String(currentUserId)) {
+                    setStatus('Access denied: this product belongs to another seller.', 'error');
+                    saveProductButton.disabled = true;
+                    deleteProductButton.disabled = true;
+                    return;
+                }
+
+                productNameInput.value = loadedProduct.itemName || '';
+                productPriceInput.value = loadedProduct.price != null ? loadedProduct.price : '';
+                productBrandInput.value = loadedProduct.style || '';
+                productStatusSelect.value = loadedProduct.status || 'AVAILABLE';
+
+                const split = splitDescriptionFields(loadedProduct.description || '');
+                productDescriptionInput.value = split.description;
+                productFlawNotesInput.value = split.flawNotes;
+                productTags = split.tags;
+                renderTags();
+
+                setRadioValue('category', loadedProduct.category, 'Tops');
+                setRadioValue('size', loadedProduct.size, 'M');
+                setRadioValue('condition', loadedProduct.itemCondition, 'Like New');
+
+                selectedColor = loadedProduct.color || 'Black';
+                colorSwatches.forEach(swatch => {
+                    swatch.classList.toggle('active', swatch.dataset.color === selectedColor);
+                });
+
+                setImagePreview(loadedProduct.imagePath || '/images/default-product.png');
+            } catch (error) {
+                console.error('Edit product init failed', error);
+                setStatus(error.message || 'Unable to load product page.', 'error');
+            }
+        }
+
+        colorSwatches.forEach(swatch => {
+            swatch.addEventListener('click', () => {
+                colorSwatches.forEach(s => s.classList.remove('active'));
+                swatch.classList.add('active');
+                selectedColor = swatch.dataset.color || selectedColor;
+            });
+        });
+
+        addTagButton.addEventListener('click', () => {
+            addTagsFromText(productTagInput.value);
+            productTagInput.value = '';
+            productTagInput.focus();
+        });
+
+        productTagInput.addEventListener('keydown', event => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                addTagButton.click();
+            }
+        });
+
+        productTagsContainer.addEventListener('click', event => {
+            const removeButton = event.target.closest('.tag-remove');
+            if (!removeButton) return;
+            const index = Number(removeButton.dataset.index);
+            if (Number.isInteger(index)) {
+                productTags.splice(index, 1);
+                renderTags();
+            }
+        });
+
+        async function saveProduct() {
+            if (!loadedProduct) return;
+
+            addTagsFromText(productTagInput.value);
+
+            const name = productNameInput.value.trim();
+            const priceValue = productPriceInput.value.trim();
+
+            if (!name || !priceValue) {
+                setStatus('Product name and price are required.', 'error');
+                return;
+            }
+
+            const price = parseFloat(priceValue.replace(/,/g, ''));
+            if (Number.isNaN(price) || price < 0) {
+                setStatus('Please enter a valid price.', 'error');
+                return;
+            }
+
+            const body = {
+                ...loadedProduct,
+                itemName: name,
+                price,
+                style: productBrandInput.value.trim(),
+                category: getCheckedValue('category', 'Tops'),
+                size: getCheckedValue('size', 'M'),
+                itemCondition: getCheckedValue('condition', 'Like New'),
+                color: selectedColor,
+                status: productStatusSelect.value,
+                description: buildMergedDescription(
+                    productDescriptionInput.value,
+                    productFlawNotesInput.value,
+                    productTags
+                )
+            };
+
+            saveProductButton.disabled = true;
+            saveProductButton.textContent = 'Saving...';
+            setStatus('', '');
+
+            try {
+                if (selectedImageFile) {
+                    const imageForm = new FormData();
+                    imageForm.append('image', selectedImageFile);
+
+                    const imageResponse = await fetch(`/api/products/${encodeURIComponent(productId)}/image`, {
+                        method: 'PUT',
+                        headers: buildRequestHeaders(),
+                        body: imageForm
+                    });
+
+                    if (!imageResponse.ok) {
+                        let text = await imageResponse.text();
+                        try {
+                            const json = JSON.parse(text);
+                            text = json?.message || json?.error || text;
+                        } catch (_) {
+                            // not JSON
+                        }
+                        throw new Error(text || 'Failed to upload product image.');
+                    }
+
+                    const imageUpdatedProduct = await imageResponse.json();
+                    if (imageUpdatedProduct?.imagePath) {
+                        body.imagePath = imageUpdatedProduct.imagePath;
+                    }
+                }
+
+                const response = await fetch(`/api/products/${encodeURIComponent(productId)}`, {
+                    method: 'PUT',
+                    headers: {
+                        ...buildRequestHeaders(),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                if (!response.ok) {
+                    let text = await response.text();
+                    try {
+                        const json = JSON.parse(text);
+                        text = json?.message || json?.error || text;
+                    } catch (_) {
+                        // not JSON
+                    }
+                    throw new Error(text || 'Failed to update product.');
+                }
+
+                setStatus('Product updated successfully.', 'success');
+                selectedImageFile = null;
+                setTimeout(() => {
+                    window.location.href = 'inventorymanagement.html';
+                }, 500);
+            } catch (error) {
+                console.error('Update failed', error);
+                setStatus('Unable to update product: ' + error.message, 'error');
+            } finally {
+                saveProductButton.disabled = false;
+                saveProductButton.textContent = 'SAVE CHANGES';
+            }
+        }
+
+        async function deleteProduct() {
+            if (!loadedProduct) return;
+
+            const confirmed = window.confirm('Delete this product permanently? This action cannot be undone.');
+            if (!confirmed) return;
+
+            deleteProductButton.disabled = true;
+            deleteProductButton.textContent = 'Deleting...';
+            setStatus('', '');
+
+            try {
+                const response = await fetch(`/api/products/${encodeURIComponent(productId)}`, {
+                    method: 'DELETE',
+                    headers: buildRequestHeaders()
+                });
+
+                if (!response.ok) {
+                    let text = await response.text();
+                    try {
+                        const json = JSON.parse(text);
+                        text = json?.message || json?.error || text;
+                    } catch (_) {
+                        // not JSON
+                    }
+                    throw new Error(text || 'Failed to delete product.');
+                }
+
+                setStatus('Product deleted.', 'success');
+                setTimeout(() => {
+                    window.location.href = 'inventorymanagement.html';
+                }, 350);
+            } catch (error) {
+                console.error('Delete failed', error);
+                setStatus('Unable to delete product: ' + error.message, 'error');
+            } finally {
+                deleteProductButton.disabled = false;
+                deleteProductButton.textContent = 'DELETE PRODUCT';
+            }
+        }
+
+        saveProductButton.addEventListener('click', saveProduct);
+        deleteProductButton.addEventListener('click', deleteProduct);
+
+        loadProduct();
+    </script>
+</body>
 </html>

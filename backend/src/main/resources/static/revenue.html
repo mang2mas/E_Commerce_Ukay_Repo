@@ -58,7 +58,7 @@
         <div style="display: flex; align-items: center; gap: 24px;">
             <div style="display: flex; background-color: rgba(255,255,255,0.2); padding: 3px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(8px);">
                 <button style="background: none; color: rgba(255,255,255,0.7); border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">BUY</button>
-                <button style="background-color: #ffffff; color: #000000; border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">SELL</button>
+                <button onclick="if (!(window.handleSellEntryAction && window.handleSellEntryAction(event))) { const r=(sessionStorage.getItem('currentUserRole')||'').toLowerCase(); const a=sessionStorage.getItem('currentUserSellerApproved')==='true'; const v=(sessionStorage.getItem('currentUserVerificationStatus')||'').toUpperCase(); if (r==='admin') { window.location.href='./admin.html'; } else if (r==='seller' || (a && v==='APPROVED')) { window.location.href='./sellerhomeprofile.html'; } else { window.location.href='./sellerregistration.html'; } }" style="background-color: #ffffff; color: #000000; border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">SELL</button>
             </div>
             
             <a href="homepage.html" style="color:white; font-size:20px; text-decoration:none;"><i class="fa-solid fa-house"></i></a>
@@ -79,22 +79,22 @@
             <div class="metrics-grid">
                 <div class="card metric-card">
                     <i class="fa-solid fa-peso-sign" style="color: #fbce60;"></i>
-                    <div class="metric-value">₱3,240</div>
+                    <div class="metric-value" id="metricRevenue">₱0</div>
                     <div class="metric-label">Revenue This Month</div>
                 </div>
                 <div class="card metric-card">
                     <i class="fa-solid fa-bag-shopping" style="color: #4CAF50;"></i>
-                    <div class="metric-value">13</div>
+                    <div class="metric-value" id="metricSold">0</div>
                     <div class="metric-label">Items Sold</div>
                 </div>
                 <div class="card metric-card">
                     <i class="fa-solid fa-tag" style="color: #2196F3;"></i>
-                    <div class="metric-value">₱249</div>
+                    <div class="metric-value" id="metricAverage">₱0</div>
                     <div class="metric-label">Average Sale Price</div>
                 </div>
                 <div class="card metric-card">
                     <i class="fa-regular fa-eye" style="color: #9C27B0;"></i>
-                    <div class="metric-value">105</div>
+                    <div class="metric-value" id="metricViews">0</div>
                     <div class="metric-label">Total Product Views</div>
                 </div>
             </div>
@@ -107,17 +107,8 @@
                     </select>
                 </div>
                 
-                <div class="chart-area">
-                    <div class="chart-bar" style="height: 10%;" title="124"></div>
-                    <div class="chart-bar" style="height: 25%;" title="310"></div>
-                    <div class="chart-bar" style="height: 40%;" title="496"></div>
-                    <div class="chart-bar" style="height: 35%;" title="434"></div>
-                    <div class="chart-bar" style="height: 60%;" title="744"></div>
-                    <div class="chart-bar active" style="height: 100%;" title="1240"></div>
-                </div>
-                <div class="x-axis">
-                    <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
-                </div>
+                <div class="chart-area" id="analyticsChartArea" style="align-items:center; justify-content:center; color:#777; font-size:13px;">No sales data yet.</div>
+                <div class="x-axis" id="analyticsXAxis"></div>
             </section>
 
             <section class="card">
@@ -131,36 +122,9 @@
                             <th>% of Total Revenue</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="categoryRevenueBody">
                         <tr>
-                            <td>Bottoms</td>
-                            <td>6</td>
-                            <td>₱1,450</td>
-                            <td>44.8%</td>
-                        </tr>
-                        <tr>
-                            <td>Tops</td>
-                            <td>4</td>
-                            <td>₱980</td>
-                            <td>30.2%</td>
-                        </tr>
-                        <tr>
-                            <td>Outerwear</td>
-                            <td>2</td>
-                            <td>₱630</td>
-                            <td>19.4%</td>
-                        </tr>
-                        <tr>
-                            <td>Accessories</td>
-                            <td>1</td>
-                            <td>₱180</td>
-                            <td>5.6%</td>
-                        </tr>
-                        <tr class="row-total">
-                            <td>Total</td>
-                            <td>13</td>
-                            <td>₱3,240</td>
-                            <td>100%</td>
+                            <td colspan="4">No category sales data yet.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -168,6 +132,151 @@
 
         </main>
     </div>
+
+    <script>
+        const currentUserId = sessionStorage.getItem('currentUserId');
+        const authToken = sessionStorage.getItem('authToken');
+
+        function authHeaders() {
+            return authToken ? { 'Authorization': 'Bearer ' + authToken } : {};
+        }
+
+        function formatCurrency(value) {
+            const amount = Number(value || 0);
+            return `₱${Number.isFinite(amount) ? amount.toFixed(0) : '0'}`;
+        }
+
+        async function ensureSellerAccess() {
+            if (!currentUserId) {
+                window.location.href = './login.html?next=./sellerhomeprofile.html';
+                return false;
+            }
+
+            try {
+                const response = await fetch(`/api/profile/${encodeURIComponent(currentUserId)}`, { headers: authHeaders() });
+                if (!response.ok) {
+                    window.location.href = './login.html?next=./sellerregistration.html';
+                    return false;
+                }
+                const profile = await response.json();
+                const approved = profile?.sellerApproved === true;
+                const verification = (profile?.verificationStatus || '').toUpperCase();
+                sessionStorage.setItem('currentUserSellerApproved', approved ? 'true' : 'false');
+                sessionStorage.setItem('currentUserVerificationStatus', verification);
+                if (!approved || verification !== 'APPROVED') {
+                    window.location.href = './sellerregistration.html';
+                    return false;
+                }
+                return true;
+            } catch (error) {
+                console.error(error);
+                window.location.href = './sellerregistration.html';
+                return false;
+            }
+        }
+
+        function renderCategoryTable(products) {
+            const body = document.getElementById('categoryRevenueBody');
+            if (!Array.isArray(products) || products.length === 0) {
+                body.innerHTML = '<tr><td colspan="4">No category sales data yet.</td></tr>';
+                return;
+            }
+
+            const byCategory = new Map();
+            products.forEach(product => {
+                const category = (product.category || 'Uncategorized').trim() || 'Uncategorized';
+                const price = Number(product.price) || 0;
+                const current = byCategory.get(category) || { count: 0, value: 0 };
+                current.count += 1;
+                current.value += price;
+                byCategory.set(category, current);
+            });
+
+            const rows = Array.from(byCategory.entries());
+            const totalValue = rows.reduce((sum, entry) => sum + entry[1].value, 0);
+            const totalCount = rows.reduce((sum, entry) => sum + entry[1].count, 0);
+
+            body.innerHTML = rows.map(([category, info]) => {
+                const percent = totalValue > 0 ? ((info.value / totalValue) * 100).toFixed(1) : '0.0';
+                return `
+                    <tr>
+                        <td>${category}</td>
+                        <td>${info.count}</td>
+                        <td>${formatCurrency(info.value)}</td>
+                        <td>${percent}%</td>
+                    </tr>
+                `;
+            }).join('') + `
+                <tr class="row-total">
+                    <td>Total</td>
+                    <td>${totalCount}</td>
+                    <td>${formatCurrency(totalValue)}</td>
+                    <td>100%</td>
+                </tr>
+            `;
+        }
+
+        function renderChart(products) {
+            const chartArea = document.getElementById('analyticsChartArea');
+            const xAxis = document.getElementById('analyticsXAxis');
+
+            const safeProducts = Array.isArray(products) ? products : [];
+            const byStatus = (status) => safeProducts.filter(item => (item.status || '').toUpperCase() === status).length;
+            const series = [
+                { label: 'Available', value: byStatus('AVAILABLE') },
+                { label: 'Draft', value: byStatus('DRAFT') },
+                { label: 'Archived', value: byStatus('ARCHIVED') },
+                { label: 'Sold', value: byStatus('SOLD') },
+                { label: 'Flagged', value: byStatus('FLAGGED') },
+                { label: 'Total', value: safeProducts.length }
+            ];
+
+            const max = Math.max(...series.map(item => item.value), 0);
+            if (max === 0) {
+                chartArea.style.alignItems = 'center';
+                chartArea.style.justifyContent = 'center';
+                chartArea.innerHTML = 'No sales data yet.';
+                xAxis.innerHTML = '';
+                return;
+            }
+
+            chartArea.style.alignItems = 'flex-end';
+            chartArea.style.justifyContent = 'space-around';
+            chartArea.innerHTML = series.map((item, index) => {
+                const height = Math.max(8, (item.value / max) * 100);
+                const activeClass = index === series.length - 1 ? 'active' : '';
+                return `<div class="chart-bar ${activeClass}" style="height:${height}%;" title="${item.value}"></div>`;
+            }).join('');
+            xAxis.innerHTML = series.map(item => `<span>${item.label}</span>`).join('');
+        }
+
+        async function loadAnalytics() {
+            const productsResponse = await fetch(`/api/products/seller/${encodeURIComponent(currentUserId)}`, { headers: authHeaders() });
+            const products = productsResponse.ok ? await productsResponse.json() : [];
+
+            const sold = Array.isArray(products)
+                ? products.filter(product => (product.status || '').toUpperCase() === 'SOLD').length
+                : 0;
+            const revenue = 0;
+            const average = sold > 0 ? revenue / sold : 0;
+
+            document.getElementById('metricRevenue').textContent = formatCurrency(revenue);
+            document.getElementById('metricSold').textContent = String(sold);
+            document.getElementById('metricAverage').textContent = formatCurrency(average);
+            document.getElementById('metricViews').textContent = '0';
+
+            renderChart(products);
+            renderCategoryTable(products);
+        }
+
+        ensureSellerAccess().then((allowed) => {
+            if (allowed) {
+                loadAnalytics().catch((error) => {
+                    console.error('Unable to load analytics:', error);
+                });
+            }
+        });
+    </script>
 
 </body>
 </html>
