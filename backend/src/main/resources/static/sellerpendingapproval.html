@@ -86,9 +86,111 @@
         <p>Our team is reviewing your profile and uploaded documents.</p>
         <div class="status">STATUS: PENDING APPROVAL</div>
         <div class="actions">
-            <a class="btn btn-primary" href="./sellerhomeprofile.html">Go to Seller Dashboard</a>
+            <button id="checkStatusBtn" class="btn btn-primary" type="button">Check Approval Status</button>
             <a class="btn btn-secondary" href="./index.html">Back to Homepage</a>
         </div>
     </div>
+
+    <script>
+        async function fetchSellerRequests(userId, token) {
+            if (!userId) return [];
+            try {
+                const response = await fetch(`/api/seller/requests?userId=${encodeURIComponent(userId)}`, {
+                    headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+                });
+                if (!response.ok) return [];
+                const requests = await response.json();
+                return Array.isArray(requests) ? requests : [];
+            } catch (_) {
+                return [];
+            }
+        }
+
+        function summarizeSellerRequests(requests) {
+            const statuses = (Array.isArray(requests) ? requests : [])
+                .map((req) => (req?.status || '').toUpperCase())
+                .filter(Boolean);
+            return {
+                hasPendingRequest: statuses.includes('PENDING'),
+                hasApprovedRequest: statuses.includes('APPROVED')
+            };
+        }
+
+        async function ensurePendingRequestExists() {
+            const userId = sessionStorage.getItem('currentUserId');
+            const token = sessionStorage.getItem('authToken');
+            if (!userId) {
+                window.location.href = './login.html?next=./sellerpendingapproval.html';
+                return;
+            }
+
+            const requestSummary = summarizeSellerRequests(await fetchSellerRequests(userId, token));
+            if (requestSummary.hasApprovedRequest) {
+                window.location.href = './sellerhomeprofile.html';
+                return;
+            }
+            if (!requestSummary.hasPendingRequest) {
+                window.location.href = './sellerregistration.html';
+            }
+        }
+
+        async function checkSellerApprovalStatus() {
+            const userId = sessionStorage.getItem('currentUserId');
+            const token = sessionStorage.getItem('authToken');
+            if (!userId) {
+                window.location.href = './login.html?next=./sellerpendingapproval.html';
+                return;
+            }
+
+            const btn = document.getElementById('checkStatusBtn');
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = 'Checking...';
+            }
+
+            try {
+                const response = await fetch(`/api/profile/${encodeURIComponent(userId)}`, {
+                    headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+                });
+
+                if (!response.ok) {
+                    throw new Error('Unable to load seller status.');
+                }
+
+                const profile = await response.json();
+                const verification = (profile?.verificationStatus || '').toUpperCase();
+                const approved = profile?.sellerApproved === true && verification === 'APPROVED';
+                sessionStorage.setItem('currentUserSellerApproved', approved ? 'true' : 'false');
+                if (verification) {
+                    sessionStorage.setItem('currentUserVerificationStatus', verification);
+                } else {
+                    sessionStorage.removeItem('currentUserVerificationStatus');
+                }
+
+                if (approved) {
+                    window.location.href = './sellerhomeprofile.html';
+                    return;
+                }
+
+                const requestSummary = summarizeSellerRequests(await fetchSellerRequests(userId, token));
+                if (!requestSummary.hasPendingRequest) {
+                    window.location.href = './sellerregistration.html';
+                    return;
+                }
+
+                alert('Your seller account is still pending approval.');
+            } catch (error) {
+                alert(error.message || 'Unable to check seller status right now.');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = 'Check Approval Status';
+                }
+            }
+        }
+
+        ensurePendingRequestExists();
+        document.getElementById('checkStatusBtn').addEventListener('click', checkSellerApprovalStatus);
+    </script>
 </body>
 </html>

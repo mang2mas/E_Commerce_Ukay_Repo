@@ -61,7 +61,7 @@
                 <button onclick="if (!(window.handleSellEntryAction && window.handleSellEntryAction(event))) { const r=(sessionStorage.getItem('currentUserRole')||'').toLowerCase(); const a=sessionStorage.getItem('currentUserSellerApproved')==='true'; const v=(sessionStorage.getItem('currentUserVerificationStatus')||'').toUpperCase(); if (r==='admin') { window.location.href='./admin.html'; } else if (r==='seller' || (a && v==='APPROVED')) { window.location.href='./sellerhomeprofile.html'; } else { window.location.href='./sellerregistration.html'; } }" style="background-color: #ffffff; color: #000000; border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">SELL</button>
             </div>
             
-            <a href="homepage.html" style="color:white; font-size:20px; text-decoration:none;"><i class="fa-solid fa-house"></i></a>
+            <a href="index.html" style="color:white; font-size:20px; text-decoration:none;"><i class="fa-solid fa-house"></i></a>
             <a href="shoppingcart.html" style="color:white; font-size:20px; text-decoration:none;"><i class="fa-solid fa-bag-shopping"></i></a>
         </div>
     </header>
@@ -164,13 +164,13 @@
                 sessionStorage.setItem('currentUserSellerApproved', approved ? 'true' : 'false');
                 sessionStorage.setItem('currentUserVerificationStatus', verification);
                 if (!approved || verification !== 'APPROVED') {
-                    window.location.href = './sellerregistration.html';
+                    window.location.href = './sellerpendingapproval.html';
                     return false;
                 }
                 return true;
             } catch (error) {
                 console.error(error);
-                window.location.href = './sellerregistration.html';
+                window.location.href = './sellerpendingapproval.html';
                 return false;
             }
         }
@@ -277,6 +277,7 @@
             }
         });
     </script>
+    <script src="/js/app.js"></script>
 
 </body>
 </html>

@@ -556,12 +556,37 @@
             window.location.href = './login.html?next=./sellerhomeprofile.html';
         }
 
-        if (role !== 'seller' && role !== 'admin' && !(sessionApproved && sessionVerification === 'APPROVED')) {
+        if (role === 'admin') {
+            window.location.href = './admin.html';
+        }
+
+        if (role !== 'seller' && !(sessionApproved && sessionVerification === 'APPROVED')) {
             window.location.href = './login.html?next=./sellerregistration.html';
         }
 
         function authHeader() {
             return token ? { 'Authorization': 'Bearer ' + token } : {};
+        }
+
+        async function fetchSellerRequests() {
+            try {
+                const response = await fetch(`/api/seller/requests?userId=${encodeURIComponent(userId)}`, { headers: authHeader() });
+                if (!response.ok) return [];
+                const requests = await response.json();
+                return Array.isArray(requests) ? requests : [];
+            } catch (_) {
+                return [];
+            }
+        }
+
+        function summarizeSellerRequests(requests) {
+            const statuses = (Array.isArray(requests) ? requests : [])
+                .map((req) => (req?.status || '').toUpperCase())
+                .filter(Boolean);
+            return {
+                hasPendingRequest: statuses.includes('PENDING'),
+                hasApprovedRequest: statuses.includes('APPROVED')
+            };
         }
 
         function logout() {
@@ -666,9 +691,11 @@
                 }
 
                 if (!approved) {
-                    document.getElementById('sellerStatusBanner').style.display = 'block';
-                    document.getElementById('sellerStatusTitle').textContent = 'Seller Verification Pending';
-                    document.getElementById('sellerStatusMessage').textContent = 'Your seller profile is under review. Product posting is disabled until approval.';
+                    const requestSummary = summarizeSellerRequests(await fetchSellerRequests());
+                    window.location.href = requestSummary.hasPendingRequest
+                        ? './sellerpendingapproval.html'
+                        : './sellerregistration.html';
+                    return;
                 }
 
                 setAddProductEnabled(approved);

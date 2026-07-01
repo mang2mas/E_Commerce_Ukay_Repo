@@ -290,16 +290,40 @@
         const searchContainer = document.getElementById('searchContainer');
         const searchInputField = document.getElementById('searchInputField');
 
+        function runHomepageSearch() {
+            if (!searchInputField) return;
+            const query = searchInputField.value.trim();
+            if (!query) return;
+            window.location.href = './discoverypage.html?search=' + encodeURIComponent(query);
+        }
+
         if (searchToggleBtn && searchContainer) {
             searchToggleBtn.addEventListener('click', function(e) {
                 e.preventDefault();
+                const alreadyOpen = searchContainer.classList.contains('active');
+
+                // If the search bar is open and has text, treat click as submit.
+                if (alreadyOpen && searchInputField && searchInputField.value.trim()) {
+                    runHomepageSearch();
+                    return;
+                }
+
                 searchContainer.classList.toggle('active');
-                
+
                 // Focus the cursor inside the input when opened
                 if (searchContainer.classList.contains('active')) {
                     searchInputField.focus();
                 }
             });
+
+            if (searchInputField) {
+                searchInputField.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        runHomepageSearch();
+                    }
+                });
+            }
 
             // Close the search bar if the user clicks outside of it
             document.addEventListener('click', function(e) {

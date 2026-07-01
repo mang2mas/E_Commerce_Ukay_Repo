@@ -1,5 +1,6 @@
 let currentUserId = sessionStorage.getItem("currentUserId") || null;
 let currentUserRole = sessionStorage.getItem("currentUserRole") || null;
+const SELL_ENTRY_REDIRECT_MARKER = '__SELL_ENTRY__';
 
 function getAuthToken() {
     return sessionStorage.getItem("authToken") || null;
@@ -57,12 +58,38 @@ function getProductContext(target) {
 
 function getSellerEntryTarget() {
     const role = (sessionStorage.getItem('currentUserRole') || '').toLowerCase();
-    if (role === 'admin') return './admin.html';
-    if (role === 'seller') return './sellerhomeprofile.html';
     const approved = sessionStorage.getItem('currentUserSellerApproved') === 'true';
     const verificationStatus = (sessionStorage.getItem('currentUserVerificationStatus') || '').toUpperCase();
-    if (approved && verificationStatus === 'APPROVED') return './sellerhomeprofile.html';
+    return getSellerEntryTargetFromState(role, approved, verificationStatus, false, false);
+}
+
+function getSellerEntryTargetFromState(role, approved, verificationStatus, hasPendingRequest, hasApprovedRequest) {
+    if (role === 'admin') return './admin.html';
+    if ((approved && verificationStatus === 'APPROVED') || hasApprovedRequest) return './sellerhomeprofile.html';
+    if (hasPendingRequest) return './sellerpendingapproval.html';
     return './sellerregistration.html';
+}
+
+async function fetchSellerRequests(userId) {
+    if (!userId) return [];
+    try {
+        const response = await authFetch(`/api/seller/requests?userId=${encodeURIComponent(userId)}`);
+        if (!response.ok) return [];
+        const requests = await response.json();
+        return Array.isArray(requests) ? requests : [];
+    } catch (_) {
+        return [];
+    }
+}
+
+function summarizeSellerRequests(requests) {
+    const statuses = (Array.isArray(requests) ? requests : [])
+        .map((req) => (req?.status || '').toUpperCase())
+        .filter(Boolean);
+    return {
+        hasPendingRequest: statuses.includes('PENDING'),
+        hasApprovedRequest: statuses.includes('APPROVED')
+    };
 }
 
 function cacheSellerProfileFlags(profile) {
@@ -72,33 +99,55 @@ function cacheSellerProfileFlags(profile) {
     sessionStorage.setItem('currentUserSellerApproved', approved ? 'true' : 'false');
     if (verificationStatus) {
         sessionStorage.setItem('currentUserVerificationStatus', verificationStatus);
+    } else {
+        sessionStorage.removeItem('currentUserVerificationStatus');
     }
 }
 
 async function resolveSellerEntryTarget() {
     const role = (sessionStorage.getItem('currentUserRole') || '').toLowerCase();
     if (role === 'admin') return './admin.html';
-    if (role === 'seller') return './sellerhomeprofile.html';
 
     const currentUserId = sessionStorage.getItem('currentUserId');
     if (!currentUserId) return './sellerregistration.html';
 
     const approved = sessionStorage.getItem('currentUserSellerApproved') === 'true';
     const verificationStatus = (sessionStorage.getItem('currentUserVerificationStatus') || '').toUpperCase();
-    if (approved && verificationStatus === 'APPROVED') {
-        return './sellerhomeprofile.html';
+    const cachedRequestSummary = summarizeSellerRequests([]);
+    const cachedTarget = getSellerEntryTargetFromState(
+        role,
+        approved,
+        verificationStatus,
+        cachedRequestSummary.hasPendingRequest,
+        cachedRequestSummary.hasApprovedRequest
+    );
+    if (cachedTarget === './sellerhomeprofile.html') {
+        return cachedTarget;
     }
 
     try {
-        const response = await authFetch(`/api/profile/${encodeURIComponent(currentUserId)}`);
-        if (!response.ok) return './sellerregistration.html';
-        const profile = await response.json();
-        cacheSellerProfileFlags(profile);
-        const isApproved = profile?.sellerApproved === true && (profile?.verificationStatus || '').toUpperCase() === 'APPROVED';
-        return isApproved ? './sellerhomeprofile.html' : './sellerregistration.html';
+        let resolvedApproved = approved;
+        let resolvedVerification = verificationStatus;
+
+        const profileResponse = await authFetch(`/api/profile/${encodeURIComponent(currentUserId)}`);
+        if (profileResponse.ok) {
+            const profile = await profileResponse.json();
+            cacheSellerProfileFlags(profile);
+            resolvedApproved = profile?.sellerApproved === true;
+            resolvedVerification = (profile?.verificationStatus || '').toUpperCase();
+        }
+
+        const requestSummary = summarizeSellerRequests(await fetchSellerRequests(currentUserId));
+        return getSellerEntryTargetFromState(
+            role,
+            resolvedApproved,
+            resolvedVerification,
+            requestSummary.hasPendingRequest,
+            requestSummary.hasApprovedRequest
+        );
     } catch (error) {
         console.error('Unable to resolve seller entry target:', error);
-        return './sellerregistration.html';
+        return cachedTarget;
     }
 }
 
@@ -112,13 +161,12 @@ function handleSellEntryAction(event) {
     }
 
     if (!isAuthenticated) {
-        const targetUrl = getSellerEntryTarget();
-        sessionStorage.setItem('pendingRedirect', targetUrl);
+        sessionStorage.setItem('pendingRedirect', SELL_ENTRY_REDIRECT_MARKER);
         if (loginModal) {
             loginModal.classList.add('active');
             document.body.classList.add('modal-open');
         } else {
-            window.location.href = './login.html?next=' + encodeURIComponent(targetUrl);
+            window.location.href = './login.html?next=' + encodeURIComponent(SELL_ENTRY_REDIRECT_MARKER);
         }
         return true;
     }
@@ -1280,15 +1328,21 @@ if (modalLoginForm) {
             sessionStorage.removeItem('pendingRedirect');
             closeLoginModal();
             if (redirectUrl) {
-                window.location.href = redirectUrl;
+                const finalRedirectUrl = redirectUrl === SELL_ENTRY_REDIRECT_MARKER
+                    ? await resolveSellerEntryTarget()
+                    : redirectUrl;
+                window.location.href = finalRedirectUrl;
             } else {
                 const role = data.role;
                 const sellerApproved = sessionStorage.getItem('currentUserSellerApproved') === 'true'
                     && (sessionStorage.getItem('currentUserVerificationStatus') || '').toUpperCase() === 'APPROVED';
+                const requestSummary = summarizeSellerRequests(await fetchSellerRequests(data.userId));
                 if (role === 'ADMIN' || role === 'admin') {
                     window.location.href = './admin.html';
-                } else if (role === 'SELLER' || role === 'seller' || sellerApproved) {
+                } else if (sellerApproved || requestSummary.hasApprovedRequest) {
                     window.location.href = './sellerhomeprofile.html';
+                } else if (requestSummary.hasPendingRequest) {
+                    window.location.href = './sellerpendingapproval.html';
                 } else {
                     window.location.href = './index.html';
                 }
