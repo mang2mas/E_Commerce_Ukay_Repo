@@ -83,6 +83,12 @@
         .location-fields label { display: block; font-size: 14px; margin-bottom: 6px; color: #111; font-weight: 600; }
         .location-fields .readonly-input { margin-bottom: 20px; }
 
+        .documents-panel { margin-top: 14px; border-top: 1px solid #ddd; padding-top: 16px; }
+        .documents-panel h4 { font-size: 14px; margin-bottom: 10px; }
+        .doc-item { font-size: 13px; margin-bottom: 8px; color: #444; }
+        .doc-item a { color: #1a5fb4; text-decoration: none; }
+        .doc-item a:hover { text-decoration: underline; }
+
         /* Checkboxes */
         .checkbox-section { display: flex; flex-direction: column; gap: 16px; padding-left: 10px; }
         .checkbox-section label { font-size: 14px; color: #444; display: flex; align-items: center; gap: 12px; cursor: pointer; }
@@ -141,7 +147,7 @@
                 <div class="review-grid">
                     <div class="review-left">
                         <div class="profile-pic-container">
-                            <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=300&auto=format&fit=crop" alt="Profile Picture">
+                            <img id="reviewProfileImage" src="/images/profile-placeholder.jpg" alt="Profile Picture">
                         </div>
                         <div class="contact-info">
                             <strong>Contact Number</strong>
@@ -163,6 +169,11 @@
                             <label>Province</label>
                             <input type="text" id="rev-province" readonly class="readonly-input">
                         </div>
+
+                        <div class="documents-panel">
+                            <h4>Uploaded Documents</h4>
+                            <div id="reviewDocuments"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -181,7 +192,59 @@
 
     <script src="../js/app.js"></script>
     <script>
+        const DOCUMENT_KEY = 'sellerDocumentMap';
+        const STEP1_KEY = 'sellerRegistrationStep1Done';
+
+        function getDocumentMap() {
+            const raw = sessionStorage.getItem(DOCUMENT_KEY);
+            if (!raw) return {};
+            try {
+                return JSON.parse(raw);
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function getDocumentIds(map) {
+            return Object.values(map)
+                .map(function(doc) { return doc && doc.documentId; })
+                .filter(function(id) { return typeof id === 'number'; });
+        }
+
+        function renderDocuments() {
+            const map = getDocumentMap();
+            const container = document.getElementById('reviewDocuments');
+            const required = [
+                { key: 'BUSINESS_PERMIT', label: 'Business Permit' },
+                { key: 'BIR_TAX_CERTIFICATE', label: 'BIR/Tax Certificate' },
+                { key: 'GOVERNMENT_ID', label: 'Government ID' }
+            ];
+
+            const lines = required.map(function(item) {
+                const doc = map[item.key];
+                if (!doc || !doc.filePath) {
+                    return '<div class="doc-item">' + item.label + ': Not uploaded</div>';
+                }
+                return '<div class="doc-item">' + item.label + ': <a href="' + doc.filePath + '" target="_blank" rel="noopener">' +
+                    (doc.originalFileName || 'View document') + '</a></div>';
+            });
+            container.innerHTML = lines.join('');
+        }
+
+        function ensureFlowGate() {
+            if (sessionStorage.getItem(STEP1_KEY) !== '1') {
+                alert('Please complete Shop Information and click NEXT first.');
+                window.location.href = 'SellerRegistration2.html';
+                return false;
+            }
+            return true;
+        }
+
         window.onload = function() {
+            if (!ensureFlowGate()) {
+                return;
+            }
+
             if(localStorage.getItem('shopName')) document.getElementById('rev-shopName').value = localStorage.getItem('shopName');
             if(localStorage.getItem('shopDesc')) document.getElementById('rev-shopDesc').value = localStorage.getItem('shopDesc');
             if(localStorage.getItem('address')) document.getElementById('rev-address').value = localStorage.getItem('address');
@@ -189,6 +252,16 @@
             if(localStorage.getItem('province')) document.getElementById('rev-province').value = localStorage.getItem('province');
             if(localStorage.getItem('contact')) document.getElementById('rev-contact').textContent = localStorage.getItem('contact');
             if(localStorage.getItem('email')) document.getElementById('rev-email').textContent = localStorage.getItem('email');
+
+            const profileImage = document.getElementById('reviewProfileImage');
+            const docMap = getDocumentMap();
+            if (docMap.PROFILE_IMAGE && docMap.PROFILE_IMAGE.filePath) {
+                profileImage.src = docMap.PROFILE_IMAGE.filePath;
+            } else if (localStorage.getItem('shopLogo')) {
+                profileImage.src = localStorage.getItem('shopLogo');
+            }
+
+            renderDocuments();
         }
 
         function buildAuthHeaders() {
@@ -219,12 +292,23 @@
                 return;
             }
 
+            const documentMap = getDocumentMap();
+            const requiredTypes = ['PROFILE_IMAGE', 'BUSINESS_PERMIT', 'BIR_TAX_CERTIFICATE', 'GOVERNMENT_ID'];
+            const missingRequired = requiredTypes.filter(function(type) {
+                return !(documentMap[type] && documentMap[type].documentId);
+            });
+            if (missingRequired.length > 0) {
+                alert('Missing required uploads. Please go back and complete all required documents.');
+                return;
+            }
+
             const payload = {
                 userId: parseInt(currentUserId, 10),
                 businessName: localStorage.getItem('shopName') || '',
                 businessDescription: localStorage.getItem('shopDesc') || '',
-                businessPermit: '',
-                notes: `Address: ${localStorage.getItem('address') || ''}, City: ${localStorage.getItem('city') || ''}, Province: ${localStorage.getItem('province') || ''}, Email: ${localStorage.getItem('email') || ''}, Contact: ${localStorage.getItem('contact') || ''}`
+                businessPermit: (documentMap.BUSINESS_PERMIT && documentMap.BUSINESS_PERMIT.filePath) || '',
+                notes: `Address: ${localStorage.getItem('address') || ''}, City: ${localStorage.getItem('city') || ''}, Province: ${localStorage.getItem('province') || ''}, Email: ${localStorage.getItem('email') || ''}, Contact: ${localStorage.getItem('contact') || ''}`,
+                documentIds: getDocumentIds(documentMap)
             };
 
             try {
@@ -246,8 +330,11 @@
                 localStorage.removeItem('province');
                 localStorage.removeItem('contact');
                 localStorage.removeItem('email');
+                localStorage.removeItem('shopLogo');
+                sessionStorage.removeItem(STEP1_KEY);
+                sessionStorage.removeItem(DOCUMENT_KEY);
 
-                window.location.href = '../sellerhomeprofile.html';
+                window.location.href = '../sellerpendingapproval.html';
             } catch (error) {
                 console.error('Seller request failed', error);
                 alert('Unable to submit seller request. Please try again.');

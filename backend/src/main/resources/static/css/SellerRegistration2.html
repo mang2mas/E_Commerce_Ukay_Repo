@@ -61,6 +61,16 @@
         .btn-send { padding: 12px 20px; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 14px; border-radius: 4px; }
         .btn-send:hover { background-color: #f3f3f3; }
 
+        .doc-upload-row {
+            display: grid; grid-template-columns: 160px 1fr; align-items: center;
+            margin-bottom: 14px; font-size: 14px;
+        }
+        .doc-upload-row label { font-weight: 600; color: #333; }
+        .doc-upload-row input[type="file"] { width: 100%; }
+        .upload-status { font-size: 12px; color: #666; margin-top: 6px; }
+        .upload-status.success { color: #0f7a3f; }
+        .upload-status.error { color: #c0392b; }
+
         /* Footer/Next Button */
         .footer-action { width: 90%; max-width: 1000px; margin: 0 auto 60px auto; text-align: right; }
         .btn-next {
@@ -91,7 +101,7 @@
     <div class="main-container">
         <div class="tabs">
             <div class="tab active">Shop Information</div>
-            <a href="/css/ReviewSubmit.html" class="tab" id="tab-review" onclick="saveData()">Review & Submit</a>
+            <a href="/css/ReviewSubmit.html" class="tab" id="tab-review" onclick="return handleReviewTabClick(event)">Review & Submit</a>
         </div>
 
         <div class="form-content">
@@ -100,6 +110,7 @@
                 <div class="upload-box" id="uploadBox">
                     <span id="uploadText">Upload Shop Logo/ Photo</span>
                 </div>
+                <div id="status-profile-image" class="upload-status" style="margin-top:10px;">Not uploaded</div>
             </div>
             
             <div class="right-column">
@@ -140,6 +151,29 @@
                     <input type="text" placeholder="Verification Code" disabled>
                     <button class="btn-send">Send</button>
                 </div>
+
+                <div class="section-title">Business Documents</div>
+                <div class="doc-upload-row">
+                    <label for="businessPermitInput">Business Permit</label>
+                    <div>
+                        <input type="file" id="businessPermitInput" accept="image/*,application/pdf">
+                        <div id="status-business-permit" class="upload-status">Not uploaded</div>
+                    </div>
+                </div>
+                <div class="doc-upload-row">
+                    <label for="birTaxInput">BIR/Tax Certificate</label>
+                    <div>
+                        <input type="file" id="birTaxInput" accept="image/*,application/pdf">
+                        <div id="status-bir-tax" class="upload-status">Not uploaded</div>
+                    </div>
+                </div>
+                <div class="doc-upload-row">
+                    <label for="govIdInput">Government ID</label>
+                    <div>
+                        <input type="file" id="govIdInput" accept="image/*,application/pdf">
+                        <div id="status-government-id" class="upload-status">Not uploaded</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -149,10 +183,158 @@
     </div>
 
     <script>
+        const DOCUMENT_KEY = 'sellerDocumentMap';
+        const STEP1_KEY = 'sellerRegistrationStep1Done';
+
         // Image Upload Logic[cite: 5]
         const uploadBox = document.getElementById('uploadBox');
         const logoInput = document.getElementById('logoInput');
         const uploadText = document.getElementById('uploadText');
+        const businessPermitInput = document.getElementById('businessPermitInput');
+        const birTaxInput = document.getElementById('birTaxInput');
+        const govIdInput = document.getElementById('govIdInput');
+
+        function getDocumentMap() {
+            const raw = sessionStorage.getItem(DOCUMENT_KEY);
+            if (!raw) return {};
+            try {
+                return JSON.parse(raw);
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function setDocumentMap(map) {
+            sessionStorage.setItem(DOCUMENT_KEY, JSON.stringify(map));
+        }
+
+        function updateStatusElement(id, text, stateClass) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.textContent = text;
+            el.classList.remove('success', 'error');
+            if (stateClass) {
+                el.classList.add(stateClass);
+            }
+        }
+
+        function getAuthHeaders() {
+            const token = sessionStorage.getItem('authToken');
+            return token ? { 'Authorization': 'Bearer ' + token } : {};
+        }
+
+        function ensureLoggedInForSellerRegistration() {
+            const token = sessionStorage.getItem('authToken');
+            const currentUserId = sessionStorage.getItem('currentUserId');
+            if (!token || !currentUserId) {
+                const next = '/css/SellerRegistration2.html';
+                window.location.href = '/login.html?next=' + encodeURIComponent(next);
+                return false;
+            }
+            return true;
+        }
+
+        async function uploadDocument(documentType, file, statusElementId) {
+            const currentUserId = sessionStorage.getItem('currentUserId');
+            if (!currentUserId) {
+                throw new Error('You must be logged in to upload documents.');
+            }
+
+            if (!file) {
+                throw new Error('Please select a file.');
+            }
+
+            const allowedType = (file.type || '').startsWith('image/') || file.type === 'application/pdf';
+            if (!allowedType) {
+                throw new Error('Only image and PDF files are allowed.');
+            }
+
+            if (file.size > 10 * 1024 * 1024) {
+                throw new Error('File exceeds 10MB limit.');
+            }
+
+            updateStatusElement(statusElementId, 'Uploading...', null);
+
+            const formData = new FormData();
+            formData.append('userId', currentUserId);
+            formData.append('documentType', documentType);
+            formData.append('file', file);
+
+            const response = await fetch('/api/seller/documents', {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: formData
+            });
+
+            if (!response.ok) {
+                let message = '';
+                const contentType = response.headers.get('content-type') || '';
+                if (contentType.includes('application/json')) {
+                    try {
+                        const errorJson = await response.json();
+                        message = errorJson.message || errorJson.error || '';
+                    } catch (e) {
+                        message = '';
+                    }
+                }
+                if (!message) {
+                    message = await response.text();
+                }
+                if (!message) {
+                    message = 'Upload failed (HTTP ' + response.status + ').';
+                }
+                throw new Error(message);
+            }
+
+            const uploaded = await response.json();
+            const map = getDocumentMap();
+            map[documentType] = {
+                documentId: uploaded.documentId,
+                filePath: uploaded.filePath,
+                originalFileName: uploaded.originalFileName || file.name,
+                contentType: uploaded.contentType || file.type
+            };
+            setDocumentMap(map);
+            updateStatusElement(statusElementId, 'Uploaded: ' + (uploaded.originalFileName || file.name), 'success');
+            return uploaded;
+        }
+
+        function hydrateUploadStatuses() {
+            const map = getDocumentMap();
+            if (map.BUSINESS_PERMIT) {
+                updateStatusElement('status-business-permit', 'Uploaded: ' + (map.BUSINESS_PERMIT.originalFileName || 'Business Permit'), 'success');
+            }
+            if (map.BIR_TAX_CERTIFICATE) {
+                updateStatusElement('status-bir-tax', 'Uploaded: ' + (map.BIR_TAX_CERTIFICATE.originalFileName || 'BIR/Tax Certificate'), 'success');
+            }
+            if (map.GOVERNMENT_ID) {
+                updateStatusElement('status-government-id', 'Uploaded: ' + (map.GOVERNMENT_ID.originalFileName || 'Government ID'), 'success');
+            }
+            if (map.PROFILE_IMAGE) {
+                updateStatusElement('status-profile-image', 'Uploaded: ' + (map.PROFILE_IMAGE.originalFileName || 'Profile Image'), 'success');
+            }
+        }
+
+        function validateRequiredFields() {
+            const requiredIds = ['shopName', 'shopDesc', 'address', 'city', 'province', 'contact', 'email'];
+            for (const id of requiredIds) {
+                const value = (document.getElementById(id).value || '').trim();
+                if (!value) {
+                    alert('Please complete all required shop fields before continuing.');
+                    return false;
+                }
+            }
+
+            const map = getDocumentMap();
+            const requiredDocs = ['PROFILE_IMAGE', 'BUSINESS_PERMIT', 'BIR_TAX_CERTIFICATE', 'GOVERNMENT_ID'];
+            const missing = requiredDocs.filter(type => !map[type] || !map[type].documentId);
+            if (missing.length > 0) {
+                alert('Please upload profile image, Business Permit, BIR/Tax Certificate, and Government ID before continuing.');
+                return false;
+            }
+
+            return true;
+        }
 
         uploadBox.addEventListener('click', () => {
             logoInput.click();
@@ -170,7 +352,36 @@
                     localStorage.setItem('shopLogo', imageUrl);
                 }
                 reader.readAsDataURL(file);
+
+                uploadDocument('PROFILE_IMAGE', file, 'status-profile-image')
+                    .catch(error => {
+                        alert(error.message || 'Profile upload failed.');
+                    });
             }
+        });
+
+        businessPermitInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (!file) return;
+            uploadDocument('BUSINESS_PERMIT', file, 'status-business-permit').catch(error => {
+                updateStatusElement('status-business-permit', error.message || 'Upload failed', 'error');
+            });
+        });
+
+        birTaxInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (!file) return;
+            uploadDocument('BIR_TAX_CERTIFICATE', file, 'status-bir-tax').catch(error => {
+                updateStatusElement('status-bir-tax', error.message || 'Upload failed', 'error');
+            });
+        });
+
+        govIdInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (!file) return;
+            uploadDocument('GOVERNMENT_ID', file, 'status-government-id').catch(error => {
+                updateStatusElement('status-government-id', error.message || 'Upload failed', 'error');
+            });
         });
 
         function saveData() {
@@ -184,11 +395,28 @@
         }
 
         function goToReview() {
+            if (!validateRequiredFields()) {
+                return;
+            }
             saveData();
+            sessionStorage.setItem(STEP1_KEY, '1');
             window.location.href = "/css/ReviewSubmit.html";
         }
 
+        function handleReviewTabClick(event) {
+            event.preventDefault();
+            if (!validateRequiredFields()) {
+                return false;
+            }
+            goToReview();
+            return false;
+        }
+
         window.onload = function() {
+            if (!ensureLoggedInForSellerRegistration()) {
+                return;
+            }
+
             if(localStorage.getItem('shopName')) document.getElementById('shopName').value = localStorage.getItem('shopName');
             if(localStorage.getItem('shopDesc')) document.getElementById('shopDesc').value = localStorage.getItem('shopDesc');
             if(localStorage.getItem('address')) document.getElementById('address').value = localStorage.getItem('address');
@@ -202,6 +430,8 @@
                 uploadText.style.display = 'none';
                 uploadBox.style.border = 'none';
             }
+
+            hydrateUploadStatuses();
         }
     </script>
 </body>

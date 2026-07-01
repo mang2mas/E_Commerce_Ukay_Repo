@@ -3,64 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - User Verification</title>
+    <title>Admin Dashboard - Seller Verification</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        :root { --bg-cream: #faf9ee; --text-black: #000000; --border-gray: #e5e5e5; }
+        :root { --bg-cream: #faf9ee; --border-gray: #e5e5e5; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-cream); margin: 0; padding-top: 110px; }
-        
         header { background-color: rgba(36, 36, 36, 0.50); backdrop-filter: blur(8px); position: fixed; top: 0; left: 0; width: 100%; height: 90px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; z-index: 9999; }
         .header-actions { display: flex; gap: 15px; align-items: center; }
         .header-btn { color: white; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.35); border-radius: 999px; padding: 8px 16px; text-decoration: none; font-weight: 700; font-size: 13px; transition: background 0.2s ease; }
         .header-btn:hover, .header-btn.active { background: rgba(255,255,255,0.22); border-color: #fbce60; }
-        
+
         .admin-layout { display: flex; max-width: 1400px; margin: 0 auto 30px auto; gap: 30px; padding: 0 20px; }
         .card { background: white; border: 1px solid var(--border-gray); border-radius: 8px; padding: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-
         .verification-panel { flex: 2; }
+        .details-panel { flex: 1; position: sticky; top: 130px; height: fit-content; }
+
         .filter-tabs { display: flex; gap: 20px; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
         .tab-btn { background: none; border: none; font-weight: 700; color: #888; cursor: pointer; padding-bottom: 10px; font-size: 14px; }
         .tab-btn.active { color: #000; border-bottom: 2px solid #000; }
-        
+
         table { width: 100%; border-collapse: collapse; }
         th { text-align: left; font-size: 12px; color: #888; padding: 10px; text-transform: uppercase; }
-        td { padding: 20px 10px; border-top: 1px solid #eee; font-size: 14px; }
-        .user-info { display: flex; align-items: center; gap: 12px; }
-        .user-info i { font-size: 32px; color: #999; }
-        .badge-pending { background: #fff9e6; color: #d4a32b; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+        td { padding: 20px 10px; border-top: 1px solid #eee; font-size: 14px; vertical-align: top; }
+        .seller-info { display: flex; align-items: center; gap: 12px; }
+        .seller-info i { font-size: 30px; color: #999; }
+        .status-pill { display: inline-block; padding: 4px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+        .status-pending { background: #fff6dc; color: #9f7800; }
+        .status-approved { background: #e8f7ec; color: #0f7a3f; }
+        .status-rejected { background: #fceced; color: #aa2c2c; }
 
-        .details-panel { flex: 1; position: sticky; top: 130px; height: fit-content; }
-        .details-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
-        .details-header i { font-size: 40px; color: #666; }
-        
-        .detail-row { margin-bottom: 20px; font-size: 14px; color: #333; }
+        .detail-row { margin-bottom: 18px; font-size: 14px; color: #333; }
         .detail-row label { display: block; font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 6px; font-weight: 600; }
-        
+        .doc-list { margin-top: 8px; }
+        .doc-list a { display: block; color: #1a5fb4; text-decoration: none; margin-bottom: 8px; }
+        .doc-list a:hover { text-decoration: underline; }
+
         .btn-main { width: 100%; padding: 12px; border: none; border-radius: 4px; font-weight: 700; font-size: 13px; cursor: pointer; margin-bottom: 10px; transition: 0.2s; text-transform: uppercase; }
         .btn-approve { background: #fcd462; color: #000; }
         .btn-approve:hover { background: #ebd06e; }
         .btn-reject { background: #eee; color: #333; }
         .btn-reject:hover { background: #e0e0e0; }
-
-        .image-preview { width: 100%; height: 160px; background: #f0f0f0; border-radius: 6px; overflow: hidden; border: 1px solid var(--border-gray); cursor: pointer; display: flex; justify-content: center; align-items: center; color: #666; font-weight: 600; }
-        .image-preview img { width: 100%; height: 100%; object-fit: cover; }
-
-        .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; }
-        .modal img { max-width: 90%; max-height: 90%; border-radius: 8px; }
-        .close-modal { position: absolute; top: 25px; right: 40px; color: white; font-size: 40px; cursor: pointer; }
     </style>
 </head>
 <body>
-
     <header>
         <div style="color: white; font-weight: 800; font-size: 20px; letter-spacing: 1px;">ADMIN PORTAL</div>
         <div class="header-actions">
-            <a href="adminuser.html" class="header-btn active">User Verifications</a>
-            <a href="adminseller.html" class="header-btn">Seller Verifications</a>
-            <a href="admincustomers.html" class="header-btn">Customer Base</a>
+            <a href="admin.html" class="header-btn">Dashboard</a>
+            <a href="adminseller.html" class="header-btn active">Seller Verifications</a>
+            <a href="admincustomers.html" class="header-btn">Customer Records</a>
             <a href="adminauditlogs.html" class="header-btn">Audit Logs</a>
             <a href="#" class="header-btn" onclick="sessionStorage.removeItem('pendingRedirect');sessionStorage.clear();window.location.replace('./login.html?loggedOut=1');return false;">Logout</a>
             <div style="display: flex; align-items: center; gap: 10px; color: white; margin-left: 15px;">
@@ -72,7 +65,7 @@
 
     <div class="admin-layout">
         <section class="card verification-panel">
-            <h2 style="margin-bottom: 15px; font-size: 22px;">Statutory Discount Verifications (PWD / Senior)</h2>
+            <h2 style="margin-bottom: 15px; font-size: 22px;">Seller Verification Requests</h2>
             <div class="filter-tabs">
                 <button class="tab-btn active" onclick="filterByTab('PENDING', this)">Pending</button>
                 <button class="tab-btn" onclick="filterByTab('APPROVED', this)">Approved</button>
@@ -81,161 +74,180 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Customer</th>
-                        <th>Classification</th>
-                        <th>ID Document Number</th>
+                        <th>Seller</th>
+                        <th>Shop Name</th>
+                        <th>Submitted</th>
                         <th>Status</th>
                     </tr>
                 </thead>
-                <tbody id="userVerificationTable">
-                    <tr><td colspan="4" style="text-align:center; padding:30px; color:#666;">Loading verification requests...</td></tr>
+                <tbody id="sellerVerificationTable">
+                    <tr><td colspan="4" style="text-align:center; padding:30px; color:#666;">Loading seller requests...</td></tr>
                 </tbody>
             </table>
         </section>
 
         <aside class="card details-panel" id="detailsCard" style="display:none;">
-            <div class="details-header">
-                <i class="fa-solid fa-id-card"></i>
-                <div>
-                    <b style="font-size: 18px;" id="detailName">—</b><br>
-                    <span style="color:#666; font-size: 13px;" id="detailEmail">—</span>
-                </div>
+            <div class="detail-row">
+                <label>Seller</label>
+                <strong id="detailName">—</strong>
+                <div id="detailEmail" style="color:#666; margin-top:4px;">—</div>
             </div>
             <div class="detail-row">
-                <label>Discount Group Classification</label>
-                <span id="detailType" style="font-weight:700; color:#d4a32b;">—</span>
+                <label>Shop Name</label>
+                <span id="detailShopName">—</span>
             </div>
             <div class="detail-row">
-                <label>Official Identification Number</label>
-                <span id="detailIdNumber" style="font-weight:600;">—</span>
+                <label>Shop Description</label>
+                <span id="detailDescription">—</span>
             </div>
             <div class="detail-row">
-                <label>Contact Phone</label>
-                <span id="detailPhone">—</span>
+                <label>Submission Notes</label>
+                <span id="detailNotes">—</span>
             </div>
             <div class="detail-row">
-                <label>Uploaded Document Copy</label>
-                <div class="image-preview" onclick="openImageModal()">
-                    <img id="detailImg" src="/images/id_placeholder.jpg" alt="ID Document Preview">
-                </div>
+                <label>Uploaded Documents</label>
+                <div id="detailDocs" class="doc-list">No uploaded documents found.</div>
             </div>
             <div style="margin-top: 30px;" id="actionButtonsRow">
-                <button class="btn-main btn-approve" onclick="decideUser('APPROVED')">Approve Discount Eligibility</button>
-                <button class="btn-main btn-reject" onclick="decideUser('REJECTED')">Reject Application</button>
+                <button class="btn-main btn-approve" onclick="decideRequest('APPROVED')">Approve Seller</button>
+                <button class="btn-main btn-reject" onclick="decideRequest('REJECTED')">Reject Seller</button>
             </div>
         </aside>
     </div>
 
-    <div class="modal" id="idModal">
-        <span class="close-modal" onclick="closeImageModal()">&times;</span>
-        <img id="modalImg" src="/images/id_placeholder.jpg" alt="Fullscreen Document View">
-    </div>
-
     <script>
-        // High-level access gate checks for protection loops
         const adminId = sessionStorage.getItem('currentUserId');
         const token = sessionStorage.getItem('authToken');
         const role = sessionStorage.getItem('currentUserRole');
-
         if (!adminId || (role !== 'ADMIN' && role !== 'admin')) {
-            alert("Access Denied: Administrative security privileges required.");
+            alert('Access denied: admin privileges required.');
             window.location.href = './login.html';
         }
 
-        function authHeader() { return token ? { 'Authorization': 'Bearer ' + token } : {}; }
+        function authHeader() {
+            return token ? { 'Authorization': 'Bearer ' + token } : {};
+        }
 
         const loginStatusEl = document.getElementById('loginStatus');
         const adminName = sessionStorage.getItem('currentUserFullName');
-        if (loginStatusEl && adminName) loginStatusEl.textContent = adminName;
+        if (loginStatusEl && adminName) {
+            loginStatusEl.textContent = adminName;
+        }
 
         let requestsList = [];
         let currentFilter = 'PENDING';
         let activeRequest = null;
 
+        function statusClass(status) {
+            if (status === 'APPROVED') return 'status-approved';
+            if (status === 'REJECTED') return 'status-rejected';
+            return 'status-pending';
+        }
+
         async function fetchRequests() {
             try {
-                // Pull active statutory accounts flagged via registration modules
-                const response = await fetch('/api/admin/requests/', { headers: authHeader() });
-                if (!response.ok) throw new Error();
+                const response = await fetch('/api/admin/requests', { headers: authHeader() });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch requests.');
+                }
                 const data = await response.json();
-                // Filter requests specifically dealing with customer accounts
-                requestsList = (data || []).filter(r => r.user && r.user.role !== 'seller');
+                requestsList = (data || []).filter(function(req) {
+                    if (!req || !req.user) return false;
+                    const roleValue = (req.user.role || '').toString().toLowerCase();
+                    return roleValue === 'seller' || !!req.businessName;
+                });
                 renderTable();
             } catch (e) {
-                document.getElementById('userVerificationTable').innerHTML = '<tr><td colspan="4" style="text-align:center;color:#c62828;padding:20px;">Could not synchronous track data channels.</td></tr>';
+                document.getElementById('sellerVerificationTable').innerHTML =
+                    '<tr><td colspan="4" style="text-align:center;color:#c62828;padding:20px;">Unable to load seller requests.</td></tr>';
             }
         }
 
         function renderTable() {
-            const tbody = document.getElementById('userVerificationTable');
-            const targetData = requestsList.filter(r => (r.status || 'PENDING').toUpperCase() === currentFilter);
-            
+            const tbody = document.getElementById('sellerVerificationTable');
+            const targetData = requestsList.filter(function(r) {
+                return (r.status || 'PENDING').toUpperCase() === currentFilter;
+            });
+
             if (targetData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#666;padding:30px;">No matching accounts in ${currentFilter.toLowerCase()} status pipeline.</td></tr>`;
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#666;padding:30px;">No seller requests in ' +
+                    currentFilter.toLowerCase() + ' state.</td></tr>';
                 document.getElementById('detailsCard').style.display = 'none';
                 return;
             }
 
-            tbody.innerHTML = targetData.map(r => `
-                <tr style="cursor:pointer;" onclick="viewDetails(${r.requestId || r.id})">
-                    <td class="user-info">
-                        <i class="fa-solid fa-circle-user"></i>
-                        <div><b>${r.user?.fullName || 'User'}</b><br><small style="color:#666;">${r.user?.email || ''}</small></div>
-                    </td>
-                    <td style="font-weight:600; color:#7a5f00;">${r.user?.discountType || 'PWD/SENIOR'}</td>
-                    <td><code>${r.user?.idNumber || 'Not provided'}</code></td>
-                    <td><span class="badge-pending">${r.status || 'PENDING'}</span></td>
-                </tr>
-            `).join('');
-            
-            viewDetails(targetData[0].requestId || targetData[0].id);
+            tbody.innerHTML = targetData.map(function(r) {
+                const submitted = r.createdAt ? new Date(r.createdAt).toLocaleString() : 'N/A';
+                return '<tr style="cursor:pointer;" onclick="viewDetails(' + r.requestId + ')">' +
+                    '<td class="seller-info"><i class="fa-solid fa-circle-user"></i><div><b>' +
+                    (r.user.fullName || 'Seller') + '</b><br><small style="color:#666;">' + (r.user.email || '') +
+                    '</small></div></td>' +
+                    '<td>' + (r.businessName || '-') + '</td>' +
+                    '<td>' + submitted + '</td>' +
+                    '<td><span class="status-pill ' + statusClass((r.status || 'PENDING').toUpperCase()) + '">' +
+                    (r.status || 'PENDING') + '</span></td>' +
+                    '</tr>';
+            }).join('');
+
+            viewDetails(targetData[0].requestId);
         }
 
         function filterByTab(status, btn) {
             currentFilter = status;
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
             btn.classList.add('active');
             renderTable();
         }
 
-        function viewDetails(id) {
-            activeRequest = requestsList.find(r => (r.requestId || r.id) === id);
+        async function viewDetails(requestId) {
+            activeRequest = requestsList.find(function(r) { return r.requestId === requestId; });
             if (!activeRequest) return;
 
             document.getElementById('detailsCard').style.display = 'block';
-            document.getElementById('detailName').textContent = activeRequest.user?.fullName || 'User';
-            document.getElementById('detailEmail').textContent = activeRequest.user?.email || '';
-            document.getElementById('detailType').textContent = activeRequest.user?.discountType || 'PWD/SENIOR';
-            document.getElementById('detailIdNumber').textContent = activeRequest.user?.idNumber || 'None';
-            document.getElementById('detailPhone').textContent = activeRequest.user?.contactNo || '—';
-            
-            const docImg = activeRequest.user?.businessPermitUrl || '/images/id_placeholder.jpg';
-            document.getElementById('detailImg').src = docImg;
-            
+            document.getElementById('detailName').textContent = activeRequest.user.fullName || 'Seller';
+            document.getElementById('detailEmail').textContent = activeRequest.user.email || '-';
+            document.getElementById('detailShopName').textContent = activeRequest.businessName || '-';
+            document.getElementById('detailDescription').textContent = activeRequest.businessDescription || '-';
+            document.getElementById('detailNotes').textContent = activeRequest.notes || '-';
             document.getElementById('actionButtonsRow').style.display = currentFilter === 'PENDING' ? 'block' : 'none';
-        }
 
-        async function decideUser(status) {
-            if (!activeRequest) return;
-            const targetId = activeRequest.user?.userId || activeRequest.user?.id;
-            if (!confirm(`Confirm account statutory status update to: ${status}?`)) return;
-
+            const docsContainer = document.getElementById('detailDocs');
+            docsContainer.textContent = 'Loading documents...';
             try {
-                const url = `/api/admin/users/${targetId}/verify?status=${status}&adminId=${adminId}`;
-                const response = await fetch(url, { method: 'PUT', headers: authHeader() });
-                if (!response.ok) throw new Error();
-                alert(`User group status updated successfully to ${status}.`);
-                fetchRequests();
+                const docResponse = await fetch('/api/seller/documents?requestId=' + requestId, { headers: authHeader() });
+                if (!docResponse.ok) {
+                    throw new Error('Unable to load documents.');
+                }
+                const docs = await docResponse.json();
+                if (!docs || docs.length === 0) {
+                    docsContainer.textContent = 'No uploaded documents found.';
+                    return;
+                }
+                docsContainer.innerHTML = docs.map(function(doc) {
+                    const name = doc.originalFileName || (doc.documentType + ' document');
+                    return '<a href="' + doc.filePath + '" target="_blank" rel="noopener">' +
+                        doc.documentType + ': ' + name + '</a>';
+                }).join('');
             } catch (e) {
-                alert('Verification routing failed. Verify configuration context properties.');
+                docsContainer.textContent = 'Unable to load documents.';
             }
         }
 
-        function openImageModal() {
-            document.getElementById('modalImg').src = document.getElementById('detailImg').src;
-            document.getElementById('idModal').style.display = 'flex';
+        async function decideRequest(status) {
+            if (!activeRequest) return;
+            if (!confirm('Set this seller request to ' + status + '?')) return;
+            try {
+                const url = '/api/admin/requests/' + activeRequest.requestId + '/decide?status=' + status;
+                const response = await fetch(url, { method: 'PUT', headers: authHeader() });
+                if (!response.ok) {
+                    throw new Error('Failed to update request status.');
+                }
+                await fetchRequests();
+                alert('Seller request updated to ' + status + '.');
+            } catch (e) {
+                alert('Could not update seller request.');
+            }
         }
-        function closeImageModal() { document.getElementById('idModal').style.display = 'none'; }
 
         document.addEventListener('DOMContentLoaded', fetchRequests);
     </script>

@@ -127,6 +127,13 @@
 
         <!-- MAIN DASHBOARD CONTENT -->
         <main class="main-content">
+
+            <div id="sellerStatusBanner" class="card" style="display:none; border-left: 6px solid #fbce60;">
+                <h3 id="sellerStatusTitle" style="margin:0 0 8px 0; font-size:18px;">Seller Verification Pending</h3>
+                <p id="sellerStatusMessage" style="margin:0; color:#555; line-height:1.5;">
+                    Your seller profile is under review. Product posting is temporarily disabled until approval.
+                </p>
+            </div>
             
            <!-- Profile Info Card -->
             <div class="card profile-header">
@@ -326,6 +333,51 @@
 
     const fullName = sessionStorage.getItem('currentUserFullName');
     if (fullName) document.getElementById('loginStatus').textContent = fullName;
+
+    function toggleSellerActionAvailability(allowPosting) {
+        const addProductBtn = document.querySelector('.btn-add-product');
+        const addProductNav = document.querySelector('a[href="./addproduct.html"]');
+
+        if (addProductBtn) {
+            addProductBtn.disabled = !allowPosting;
+            addProductBtn.style.opacity = allowPosting ? '1' : '0.5';
+            addProductBtn.style.cursor = allowPosting ? 'pointer' : 'not-allowed';
+        }
+        if (addProductNav) {
+            addProductNav.style.pointerEvents = allowPosting ? 'auto' : 'none';
+            addProductNav.style.opacity = allowPosting ? '1' : '0.5';
+        }
+    }
+
+    fetch('/api/profile/' + userId, { headers: authHeader() })
+        .then(r => r.ok ? r.json() : null)
+        .then(profile => {
+            if (!profile) return;
+            const banner = document.getElementById('sellerStatusBanner');
+            const title = document.getElementById('sellerStatusTitle');
+            const message = document.getElementById('sellerStatusMessage');
+            const status = (profile.verificationStatus || 'PENDING').toUpperCase();
+
+            if (status === 'APPROVED' && profile.sellerApproved === true) {
+                toggleSellerActionAvailability(true);
+                return;
+            }
+
+            banner.style.display = 'block';
+            if (status === 'REJECTED') {
+                banner.style.borderLeftColor = '#d9534f';
+                title.textContent = 'Seller Verification Rejected';
+                message.textContent = 'Your registration was rejected. Please update your documents and submit a new request.';
+            } else {
+                banner.style.borderLeftColor = '#fbce60';
+                title.textContent = 'Seller Verification Pending';
+                message.textContent = 'Your seller profile is under review. Product posting is temporarily disabled until approval.';
+            }
+            toggleSellerActionAvailability(false);
+        })
+        .catch(() => {
+            toggleSellerActionAvailability(false);
+        });
 
     // Load seller shop data
     fetch('/api/shops/seller/' + userId, { headers: authHeader() })

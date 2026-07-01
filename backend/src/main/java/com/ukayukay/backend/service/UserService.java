@@ -86,6 +86,14 @@ public class UserService {
 
         return updatedUser;
     }
+
+    public List<User> getManageableUsers(User.UserRole role) {
+        List<User> users = role == null ? userRepository.findAll() : userRepository.findByRole(role);
+        return users.stream()
+            .filter(user -> user.getRole() != User.UserRole.admin)
+            .sorted((a, b) -> Integer.compare(a.getUserId(), b.getUserId()))
+            .toList();
+    }
 }
 
 

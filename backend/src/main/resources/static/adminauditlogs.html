@@ -3,179 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Audit Logs</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Admin - Audit Logs</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        :root { --bg-cream: #faf9ee; --text-black: #000000; --border-gray: #e5e5e5; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-cream); margin: 0; padding-top: 110px; }
-        
-        /* Unified Admin Header */
-        header { background-color: rgba(36, 36, 36, 0.50); backdrop-filter: blur(8px); position: fixed; top: 0; left: 0; width: 100%; height: 90px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; z-index: 9999; }
-        .header-actions { display: flex; gap: 15px; align-items: center; }
-        .header-btn { color: white; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.35); border-radius: 999px; padding: 8px 16px; text-decoration: none; font-weight: 700; font-size: 13px; transition: background 0.2s ease; }
-        .header-btn:hover { background: rgba(255,255,255,0.22); }
-        
-        /* Dashboard Layout */
-        .admin-layout { max-width: 1400px; margin: 0 auto 30px auto; padding: 0 20px; }
-        .card { background: white; border: 1px solid var(--border-gray); border-radius: 8px; padding: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        :root {
+            --bg: #f6f1e6;
+            --card: #fff;
+            --line: #eadfc7;
+            --ink: #202020;
+            --muted: #6a6a6a;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Segoe UI, sans-serif; color: var(--ink); background: linear-gradient(180deg, #fbf7ee 0%, var(--bg) 60%); }
+        .topbar {
+            position: sticky; top: 0; z-index: 20;
+            background: rgba(30,30,30,0.92); color: #fff;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 20px;
+        }
+        .topbar a { color: #fff; text-decoration: none; font-size: 13px; font-weight: 700; border: 1px solid rgba(255,255,255,0.22); padding: 7px 11px; border-radius: 18px; }
+        .top-links { display: flex; gap: 8px; align-items: center; }
+        .pill { background: #fff; color: #222; border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 700; }
 
-        /* Filtering UI */
-        .controls { display: flex; gap: 15px; margin-bottom: 25px; }
-        .filter-input { padding: 10px 15px; border: 1px solid var(--border-gray); border-radius: 4px; font-family: 'Inter', sans-serif; font-size: 13px; outline: none; }
+        .wrap { max-width: 1180px; margin: 18px auto 34px; padding: 0 16px; }
+        .panel {
+            background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+            box-shadow: 0 8px 20px rgba(70, 55, 24, 0.08);
+            overflow: hidden;
+        }
+        .panel-head {
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 10px; padding: 14px; border-bottom: 1px solid var(--line);
+            background: #fffaf0;
+        }
 
-        /* Table */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { text-align: left; font-size: 12px; color: #888; padding: 15px; text-transform: uppercase; border-bottom: 2px solid #eee; }
-        td { padding: 20px 15px; border-top: 1px solid #eee; font-size: 14px; color: #333; }
-        
-        /* Action Tags */
-        .action-tag { padding: 4px 10px; border-radius: 4px; font-weight: 700; font-size: 11px; text-transform: uppercase; }
-        .status-success { color: #2e7d32; font-weight: 600; }
+        input {
+            border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; font-size: 13px;
+            width: 260px;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 10px; border-top: 1px solid #f1ead8; font-size: 13px; text-align: left; vertical-align: middle; }
+        th { border-top: none; background: #fffdf7; color: #6f685b; text-transform: uppercase; letter-spacing: 0.04em; font-size: 11px; }
+
+        .tag {
+            display: inline-block; border-radius: 12px; padding: 2px 8px; font-size: 11px; font-weight: 700;
+            background: #efefef;
+        }
+        .empty { padding: 28px; text-align: center; color: var(--muted); }
     </style>
 </head>
 <body>
-
-    <header>
-        <div style="color: white; font-weight: 800; font-size: 20px; letter-spacing: 1px;">ADMIN PORTAL</div>
-        <div class="header-actions">
-            <a href="adminseller.html" class="header-btn">Seller Verifications</a>
-            <a href="adminuser.html" class="header-btn">User Verifications</a>
-            <a href="admincustomers.html" class="header-btn">Customers</a>
-            <a href="contentmoderation.html" class="header-btn">Moderation</a>
-            <a href="#" class="header-btn" onclick="sessionStorage.removeItem('pendingRedirect');sessionStorage.clear();window.location.replace('./login.html?loggedOut=1');return false;">Logout</a>
-            <div style="display: flex; align-items: center; gap: 10px; color: white; margin-left: 15px;">
-                <i class="fa-solid fa-user-circle" style="font-size: 18px;"></i>
-                <span id="adminNameDisplay" style="font-size: 14px;">Administrator</span>
-                <span id="loginStatus" style="color: #000; background: rgba(255, 255, 255, 0.9); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;">Logged in</span>
-            </div>
+    <header class="topbar">
+        <div style="font-weight: 800; letter-spacing: 0.06em;">ADMIN PORTAL</div>
+        <div class="top-links">
+            <span id="adminName" class="pill">Admin</span>
+            <a href="admin.html">Dashboard</a>
+            <a href="adminseller.html">Seller Approvals</a>
+            <a href="admincustomers.html">Customer Records</a>
+            <a href="adminauditlogs.html">Audit Logs</a>
+            <a href="#" onclick="logout();return false;">Logout</a>
         </div>
     </header>
 
-    <main class="admin-layout">
-        <section class="card">
-            <h2 style="margin-bottom: 20px; font-size: 22px;">Admin Action Audit Logs</h2>
-            
-            <div class="controls">
-                <input type="text" class="filter-input" placeholder="Search by action..." style="width: 250px;">
-                <select class="filter-input">
-                    <option>All Actions</option>
-                    <option>Verification</option>
-                    <option>Moderation</option>
-                </select>
-                <select class="filter-input">
-                    <option>Last 7 Days</option>
-                    <option>Last 30 Days</option>
-                </select>
+    <main class="wrap">
+        <h1 style="margin: 4px 0 6px;">Audit Logs</h1>
+        <p style="margin: 0 0 14px; color: #6a6a6a;">Admin login, seller verification, account suspension, and shadow ban actions are recorded here.</p>
+
+        <section class="panel">
+            <div class="panel-head">
+                <strong><i class="fa-solid fa-clipboard-list"></i> Admin Action History</strong>
+                <input id="searchInput" type="text" placeholder="Search action or table">
             </div>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Timestamp</th>
-                        <th>Action Performed</th>
-                        <th>Admin</th>
-                        <th>Description</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="auditLogTable">
-                    <tr><td colspan="5" style="text-align:center;padding:40px;color:#666;">Loading audit logs…</td></tr>
-                </tbody>
-            </table>
+
+            <div style="overflow:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Admin ID</th>
+                            <th>Action</th>
+                            <th>Table</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logRows">
+                        <tr><td colspan="4" class="empty">Loading logs...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </section>
     </main>
 
     <script>
-        const adminId = sessionStorage.getItem('currentUserId');
         const token = sessionStorage.getItem('authToken');
-        if (!adminId) window.location.href = './login.html';
+        const role = (sessionStorage.getItem('currentUserRole') || '').toLowerCase();
+        const name = sessionStorage.getItem('currentUserFullName') || 'Administrator';
 
-        const nameEl = document.getElementById('adminNameDisplay');
-        const statusEl = document.getElementById('loginStatus');
-        const fullName = sessionStorage.getItem('currentUserFullName');
-        if (nameEl && fullName) nameEl.textContent = fullName;
-        if (statusEl && fullName) statusEl.textContent = fullName;
+        if (!token || role !== 'admin') {
+            alert('Admin access required.');
+            window.location.href = './login.html';
+        }
+        document.getElementById('adminName').textContent = name;
 
-        function authHeader() { return token ? { 'Authorization': 'Bearer ' + token } : {}; }
-
-        function actionTagColor(action) {
-            const a = (action || '').toUpperCase();
-            if (a.includes('APPROVE') || a.includes('VERIFY')) return '#fcd462';
-            if (a.includes('REJECT') || a.includes('BAN') || a.includes('REMOVE')) return '#ffcdd2';
-            if (a.includes('UPDATE') || a.includes('TOGGLE')) return '#b3e5fc';
-            return '#e0e0e0';
+        function authHeader() {
+            return { 'Authorization': 'Bearer ' + token };
         }
 
-        function renderLogs(logs) {
-            const tbody = document.getElementById('auditLogTable');
-            if (!logs || logs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:#666;">No audit logs found.</td></tr>';
+        function logout() {
+            sessionStorage.removeItem('pendingRedirect');
+            sessionStorage.clear();
+            window.location.replace('./login.html?loggedOut=1');
+        }
+
+        let allLogs = [];
+
+        function actionTag(action) {
+            return '<span class="tag">' + (action || '-') + '</span>';
+        }
+
+        function renderRows(list) {
+            const tbody = document.getElementById('logRows');
+            if (!list || list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="empty">No audit logs found.</td></tr>';
                 return;
             }
-            tbody.innerHTML = logs.map(function(log) {
-                const ts = log.createdAt || log.timestamp || log.actionDate;
-                const dateStr = ts ? new Date(ts).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) : '—';
-                const action = log.action || log.actionType || 'ACTION';
-                const admin = log.admin?.fullName || log.adminName || 'Admin';
-                const desc = log.description || log.details || log.notes || '—';
-                return `
-                    <tr>
-                        <td style="white-space:nowrap;">${dateStr}</td>
-                        <td><span class="action-tag" style="background:${actionTagColor(action)}">${action}</span></td>
-                        <td style="font-size:13px;">${admin}</td>
-                        <td>${desc}</td>
-                        <td class="status-success">Success</td>
-                    </tr>
-                `;
+
+            tbody.innerHTML = list.map(log => {
+                const date = log.timestamp ? new Date(log.timestamp).toLocaleString() : '-';
+                return '<tr>' +
+                    '<td>' + date + '</td>' +
+                    '<td>' + (log.adminId || '-') + '</td>' +
+                    '<td>' + actionTag(log.action) + '</td>' +
+                    '<td>' + (log.tableAffected || '-') + '</td>' +
+                '</tr>';
             }).join('');
         }
 
-        function loadAuditLogs() {
-            fetch('/api/admin/audit-logs', { headers: authHeader() })
-                .then(function(r) { return r.ok ? r.json() : []; })
-                .then(renderLogs)
-                .catch(function() {
-                    // Fallback: load from requests to synthesize log entries
-                    fetch('/api/admin/requests/', { headers: authHeader() })
-                        .then(function(r) { return r.ok ? r.json() : []; })
-                        .then(function(requests) {
-                            const syntheticLogs = (requests || [])
-                                .filter(function(r) { return r.status && r.status !== 'PENDING'; })
-                                .map(function(r) {
-                                    const shopName = r.businessName || 'Unknown';
-                                    const action = r.status === 'APPROVED' ? 'APPROVE_SELLER' : 'REJECT_SELLER';
-                                    return {
-                                        createdAt: r.updatedAt || r.createdAt,
-                                        action: action,
-                                        admin: r.reviewedBy || {},
-                                        description: `${r.status === 'APPROVED' ? 'Approved' : 'Rejected'} seller application for "${shopName}"`
-                                    };
-                                });
-                            renderLogs(syntheticLogs);
-                        })
-                        .catch(function() {
-                            document.getElementById('auditLogTable').innerHTML =
-                                '<tr><td colspan="5" style="text-align:center;padding:40px;color:#c62828;">Could not load audit logs.</td></tr>';
-                        });
-                });
-        }
-
-        loadAuditLogs();
-
-        // Search filter
-        const searchInput = document.querySelector('.filter-input');
-        if (searchInput) {
-            searchInput.addEventListener('input', function() {
-                const q = this.value.toLowerCase();
-                document.querySelectorAll('#auditLogTable tr').forEach(function(tr) {
-                    tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
-                });
+        function applyFilter() {
+            const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+            if (!q) {
+                renderRows(allLogs);
+                return;
+            }
+            const filtered = allLogs.filter(log => {
+                const action = (log.action || '').toLowerCase();
+                const table = (log.tableAffected || '').toLowerCase();
+                const admin = String(log.adminId || '');
+                return action.includes(q) || table.includes(q) || admin.includes(q);
             });
+            renderRows(filtered);
         }
-    </script>
 
+        async function loadLogs() {
+            try {
+                const res = await fetch('/api/admin/audit-logs', { headers: authHeader() });
+                if (!res.ok) throw new Error('Failed to load logs');
+                allLogs = await res.json();
+                renderRows(allLogs);
+            } catch (_) {
+                document.getElementById('logRows').innerHTML = '<tr><td colspan="4" class="empty">Could not load audit logs.</td></tr>';
+            }
+        }
+
+        document.getElementById('searchInput').addEventListener('input', applyFilter);
+        loadLogs();
+    </script>
 </body>
 </html>

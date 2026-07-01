@@ -228,7 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
             e.stopImmediatePropagation();
             const role = sessionStorage.getItem('currentUserRole');
             if (role === 'ADMIN' || role === 'admin') {
-                window.location.href = './adminuser.html';
+                window.location.href = './admin.html';
             } else if (role === 'SELLER' || role === 'seller') {
                 window.location.href = './sellerhomeprofile.html';
             } else {
@@ -1192,7 +1192,7 @@ if (modalLoginForm) {
             } else {
                 const role = data.role;
                 if (role === 'ADMIN' || role === 'admin') {
-                    window.location.href = './adminuser.html';
+                    window.location.href = './admin.html';
                 } else if (role === 'SELLER' || role === 'seller') {
                     window.location.href = './sellerhomeprofile.html';
                 } else {
