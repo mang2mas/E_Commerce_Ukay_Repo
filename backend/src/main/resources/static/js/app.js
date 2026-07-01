@@ -218,7 +218,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Profile trigger: buyers → ordermanagement, sellers → sellerhomeprofile
+    // Profile trigger: follows the page's current BUY/SELL toggle, not just account role,
+    // since a seller browsing in BUY mode should land on their buyer profile.
     document.body.addEventListener('click', function(e) {
         const profileTrigger = e.target.closest('.profile-trigger');
         if (profileTrigger) {
@@ -229,8 +230,11 @@ document.addEventListener("DOMContentLoaded", () => {
             const role = sessionStorage.getItem('currentUserRole');
             if (role === 'ADMIN' || role === 'admin') {
                 window.location.href = './admin.html';
-            } else if (role === 'SELLER' || role === 'seller') {
-                window.location.href = './sellerhomeprofile.html';
+                return;
+            }
+            const sellToggleActive = document.querySelector('.toggle-btn[data-view="sell"].active');
+            if (sellToggleActive) {
+                goToSellerArea();
             } else {
                 window.location.href = './ordermanagement.html';
             }
@@ -261,6 +265,32 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================================================
     // 1. NAVBAR TOGGLE STATES
     // ==========================================================================
+    async function goToSellerArea() {
+        const role = (sessionStorage.getItem('currentUserRole') || '').toLowerCase();
+        if (role === 'seller') {
+            window.location.href = './sellerhomeprofile.html';
+            return;
+        }
+
+        try {
+            const res = await authFetch(`/api/seller/requests?userId=${encodeURIComponent(currentUserId)}`);
+            if (res.ok) {
+                const requests = await res.json();
+                if (Array.isArray(requests) && requests.length > 0) {
+                    const latest = requests.reduce((a, b) => (b.requestId > a.requestId ? b : a));
+                    if (latest.status === 'PENDING') {
+                        window.location.href = './sellerpendingapproval.html';
+                        return;
+                    }
+                }
+            }
+        } catch (e) {
+            // Fall through to registration on any error
+        }
+
+        window.location.href = './sellerregistration.html';
+    }
+
     const toggleButtons = document.querySelectorAll(".toggle-btn");
     toggleButtons.forEach(button => {
         button.addEventListener("click", () => {
@@ -283,7 +313,7 @@ document.addEventListener("DOMContentLoaded", () => {
             button.classList.add("active");
 
             if (isSellView) {
-                window.location.href = './sellerregistration.html';
+                goToSellerArea();
             }
         });
     });
@@ -635,94 +665,6 @@ function setLoggedIn(user){
                 container.html('<div class="recommended-loading">Unable to load recommendations.</div>');
             });
     }
-
-    function loadYouMightAlsoLike(containerSelector, currentProductId, category, style, sellerId, limit = 6) {
-        const container = $(containerSelector);
-        if (!container.length) return;
-
-        container.html('<div class="recommended-loading">Loading suggestions…</div>');
-        const excludedProductId = Number(currentProductId);
-        const desiredCategory = category ? String(category).trim().toLowerCase() : '';
-        const desiredStyle = style ? String(style).trim().toLowerCase() : '';
-        const desiredSellerId = sellerId != null ? String(sellerId) : null;
-
-        const renderFallback = function() {
-            const fallbackQuery = currentUserId ? `?userId=${currentUserId}` : '';
-            $.get(`/api/products/recommended${fallbackQuery}`)
-                .done(function(products) {
-                    const filtered = (products || []).filter(product => String(product.productId) !== String(excludedProductId));
-                    renderRecommendedProducts(filtered.slice(0, limit), containerSelector);
-                })
-                .fail(function(xhr) {
-                    console.error('Failed to load suggestion products:', xhr.responseText);
-                    container.html('<div class="recommended-loading">Unable to load suggestions.</div>');
-                });
-        };
-
-        $.get('/api/products')
-            .done(function(products) {
-                const filtered = (products || []).filter(function(product) {
-                    const productId = product.productId != null ? product.productId : product.id;
-                    return String(productId) !== String(excludedProductId);
-                });
-                if (filtered.length === 0) {
-                    renderFallback();
-                    return;
-                }
-
-                const exactMatches = [];
-                const categoryStyleMatches = [];
-                const categoryMatches = [];
-                const styleMatches = [];
-                const sellerMatches = [];
-                const others = [];
-
-                filtered.forEach(function(product) {
-                    const productSellerId = product.seller ? String(product.seller.userId || '') : '';
-                    const productStyle = product.style ? String(product.style).trim().toLowerCase() : '';
-                    const productCategory = product.category ? String(product.category).trim().toLowerCase() : '';
-
-                    const sameSeller = desiredSellerId && productSellerId && productSellerId === desiredSellerId;
-                    const sameStyle = desiredStyle && productStyle && productStyle === desiredStyle;
-                    const sameCategory = desiredCategory && productCategory && productCategory === desiredCategory;
-
-                    if (sameSeller && sameStyle && sameCategory) {
-                        exactMatches.push(product);
-                    } else if (sameCategory && sameStyle) {
-                        categoryStyleMatches.push(product);
-                    } else if (sameCategory) {
-                        categoryMatches.push(product);
-                    } else if (sameStyle) {
-                        styleMatches.push(product);
-                    } else if (sameSeller) {
-                        sellerMatches.push(product);
-                    } else {
-                        others.push(product);
-                    }
-                });
-
-                const sortedCandidates = [].concat(
-                    exactMatches,
-                    categoryStyleMatches,
-                    categoryMatches,
-                    styleMatches,
-                    sellerMatches,
-                    others
-                );
-
-                const matched = sortedCandidates.slice(0, limit);
-                if (matched.length === 0) {
-                    renderFallback();
-                } else {
-                    renderRecommendedProducts(matched, containerSelector);
-                }
-            })
-            .fail(function(xhr) {
-                console.error('Failed to load related products:', xhr.responseText);
-                renderFallback();
-            });
-    }
-
 
     // (duplicate renderCart removed — real implementation is above)
 

@@ -90,6 +90,20 @@ public class User {
     private String businessPermitUrl; // Stores image path/link of uploaded document
 
 
+    @Column(name = "discount_id_image_url")
+    private String discountIdImageUrl; // Stores image path/link of uploaded PWD/Senior ID
+
+
+    public enum DiscountStatus {
+        NONE, PENDING, APPROVED, REJECTED
+    }
+
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "discount_status")
+    private DiscountStatus discountStatus = DiscountStatus.NONE;
+
+
     @Column(name = "is_active")
     private Boolean isActive = true;
 

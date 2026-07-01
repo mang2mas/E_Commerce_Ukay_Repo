@@ -87,6 +87,20 @@ public class UserService {
         return updatedUser;
     }
 
+    public User decideDiscountApplication(Integer userId, User.DiscountStatus status, Integer adminId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User account not found with ID: " + userId));
+
+        user.setDiscountStatus(status);
+        user.setIsDiscountElig(status == User.DiscountStatus.APPROVED);
+
+        User updatedUser = userRepository.save(user);
+
+        auditLogService.logAction(adminId, "DISCOUNT_APPLICATION_" + status, "users");
+
+        return updatedUser;
+    }
+
     public List<User> getManageableUsers(User.UserRole role) {
         List<User> users = role == null ? userRepository.findAll() : userRepository.findByRole(role);
         return users.stream()

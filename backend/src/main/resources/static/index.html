@@ -93,7 +93,6 @@
             <div class="category-card" onclick="window.location.href='./discoverypage.html?category=BAGS'"><img src="/images/bags.jpg" alt="Bags"><span>BAGS</span></div>
             <div class="category-card" onclick="window.location.href='./discoverypage.html?category=ACCESSORIES'"><img src="/images/accessories.jpg" alt="Accesories"><span>ACCESORIES</span></div>
             <div class="category-card" onclick="window.location.href='./discoverypage.html?category=SHIRTS'"><img src="/images/shirts.jpg" alt="Shirts"><span>SHIRTS</span></div>
-            <div class="category-card" onclick="window.location.href='./discoverypage.html?category=SALE'"><img src="/images/sale.jpg" alt="Sale"><span>SALE</span></div>
         </div>
     </section>
 
@@ -264,7 +263,6 @@
 <script src="/js/app.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const sellToggle = document.getElementById('sellToggle');
         const loginModal = document.getElementById('loginModalOverlay');
 
         // --- EXISTING LOGIN MODAL LOGIC ---
@@ -283,22 +281,9 @@
             openLoginModal('./index.html');
         }
 
-        if (sellToggle) {
-            sellToggle.addEventListener('click', function (event) {
-                event.preventDefault();
-                // Check if user is logged in
-                const currentUserId = sessionStorage.getItem('currentUserId');
-                const targetUrl = './sellerregistration.html';
-                
-                if (!currentUserId) {
-                    // Redirect to login if not logged in
-                    openLoginModal(targetUrl);
-                } else {
-                    // Redirect to SellerRegistration.html
-                    window.location.href = targetUrl;
-                }
-            });
-        }
+        // NOTE: the SELL button's click handling (login check, pending-approval
+        // redirect, etc.) is handled centrally by the .toggle-btn logic in app.js
+        // to avoid duplicate/conflicting navigation.
 
         // ==========================================
         // NEW: EXPANDING SEARCH BAR LOGIC
