@@ -106,10 +106,6 @@
           </div>
         </section>
 
-        <section class="recommendations-section">
-          <h2>You might also like</h2>
-          <div id="itemRecommendationsContainer" class="masonry-grid"></div>
-        </section>
       </main>
     </div>
 
@@ -205,9 +201,6 @@
           })
           .then(product => {
             updateProductDetails(product);
-            if (typeof loadYouMightAlsoLike === 'function') {
-              loadYouMightAlsoLike('#itemRecommendationsContainer', product.productId, product.category, product.style, product.seller?.userId, 6);
-            }
             attachItemActions();
           })
           .catch(error => {

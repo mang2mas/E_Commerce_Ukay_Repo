@@ -95,6 +95,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/seller/documents").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/seller/documents").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/seller/requests").authenticated()
+                // Discount (PWD/Senior) ID upload — called right after registration, before a token exists
+                .requestMatchers(HttpMethod.POST, "/api/discount/id-document").permitAll()
                 // All other endpoints require authentication
                 .anyRequest().authenticated()
             )

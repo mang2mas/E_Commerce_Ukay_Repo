@@ -430,17 +430,18 @@
             }
 
             container.innerHTML = activeProducts.map((product) => {
+                const productId = product?.productId ?? product?.id ?? '';
                 const image = product?.imagePath || '/images/profile-placeholder.jpg';
                 const title = product?.itemName || product?.productName || product?.name || 'Untitled Item';
                 const price = formatPrice(product?.price || product?.productPrice);
                 const description = product?.description ? String(product.description).slice(0, 90) : 'No description available.';
                 const details = [product?.itemCondition ? `Condition: ${product.itemCondition}` : null, product?.size ? `Size: ${product.size}` : null, product?.category ? `Category: ${product.category}` : null].filter(Boolean).join(' • ');
                 return `
-                    <div class="seller-product-card">
+                    <div class="seller-product-card masonry-item" data-product-id="${productId}">
                         <img src="${image}" alt="${title}" onerror="this.src='/images/item1.jpg'">
                         <div class="seller-product-info">
-                            <p class="seller-product-title">${title}</p>
-                            <div class="seller-product-price">${price}</div>
+                            <p class="seller-product-title item-title-badge">${title}</p>
+                            <div class="seller-product-price item-price-tag">${price}</div>
                             <div class="seller-product-details">${description}${description.length >= 90 ? '…' : ''}</div>
                             <div class="seller-product-meta">${details || 'More details coming soon.'}</div>
                         </div>

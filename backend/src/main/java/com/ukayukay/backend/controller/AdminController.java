@@ -86,6 +86,16 @@ public class AdminController {
     }
 
 
+    @PutMapping("/users/{userId}/discount-status")
+    public ResponseEntity<User> decideDiscountApplication(
+            @PathVariable Integer userId,
+            @RequestParam User.DiscountStatus status,
+            @RequestHeader("Authorization") String authHeader) {
+        Integer adminId = extractAdminId(authHeader);
+        return ResponseEntity.ok(userService.decideDiscountApplication(userId, status, adminId));
+    }
+
+
     @PutMapping("/products/{productId}/moderate")
     public ResponseEntity<Product> moderateProductListing(
             @PathVariable Integer productId,

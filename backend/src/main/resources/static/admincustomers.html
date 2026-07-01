@@ -52,6 +52,13 @@
         .status.active { background: #e7f8ef; color: var(--ok); }
         .status.suspended { background: #fdeaea; color: #9f2222; }
         .status.shadow { background: #ede8ff; color: #5542a5; }
+        .status.pending { background: #fff4d6; color: #8a6d1a; }
+        .status.approved { background: #e7f8ef; color: var(--ok); }
+        .status.rejected { background: #fdeaea; color: #9f2222; }
+        .status.none { background: #f1ead8; color: var(--muted); }
+        .btn.approve { border-color: var(--ok); color: var(--ok); }
+        .btn.reject { border-color: var(--danger); color: var(--danger); }
+        .view-id-link { display: inline-block; margin-top: 4px; font-size: 11px; font-weight: 700; color: #8a6d1a; }
 
         .actions { display: flex; gap: 6px; flex-wrap: wrap; }
         .btn {
@@ -80,7 +87,7 @@
 
     <main class="wrap">
         <h1 style="margin: 4px 0 6px;">Customer Records Management</h1>
-        <p style="margin: 0 0 14px; color: var(--muted);">Suspend/reactivate accounts and apply shadow ban actions for enforcement.</p>
+        <p style="margin: 0 0 14px; color: var(--muted);">Suspend/reactivate accounts, apply shadow ban actions, and review PWD/Senior ID applications.</p>
 
         <section class="panel">
             <div class="panel-head">
@@ -105,11 +112,12 @@
                             <th>Role</th>
                             <th>Account</th>
                             <th>Shadow Ban</th>
+                            <th>PWD/Senior</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="userRows">
-                        <tr><td colspan="7" class="empty">Loading accounts...</td></tr>
+                        <tr><td colspan="8" class="empty">Loading accounts...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -149,10 +157,26 @@
             return '<span class="status ' + (shadow ? 'shadow' : 'active') + '">' + (shadow ? 'Shadow Banned' : 'Normal') + '</span>';
         }
 
+        function discountCell(user) {
+            const discountType = user.discountType;
+            if (!discountType || discountType === 'NONE') {
+                return '<span class="status none">&mdash;</span>';
+            }
+            if (!user.discountIdImageUrl) {
+                return '<span class="status none">' + discountType + ' &middot; No ID submitted</span>';
+            }
+            const status = user.discountStatus || 'PENDING';
+            const statusClass = status.toLowerCase();
+            const label = discountType + ' &middot; ' + status.charAt(0) + status.slice(1).toLowerCase();
+            let html = '<span class="status ' + statusClass + '">' + label + '</span>';
+            html += '<br><a class="view-id-link" href="' + user.discountIdImageUrl + '" target="_blank" rel="noopener">View ID</a>';
+            return html;
+        }
+
         function renderRows(users) {
             const tbody = document.getElementById('userRows');
             if (!users || users.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="empty">No matching accounts found.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" class="empty">No matching accounts found.</td></tr>';
                 return;
             }
 
@@ -160,6 +184,7 @@
                 const active = user.isActive !== false;
                 const shadow = user.isShadowBanned === true;
                 const roleText = (user.role || '').toString().toUpperCase();
+                const discountPending = user.discountStatus === 'PENDING';
                 return '<tr>' +
                     '<td>' + user.userId + '</td>' +
                     '<td>' + (user.fullName || '-') + '</td>' +
@@ -167,6 +192,7 @@
                     '<td>' + roleText + '</td>' +
                     '<td>' + rowStatusLabel(user) + '</td>' +
                     '<td>' + shadowLabel(user) + '</td>' +
+                    '<td>' + discountCell(user) + '</td>' +
                     '<td>' +
                         '<div class="actions">' +
                             (active
@@ -175,6 +201,10 @@
                             (shadow
                                 ? '<button class="btn" onclick="toggleShadow(' + user.userId + ', false)">Remove Shadow Ban</button>'
                                 : '<button class="btn shadow" onclick="toggleShadow(' + user.userId + ', true)">Shadow Ban</button>') +
+                            (discountPending
+                                ? '<button class="btn approve" onclick="decideDiscount(' + user.userId + ', \'APPROVED\')">Approve ID</button>' +
+                                  '<button class="btn reject" onclick="decideDiscount(' + user.userId + ', \'REJECTED\')">Reject ID</button>'
+                                : '') +
                         '</div>' +
                     '</td>' +
                 '</tr>';
@@ -222,11 +252,22 @@
             await fetchUsers();
         }
 
+        async function decideDiscount(userId, status) {
+            if (!confirm('Confirm ' + status.toLowerCase() + ' of this PWD/Senior ID application?')) return;
+            const url = '/api/admin/users/' + userId + '/discount-status?status=' + status;
+            const res = await fetch(url, { method: 'PUT', headers: authHeader() });
+            if (!res.ok) {
+                alert('Failed to update discount application status.');
+                return;
+            }
+            await fetchUsers();
+        }
+
         document.getElementById('searchInput').addEventListener('input', applyClientFilter);
         document.getElementById('roleFilter').addEventListener('change', fetchUsers);
 
         fetchUsers().catch(() => {
-            document.getElementById('userRows').innerHTML = '<tr><td colspan="7" class="empty">Could not load users.</td></tr>';
+            document.getElementById('userRows').innerHTML = '<tr><td colspan="8" class="empty">Could not load users.</td></tr>';
         });
     </script>
 </body>

@@ -41,6 +41,7 @@ public class DemoDataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) {
                 seedAdminAccount();
+                seedDiscountApplicantAccount();
 
         if (productRepository.count() > 0) {
             return;
@@ -93,6 +94,23 @@ public class DemoDataLoader implements CommandLineRunner {
         System.out.println("Seeded demo products and sellers for homepage recommendations.");
     }
 
+        private void seedDiscountApplicantAccount() {
+                userRepository.findByEmail("senior.applicant@example.com").orElseGet(() -> {
+                        User applicant = new User();
+                        applicant.setEmail("senior.applicant@example.com");
+                        applicant.setPassword(passwordEncoder.encode("applicant123"));
+                        applicant.setFullName("Roberto Santos");
+                        applicant.setRole(User.UserRole.buyer);
+                        applicant.setIsActive(true);
+                        applicant.setIsShadowBanned(false);
+                        applicant.setDiscountType("SENIOR");
+                        applicant.setIsPwdSenior(true);
+                        applicant.setDiscountStatus(User.DiscountStatus.PENDING);
+                        applicant.setDiscountIdImageUrl("/images/fit1.jpg");
+                        return userRepository.save(applicant);
+                });
+        }
+
         private void seedAdminAccount() {
                 userRepository.findByEmail(adminEmail).orElseGet(() -> {
                         User admin = new User();
@@ -112,7 +130,7 @@ public class DemoDataLoader implements CommandLineRunner {
         return userRepository.findByEmail(email).orElseGet(() -> {
             User seller = new User();
             seller.setEmail(email);
-            seller.setPassword("seller123");
+            seller.setPassword(passwordEncoder.encode("seller123"));
             seller.setFullName(businessName);
             seller.setRole(User.UserRole.seller);
             seller.setSellerApproved(true);

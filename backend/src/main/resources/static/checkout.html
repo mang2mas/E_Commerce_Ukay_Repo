@@ -61,13 +61,6 @@
         .payment-option input[type=radio] { accent-color:#fbce60; }
         .payment-name { flex:1; font-size:14px; font-weight:600; }
 
-        /* Promo */
-        .promo-row { display:flex; gap:8px; }
-        .promo-row input { flex:1; padding:10px; border:1px solid #ddd; border-radius:4px; font-size:13px; }
-        .promo-msg { font-size:12px; margin-top:6px; }
-        .promo-msg.success { color:#2e7d32; }
-        .promo-msg.error { color:#c62828; }
-
         /* Summary */
         .summary-line { display:flex; justify-content:space-between; font-size:14px; margin-bottom:12px; }
         .summary-total { display:flex; justify-content:space-between; font-size:16px; font-weight:800; margin-top:16px; padding-top:16px; border-top:2px solid #e5e5e5; }
@@ -178,16 +171,6 @@
                 </label>
             </div>
 
-            <!-- Promo Code -->
-            <div class="section-card">
-                <div class="section-title"><i class="fa-solid fa-tag"></i> Promo Code</div>
-                <div class="promo-row">
-                    <input type="text" id="promoInput" placeholder="Enter promo code">
-                    <button class="btn-sm btn-yellow" onclick="applyPromo()">Apply</button>
-                </div>
-                <div id="promoMsg" class="promo-msg"></div>
-            </div>
-
         </div>
 
         <!-- RIGHT COLUMN: Summary -->
@@ -196,7 +179,6 @@
                 <div class="section-title">Order Summary</div>
                 <div class="summary-line"><span>Items (<span id="summaryCount">0</span>)</span><span id="summaryItems">₱0.00</span></div>
                 <div class="summary-line"><span>Shipping</span><span id="summaryShipping">₱49.00</span></div>
-                <div class="summary-line" id="discountRow" style="display:none;"><span>Discount</span><span id="summaryDiscount" style="color:#2e7d32;">-₱0.00</span></div>
                 <div class="summary-total">
                     <span>ESTIMATED TOTAL</span><span id="summaryTotal">₱0.00</span>
                 </div>
@@ -231,8 +213,6 @@
         let cartItems = [];
         let addresses = [];
         let selectedAddressId = null;
-        let discountAmount = 0;
-        let appliedPromoCode = null;
         let shippingFee = 49;
 
         // Update summary totals
@@ -240,7 +220,7 @@
             const subtotal = cartItems.reduce((sum, item) => {
                 return sum + (parseFloat(item.product?.price || 0) * (item.quantity || 1));
             }, 0);
-            const total = subtotal + shippingFee - discountAmount;
+            const total = subtotal + shippingFee;
             document.getElementById('summaryCount').textContent = cartItems.length;
             document.getElementById('summaryItems').textContent = '₱' + subtotal.toFixed(2);
             document.getElementById('summaryShipping').textContent = '₱' + shippingFee.toFixed(2);
@@ -380,34 +360,6 @@
                 .catch(() => alert('Could not remove item. Please try again.'));
         }
 
-        // Apply promo code
-        function applyPromo() {
-            const code = document.getElementById('promoInput').value.trim();
-            if (!code) return;
-            const subtotal = cartItems.reduce((s, i) => s + parseFloat(i.product?.price || 0) * (i.quantity || 1), 0);
-            fetch('/api/promo-codes/validate', {
-                method: 'POST',
-                headers: Object.assign({ 'Content-Type': 'application/json' }, authHeader()),
-                body: JSON.stringify({ code: code, orderAmount: subtotal })
-            })
-            .then(r => r.ok ? r.json() : Promise.reject('Invalid promo code'))
-            .then(result => {
-                discountAmount = parseFloat(result.discountAmount || 0);
-                appliedPromoCode = code;
-                document.getElementById('discountRow').style.display = 'flex';
-                document.getElementById('summaryDiscount').textContent = '-₱' + discountAmount.toFixed(2);
-                document.getElementById('promoMsg').textContent = 'Promo applied! You save ₱' + discountAmount.toFixed(2);
-                document.getElementById('promoMsg').className = 'promo-msg success';
-                updateSummary();
-            })
-            .catch(() => {
-                document.getElementById('promoMsg').textContent = 'Invalid or expired promo code.';
-                document.getElementById('promoMsg').className = 'promo-msg error';
-                discountAmount = 0;
-                updateSummary();
-            });
-        }
-
         // Place order
         function placeOrder() {
             if (!cartItems || cartItems.length === 0) { alert('Your cart is empty.'); return; }
@@ -439,8 +391,7 @@
 
             const payload = {
                 shippingAddress: shippingAddress,
-                paymentMethod: paymentMethod,
-                promoCode: appliedPromoCode || null
+                paymentMethod: paymentMethod
             };
 
             fetch('/api/orders/checkout/' + userId, {

@@ -35,7 +35,6 @@
         <div class="frame2">
           <input class="search" id="discoverySearch" placeholder="Search items..." type="text" />
           <i class="fa-solid fa-magnifying-glass search-icon" aria-hidden="true" style="cursor:pointer;" onclick="runSearch()"></i>
-          <i class="fa-solid fa-sliders search-icon" aria-hidden="true"></i>
         </div>
       </div>
             <p id="searchResultsMeta" style="margin-top:10px;text-align:center;color:#444;font-size:13px;font-family:'Inter', sans-serif;"></p>
@@ -97,7 +96,7 @@
         }
 
         // Category chips
-        const categories = ['TOPS','BOTTOMS','OUTERWEAR','BAGS','ACCESSORIES','SHIRTS','SALE'];
+        const categories = ['TOPS','BOTTOMS','OUTERWEAR','BAGS','ACCESSORIES','SHIRTS'];
         const chipsContainer = document.getElementById('categoryChips');
         categories.forEach(function(cat) {
             const chip = document.createElement('button');
@@ -139,7 +138,7 @@
             columns.forEach(function(col) {
                 if (col.length === 0) return;
                 const colDiv = document.createElement('div');
-                colDiv.style.cssText = 'display:flex;flex-direction:column;flex:1;gap:16px;';
+                colDiv.style.cssText = 'display:flex;flex-direction:column;flex:0 1 260px;max-width:260px;gap:16px;';
                 
                 col.forEach(function(p) {
                     const pid = p.productId || p.id;
