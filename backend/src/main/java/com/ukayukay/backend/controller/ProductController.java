@@ -106,7 +106,7 @@ public class ProductController {
     }
 
     private String saveProductImage(MultipartFile imageFile) throws IOException {
-        Path uploadDir = Paths.get("uploads", "product-images");
+        Path uploadDir = Paths.get("uploads", "product-images").toAbsolutePath().normalize();
         if (!Files.exists(uploadDir)) {
             Files.createDirectories(uploadDir);
         }
