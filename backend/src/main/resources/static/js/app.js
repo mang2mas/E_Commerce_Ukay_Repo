@@ -1,5 +1,6 @@
 let currentUserId = sessionStorage.getItem("currentUserId") || null;
 let currentUserRole = sessionStorage.getItem("currentUserRole") || null;
+const SELL_ENTRY_REDIRECT_MARKER = '__SELL_ENTRY__';
 
 function getAuthToken() {
     return sessionStorage.getItem("authToken") || null;
@@ -55,6 +56,129 @@ function getProductContext(target) {
     return { productId, productName, price, imageUrl };
 }
 
+function getSellerEntryTarget() {
+    const role = (sessionStorage.getItem('currentUserRole') || '').toLowerCase();
+    const approved = sessionStorage.getItem('currentUserSellerApproved') === 'true';
+    const verificationStatus = (sessionStorage.getItem('currentUserVerificationStatus') || '').toUpperCase();
+    return getSellerEntryTargetFromState(role, approved, verificationStatus, false, false);
+}
+
+function getSellerEntryTargetFromState(role, approved, verificationStatus, hasPendingRequest, hasApprovedRequest) {
+    if (role === 'admin') return './admin.html';
+    if ((approved && verificationStatus === 'APPROVED') || hasApprovedRequest) return './sellerhomeprofile.html';
+    if (hasPendingRequest) return './sellerpendingapproval.html';
+    return './sellerregistration.html';
+}
+
+async function fetchSellerRequests(userId) {
+    if (!userId) return [];
+    try {
+        const response = await authFetch(`/api/seller/requests?userId=${encodeURIComponent(userId)}`);
+        if (!response.ok) return [];
+        const requests = await response.json();
+        return Array.isArray(requests) ? requests : [];
+    } catch (_) {
+        return [];
+    }
+}
+
+function summarizeSellerRequests(requests) {
+    const statuses = (Array.isArray(requests) ? requests : [])
+        .map((req) => (req?.status || '').toUpperCase())
+        .filter(Boolean);
+    return {
+        hasPendingRequest: statuses.includes('PENDING'),
+        hasApprovedRequest: statuses.includes('APPROVED')
+    };
+}
+
+function cacheSellerProfileFlags(profile) {
+    if (!profile || typeof profile !== 'object') return;
+    const approved = profile.sellerApproved === true;
+    const verificationStatus = (profile.verificationStatus || '').toUpperCase();
+    sessionStorage.setItem('currentUserSellerApproved', approved ? 'true' : 'false');
+    if (verificationStatus) {
+        sessionStorage.setItem('currentUserVerificationStatus', verificationStatus);
+    } else {
+        sessionStorage.removeItem('currentUserVerificationStatus');
+    }
+}
+
+async function resolveSellerEntryTarget() {
+    const role = (sessionStorage.getItem('currentUserRole') || '').toLowerCase();
+    if (role === 'admin') return './admin.html';
+
+    const currentUserId = sessionStorage.getItem('currentUserId');
+    if (!currentUserId) return './sellerregistration.html';
+
+    const approved = sessionStorage.getItem('currentUserSellerApproved') === 'true';
+    const verificationStatus = (sessionStorage.getItem('currentUserVerificationStatus') || '').toUpperCase();
+    const cachedRequestSummary = summarizeSellerRequests([]);
+    const cachedTarget = getSellerEntryTargetFromState(
+        role,
+        approved,
+        verificationStatus,
+        cachedRequestSummary.hasPendingRequest,
+        cachedRequestSummary.hasApprovedRequest
+    );
+    if (cachedTarget === './sellerhomeprofile.html') {
+        return cachedTarget;
+    }
+
+    try {
+        let resolvedApproved = approved;
+        let resolvedVerification = verificationStatus;
+
+        const profileResponse = await authFetch(`/api/profile/${encodeURIComponent(currentUserId)}`);
+        if (profileResponse.ok) {
+            const profile = await profileResponse.json();
+            cacheSellerProfileFlags(profile);
+            resolvedApproved = profile?.sellerApproved === true;
+            resolvedVerification = (profile?.verificationStatus || '').toUpperCase();
+        }
+
+        const requestSummary = summarizeSellerRequests(await fetchSellerRequests(currentUserId));
+        return getSellerEntryTargetFromState(
+            role,
+            resolvedApproved,
+            resolvedVerification,
+            requestSummary.hasPendingRequest,
+            requestSummary.hasApprovedRequest
+        );
+    } catch (error) {
+        console.error('Unable to resolve seller entry target:', error);
+        return cachedTarget;
+    }
+}
+
+function handleSellEntryAction(event) {
+    const isAuthenticated = Boolean(sessionStorage.getItem('currentUserId'));
+    const loginModal = document.getElementById('loginModalOverlay');
+
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    if (!isAuthenticated) {
+        sessionStorage.setItem('pendingRedirect', SELL_ENTRY_REDIRECT_MARKER);
+        if (loginModal) {
+            loginModal.classList.add('active');
+            document.body.classList.add('modal-open');
+        } else {
+            window.location.href = './login.html?next=' + encodeURIComponent(SELL_ENTRY_REDIRECT_MARKER);
+        }
+        return true;
+    }
+
+    resolveSellerEntryTarget().then((targetUrl) => {
+        window.location.href = targetUrl;
+    });
+    return true;
+}
+
+window.handleSellEntryAction = handleSellEntryAction;
+
 
 document.addEventListener("DOMContentLoaded", () => {
    
@@ -68,6 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const cartClick = event.target.closest('.cart-trigger');
         const profileClick = event.target.closest('.profile-trigger');
         const homeClick = event.target.closest('.home-trigger');
+        const sellClick = event.target.closest('[data-view="sell"], .sell-trigger, .sell-toggle');
         const protectedTarget = event.target.closest('.profile-trigger, .cart-trigger, .home-trigger, .shop-trigger, .category-card, .view-all, .btn-primary, .btn-outline, .btn-add-cart-action, .btn-checkout');
         const anchor = event.target.closest('a');
        
@@ -184,6 +309,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
         }
+
+        if (sellClick) {
+            handleSellEntryAction(event);
+        }
     }, true);
     function refreshLoginStatusIndicator() {
         const statusLabel = document.getElementById('loginStatus');
@@ -293,19 +422,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const toggleButtons = document.querySelectorAll(".toggle-btn");
     toggleButtons.forEach(button => {
-        button.addEventListener("click", () => {
+        button.addEventListener("click", (event) => {
             const isSellView = button.dataset.view === 'sell';
 
-            if (isSellView && !currentUserId) {
-                const target = './sellerregistration.html';
-                sessionStorage.setItem('pendingRedirect', target);
-                const modal = document.getElementById('loginModalOverlay');
-                if (modal) {
-                    modal.classList.add('active');
-                    document.body.classList.add('modal-open');
-                } else {
-                    window.location.href = `./login.html?next=${encodeURIComponent(target)}`;
-                }
+            if (isSellView && handleSellEntryAction(event)) {
                 return;
             }
 
@@ -313,7 +433,7 @@ document.addEventListener("DOMContentLoaded", () => {
             button.classList.add("active");
 
             if (isSellView) {
-                goToSellerArea();
+                window.location.href = getSellerEntryTarget();
             }
         });
     });
@@ -565,21 +685,31 @@ function setLoggedIn(user){
     function loadProducts() {
         const container = $('#newArrivalsContainer');
         if (!container.length) {
-            console.warn('New arrivals container not found');
             return;
         }
 
-        const userId = currentUserId ? Number(currentUserId) : null;
         container.html('<div class="recommended-loading">Loading new arrivals…</div>');
-        const query = userId ? `?userId=${userId}` : '';
 
-        $.get(`/api/products/recommended${query}`)
+        $.get('/api/products')
             .done(function(products) {
-                renderRecommendedProducts(products, '#newArrivalsContainer');
+                const sorted = (products || []).slice().sort(function(a, b) {
+                    const dateA = a && a.dateAdded ? new Date(a.dateAdded).getTime() : 0;
+                    const dateB = b && b.dateAdded ? new Date(b.dateAdded).getTime() : 0;
+
+                    if (dateB !== dateA) {
+                        return dateB - dateA;
+                    }
+
+                    const idA = Number((a && (a.productId || a.id)) || 0);
+                    const idB = Number((b && (b.productId || b.id)) || 0);
+                    return idB - idA;
+                });
+
+                renderRecommendedProducts(sorted, '#newArrivalsContainer');
             })
             .fail(function(xhr) {
-                console.error('Failed to load recommended products:', xhr.responseText);
-                container.html('<div class="recommended-loading">Unable to load recommendations.</div>');
+                console.error('Failed to load new arrivals:', xhr.responseText);
+                container.html('<div class="recommended-loading">Unable to load new arrivals.</div>');
             });
     }
 
@@ -1125,18 +1255,36 @@ if (modalLoginForm) {
             sessionStorage.setItem('currentUserEmail', data.email);
             sessionStorage.setItem('currentUserFullName', data.fullName);
 
+            try {
+                const profileResponse = await authFetch(`/api/profile/${encodeURIComponent(data.userId)}`);
+                if (profileResponse.ok) {
+                    const profile = await profileResponse.json();
+                    cacheSellerProfileFlags(profile);
+                }
+            } catch (_) {
+                // Ignore profile hydration failures; role-based fallback remains.
+            }
+
 
             const redirectUrl = sessionStorage.getItem('pendingRedirect');
             sessionStorage.removeItem('pendingRedirect');
             closeLoginModal();
             if (redirectUrl) {
-                window.location.href = redirectUrl;
+                const finalRedirectUrl = redirectUrl === SELL_ENTRY_REDIRECT_MARKER
+                    ? await resolveSellerEntryTarget()
+                    : redirectUrl;
+                window.location.href = finalRedirectUrl;
             } else {
                 const role = data.role;
+                const sellerApproved = sessionStorage.getItem('currentUserSellerApproved') === 'true'
+                    && (sessionStorage.getItem('currentUserVerificationStatus') || '').toUpperCase() === 'APPROVED';
+                const requestSummary = summarizeSellerRequests(await fetchSellerRequests(data.userId));
                 if (role === 'ADMIN' || role === 'admin') {
                     window.location.href = './admin.html';
-                } else if (role === 'SELLER' || role === 'seller') {
+                } else if (sellerApproved || requestSummary.hasApprovedRequest) {
                     window.location.href = './sellerhomeprofile.html';
+                } else if (requestSummary.hasPendingRequest) {
+                    window.location.href = './sellerpendingapproval.html';
                 } else {
                     window.location.href = './index.html';
                 }

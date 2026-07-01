@@ -35,12 +35,57 @@
 
 
     <script>
+        const SELL_ENTRY_REDIRECT_MARKER = '__SELL_ENTRY__';
         const urlParams = new URLSearchParams(window.location.search);
         const nextUrl = urlParams.get('next') || './index.html';
 
+        async function fetchSellerRequests(userId, token) {
+            if (!userId) return [];
+            try {
+                const response = await fetch(`/api/seller/requests?userId=${encodeURIComponent(userId)}`, {
+                    headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+                });
+                if (!response.ok) return [];
+                const requests = await response.json();
+                return Array.isArray(requests) ? requests : [];
+            } catch (_) {
+                return [];
+            }
+        }
+
+        function summarizeSellerRequests(requests) {
+            const statuses = (Array.isArray(requests) ? requests : [])
+                .map((req) => (req?.status || '').toUpperCase())
+                .filter(Boolean);
+            return {
+                hasPendingRequest: statuses.includes('PENDING'),
+                hasApprovedRequest: statuses.includes('APPROVED')
+            };
+        }
+
+        async function resolveSellerEntryTargetFromSession(userId, token) {
+            const role = (sessionStorage.getItem('currentUserRole') || '').toLowerCase();
+            const approved = sessionStorage.getItem('currentUserSellerApproved') === 'true';
+            const verification = (sessionStorage.getItem('currentUserVerificationStatus') || '').toUpperCase();
+            const requestSummary = summarizeSellerRequests(await fetchSellerRequests(userId, token));
+
+            if (role === 'admin') return './admin.html';
+            if ((approved && verification === 'APPROVED') || requestSummary.hasApprovedRequest) return './sellerhomeprofile.html';
+            if (requestSummary.hasPendingRequest) return './sellerpendingapproval.html';
+            return './sellerregistration.html';
+        }
+
 
         if (sessionStorage.getItem('authToken')) {
-            window.location.href = nextUrl;
+            const token = sessionStorage.getItem('authToken');
+            const userId = sessionStorage.getItem('currentUserId');
+            if (nextUrl === SELL_ENTRY_REDIRECT_MARKER) {
+                resolveSellerEntryTargetFromSession(userId, token)
+                    .then((target) => { window.location.href = target; })
+                    .catch(() => { window.location.href = './sellerregistration.html'; });
+            } else {
+                window.location.href = nextUrl;
+            }
         }
 
 
@@ -63,6 +108,26 @@
             return response.json();
         }
 
+        async function hydrateSellerFlags(userId, token) {
+            if (!userId) return;
+            try {
+                const response = await fetch(`/api/profile/${encodeURIComponent(userId)}`, {
+                    headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+                });
+                if (!response.ok) return;
+                const profile = await response.json();
+                const approved = profile?.sellerApproved === true;
+                const verification = (profile?.verificationStatus || '').toUpperCase();
+                sessionStorage.setItem('currentUserSellerApproved', approved ? 'true' : 'false');
+                if (verification) {
+                    sessionStorage.setItem('currentUserVerificationStatus', verification);
+                } else {
+                    sessionStorage.removeItem('currentUserVerificationStatus');
+                }
+            } catch (_) {
+                // Ignore profile hydration failures; role-based fallback remains.
+            }
+        }
 
         function showMessage(text, type = 'error') {
             const messageElement = document.getElementById('message');
@@ -97,14 +162,22 @@
                 sessionStorage.setItem('currentUserRole', data.role);
                 sessionStorage.setItem('currentUserEmail', data.email);
                 sessionStorage.setItem('currentUserFullName', data.fullName);
+                await hydrateSellerFlags(data.userId, data.token);
                 // Role-based redirect: only use nextUrl if it was actually set by a redirect
                 const isDefaultUrl = (nextUrl === './index.html' || nextUrl === '/' || nextUrl === '/index.html');
-                if (!isDefaultUrl) {
+                const sellerApproved = sessionStorage.getItem('currentUserSellerApproved') === 'true'
+                    && (sessionStorage.getItem('currentUserVerificationStatus') || '').toUpperCase() === 'APPROVED';
+                const requestSummary = summarizeSellerRequests(await fetchSellerRequests(data.userId, data.token));
+                if (nextUrl === SELL_ENTRY_REDIRECT_MARKER) {
+                    window.location.href = await resolveSellerEntryTargetFromSession(data.userId, data.token);
+                } else if (!isDefaultUrl) {
                     window.location.href = nextUrl;
                 } else if (data.role === 'ADMIN' || data.role === 'admin') {
                     window.location.href = './admin.html';
-                } else if (data.role === 'SELLER' || data.role === 'seller') {
+                } else if (sellerApproved || requestSummary.hasApprovedRequest) {
                     window.location.href = './sellerhomeprofile.html';
+                } else if (requestSummary.hasPendingRequest) {
+                    window.location.href = './sellerpendingapproval.html';
                 } else {
                     window.location.href = './index.html';
                 }

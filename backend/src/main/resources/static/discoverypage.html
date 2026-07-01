@@ -19,7 +19,7 @@
         <div class="nav-right">
             <div class="toggle-container">
                 <button class="toggle-btn active" data-view="buy">BUY</button>
-                <button class="toggle-btn" id="sellToggle" data-view="sell">SELL</button>
+                <button class="toggle-btn" id="sellToggle" data-view="sell" onclick="return window.handleSellEntryAction && window.handleSellEntryAction(event)">SELL</button>
             </div>
             <button class="icon-btn home-trigger" onclick="window.location.href='./index.html'"><i class="fa-solid fa-house"></i></button>
             <button class="icon-btn profile-trigger" onclick="window.location.href='./ordermanagement.html'"><i class="fa-regular fa-user"></i></button>
@@ -37,6 +37,8 @@
           <i class="fa-solid fa-magnifying-glass search-icon" aria-hidden="true" style="cursor:pointer;" onclick="runSearch()"></i>
         </div>
       </div>
+            <p id="searchResultsMeta" style="margin-top:10px;text-align:center;color:#444;font-size:13px;font-family:'Inter', sans-serif;"></p>
+            <p id="searchResultsHint" style="margin-top:6px;text-align:center;color:#777;font-size:12px;font-family:'Inter', sans-serif;"></p>
       <!-- Category filter chips -->
       <div id="categoryChips" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px;"></div>
     </section>
@@ -70,6 +72,7 @@
         const token = sessionStorage.getItem('authToken');
         const urlParams = new URLSearchParams(window.location.search);
         const categoryParam = urlParams.get('category') || '';
+        const searchParam = (urlParams.get('search') || '').trim();
 
         function authHeader() { 
             return token ? { 'Authorization': 'Bearer ' + token } : {}; 
@@ -86,6 +89,10 @@
         if (categoryParam) {
             document.getElementById('discoveryTitle').textContent = categoryParam.toUpperCase();
             document.getElementById('discoverySearch').placeholder = 'Search in ' + categoryParam + '...';
+        }
+
+        if (searchParam) {
+            document.getElementById('discoverySearch').value = searchParam;
         }
 
         // Category chips
@@ -194,13 +201,31 @@
         }
 
         function runSearch() {
+            const meta = document.getElementById('searchResultsMeta');
+            const hint = document.getElementById('searchResultsHint');
             const query = document.getElementById('discoverySearch').value.trim().toLowerCase();
-            if (!query) { renderProducts(allProducts); return; }
+            if (!query) {
+                if (meta) meta.textContent = 'Showing all ' + allProducts.length + ' items';
+                if (hint) hint.textContent = '';
+                renderProducts(allProducts);
+                return;
+            }
             const filtered = allProducts.filter(function(p) {
                 return (p.itemName || '').toLowerCase().includes(query) ||
                         (p.category || '').toLowerCase().includes(query) ||
                         (p.description || '').toLowerCase().includes(query);
             });
+            if (meta) {
+                const noun = filtered.length === 1 ? 'item' : 'items';
+                meta.textContent = 'Showing ' + filtered.length + ' ' + noun + ' for "' + query + '"';
+            }
+            if (hint) {
+                if (filtered.length === 0) {
+                    hint.textContent = 'No exact matches. Try keywords like tops, jeans, shirt, bag, or vintage.';
+                } else {
+                    hint.textContent = '';
+                }
+            }
             renderProducts(filtered);
         }
 
@@ -217,7 +242,15 @@
             .then(r => r.ok ? r.json() : [])
             .then(products => {
                 allProducts = products || [];
-                renderProducts(allProducts);
+                if (searchParam) {
+                    runSearch();
+                } else {
+                    const meta = document.getElementById('searchResultsMeta');
+                    const hint = document.getElementById('searchResultsHint');
+                    if (meta) meta.textContent = 'Showing all ' + allProducts.length + ' items';
+                    if (hint) hint.textContent = '';
+                    renderProducts(allProducts);
+                }
             })
             .catch(() => {
                 document.getElementById('dynamicMasonryContainer').innerHTML =
