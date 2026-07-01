@@ -35,7 +35,8 @@
 
 
     <script>
-        const nextUrl = new URLSearchParams(window.location.search).get('next') || './index.html';
+        const urlParams = new URLSearchParams(window.location.search);
+        const nextUrl = urlParams.get('next') || './index.html';
 
 
         if (sessionStorage.getItem('authToken')) {
@@ -67,6 +68,10 @@
             const messageElement = document.getElementById('message');
             messageElement.textContent = text;
             messageElement.className = `message ${type}`;
+        }
+
+        if (urlParams.get('loggedOut') === '1') {
+            showMessage('You have been logged out successfully.', 'info');
         }
 
 

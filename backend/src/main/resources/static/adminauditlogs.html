@@ -45,7 +45,7 @@
             <a href="adminuser.html" class="header-btn">User Verifications</a>
             <a href="admincustomers.html" class="header-btn">Customers</a>
             <a href="contentmoderation.html" class="header-btn">Moderation</a>
-            <a href="#" class="header-btn" onclick="sessionStorage.clear();window.location.href='./login.html';return false;">Logout</a>
+            <a href="#" class="header-btn" onclick="sessionStorage.removeItem('pendingRedirect');sessionStorage.clear();window.location.replace('./login.html?loggedOut=1');return false;">Logout</a>
             <div style="display: flex; align-items: center; gap: 10px; color: white; margin-left: 15px;">
                 <i class="fa-solid fa-user-circle" style="font-size: 18px;"></i>
                 <span id="adminNameDisplay" style="font-size: 14px;">Administrator</span>

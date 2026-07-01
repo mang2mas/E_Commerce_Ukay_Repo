@@ -96,7 +96,7 @@
             <button class="nav-btn" onclick="window.location.href='./index.html'"><i class="fa-solid fa-house"></i></button>
             <button class="nav-btn" onclick="window.location.href='./ordermanagement.html'"><i class="fa-regular fa-user"></i></button>
             <button class="nav-btn" onclick="window.location.href='./shoppingcart.html'"><i class="fa-solid fa-bag-shopping"></i></button>
-            <button onclick="sessionStorage.clear();window.location.href='./login.html';" style="color:white;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);padding:6px 14px;font-size:12px;font-weight:700;border-radius:4px;cursor:pointer;">LOG OUT</button>
+            <button onclick="sessionStorage.removeItem('pendingRedirect');sessionStorage.clear();window.location.replace('./login.html?loggedOut=1');" style="color:white;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);padding:6px 14px;font-size:12px;font-weight:700;border-radius:4px;cursor:pointer;">LOG OUT</button>
             <span id="loginStatus" style="color:#000;font-size:12px;font-weight:600;background:rgba(255,255,255,0.7);padding:4px 8px;border-radius:4px;">Not logged in</span>
         </div>
     </header>

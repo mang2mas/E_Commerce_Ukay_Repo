@@ -132,8 +132,9 @@
 
         // Logout
         document.getElementById('logoutSidebarBtn').addEventListener('click', function() {
+            sessionStorage.removeItem('pendingRedirect');
             sessionStorage.clear();
-            window.location.href = './login.html';
+            window.location.replace('./login.html?loggedOut=1');
         });
 
         // Update login status display

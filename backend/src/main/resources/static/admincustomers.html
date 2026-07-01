@@ -76,7 +76,7 @@
                 <i class="fa-solid fa-user-circle" style="font-size: 18px;"></i>
                 <span id="loginStatus" style="color: #000; background: rgba(255, 255, 255, 0.9); padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;">Logged in</span>
             </div>
-            <a href="#" class="header-btn" onclick="sessionStorage.clear();window.location.href='./login.html';return false;">Logout</a>
+            <a href="#" class="header-btn" onclick="sessionStorage.removeItem('pendingRedirect');sessionStorage.clear();window.location.replace('./login.html?loggedOut=1');return false;">Logout</a>
         </div>
     </header>
 

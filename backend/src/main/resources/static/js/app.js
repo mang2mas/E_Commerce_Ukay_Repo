@@ -194,12 +194,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     refreshLoginStatusIndicator();
 
+    function redirectToLoginAfterLogout() {
+        sessionStorage.removeItem('pendingRedirect');
+        sessionStorage.clear();
+        currentUserId = null;
+        currentUserRole = null;
+        window.location.replace('./login.html?loggedOut=1');
+    }
+
     // Logout handler (works on any page with id="logoutBtn")
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', function() {
-            sessionStorage.clear();
-            window.location.href = './login.html';
+            redirectToLoginAfterLogout();
+        });
+    }
+
+    const logoutSidebarBtn = document.getElementById('logoutSidebarBtn');
+    if (logoutSidebarBtn) {
+        logoutSidebarBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            redirectToLoginAfterLogout();
         });
     }
 
