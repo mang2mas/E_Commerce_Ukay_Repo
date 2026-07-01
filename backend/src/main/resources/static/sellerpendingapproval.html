@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Verification Pending</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f7f3e8, #f1f7ec);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #222;
+            padding: 20px;
+        }
+        .card {
+            width: 100%;
+            max-width: 640px;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            padding: 36px;
+            text-align: center;
+        }
+        .icon {
+            width: 86px;
+            height: 86px;
+            border-radius: 50%;
+            margin: 0 auto 18px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fbce60;
+            color: #111;
+            font-size: 34px;
+        }
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 30px;
+        }
+        p {
+            margin: 8px 0;
+            line-height: 1.6;
+            color: #4f4f4f;
+        }
+        .status {
+            margin-top: 16px;
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: #fff8e1;
+            color: #8a6500;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 0.02em;
+        }
+        .actions {
+            margin-top: 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            border: none;
+            border-radius: 6px;
+            padding: 12px 18px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .btn-primary { background: #1f1f1f; color: #fff; }
+        .btn-secondary { background: #eee; color: #222; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="icon"><i class="fa-solid fa-hourglass-half"></i></div>
+        <h1>Application Submitted</h1>
+        <p>Your seller registration was submitted successfully.</p>
+        <p>Our team is reviewing your profile and uploaded documents.</p>
+        <div class="status">STATUS: PENDING APPROVAL</div>
+        <div class="actions">
+            <a class="btn btn-primary" href="./sellerhomeprofile.html">Go to Seller Dashboard</a>
+            <a class="btn btn-secondary" href="./index.html">Back to Homepage</a>
+        </div>
+    </div>
+</body>
+</html>

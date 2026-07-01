@@ -78,23 +78,18 @@
 
    <header style="background-color: rgba(36, 36, 36, 0.50); backdrop-filter: blur(8px); position: fixed; top: 0; left: 0; width: 100%; height: 90px; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; box-sizing: border-box; z-index: 9999;">
     <div style="display: flex; align-items: center; gap: 30px;">
-        <button style="background:none; border:none; color:white; font-size:20px; cursor:pointer;"><i class="fa-solid fa-magnifying-glass"></i></button>
         <img src="/images/logo.png" style="height: 36px; width: auto;" alt="Ukay Ukay">
     </div>
 
     <div style="display: flex; align-items: center; gap: 24px; position: relative; z-index: 10000;">
-        
         <div style="display: flex; background-color: rgba(255,255,255,0.2); padding: 3px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.3); margin-right: 12px; backdrop-filter: blur(8px);">
-            <button style="background-color: #ffffff; color: #000000; border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">BUY</button>
-            <button style="background: none; color: rgba(255,255,255,0.7); border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">SELL</button>
+            <button onclick="window.location.href='./index.html'" style="background-color: #ffffff; color: #000000; border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">BUY</button>
+            <button class="toggle-btn" data-view="sell" style="background: none; color: rgba(255,255,255,0.7); border: none; padding: 6px 20px; font-size: 11px; font-weight: 800; border-radius: 20px; cursor: pointer;">SELL</button>
         </div>
-
-        <a href="homepage.html" style="color:white; text-decoration:none; font-size:20px;"><i class="fa-solid fa-house"></i></a>
-        <a href="ordermanagement.html" style="color:white; text-decoration:none; font-size:20px;"><i class="fa-regular fa-user"></i></a>
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <a href="shoppingcart.html" style="color:white; text-decoration:none; font-size:20px;"><i class="fa-solid fa-bag-shopping"></i></a>
-            <span id="loginStatus" style="color: #000000; font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 4px;">Not logged in</span>
-        </div>
+        <button class="home-trigger" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;"><i class="fa-solid fa-house"></i></button>
+        <button class="profile-trigger" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;"><i class="fa-regular fa-user"></i></button>
+        <button class="cart-trigger" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;"><i class="fa-solid fa-bag-shopping"></i></button>
+        <span id="loginStatus" style="color: #ffffff; font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 4px; background: rgba(0,0,0,0.3);">Not logged in</span>
     </div>
 </header>
     <style>
@@ -386,7 +381,14 @@
         </div>
     </main>
 
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <script src="/js/app.js"></script>
     <script>
+        // Update login status label
+        const loginStatusEl = document.getElementById('loginStatus');
+        const fullName = sessionStorage.getItem('currentUserFullName');
+        if (loginStatusEl && fullName) loginStatusEl.textContent = fullName;
+
         async function fetchJson(url) {
             try {
                 const response = await fetch(url);
@@ -428,17 +430,18 @@
             }
 
             container.innerHTML = activeProducts.map((product) => {
+                const productId = product?.productId ?? product?.id ?? '';
                 const image = product?.imagePath || '/images/profile-placeholder.jpg';
                 const title = product?.itemName || product?.productName || product?.name || 'Untitled Item';
                 const price = formatPrice(product?.price || product?.productPrice);
                 const description = product?.description ? String(product.description).slice(0, 90) : 'No description available.';
                 const details = [product?.itemCondition ? `Condition: ${product.itemCondition}` : null, product?.size ? `Size: ${product.size}` : null, product?.category ? `Category: ${product.category}` : null].filter(Boolean).join(' • ');
                 return `
-                    <div class="seller-product-card">
-                        <img src="${image}" alt="${title}">
+                    <div class="seller-product-card masonry-item" data-product-id="${productId}">
+                        <img src="${image}" alt="${title}" onerror="this.src='/images/item1.jpg'">
                         <div class="seller-product-info">
-                            <p class="seller-product-title">${title}</p>
-                            <div class="seller-product-price">${price}</div>
+                            <p class="seller-product-title item-title-badge">${title}</p>
+                            <div class="seller-product-price item-price-tag">${price}</div>
                             <div class="seller-product-details">${description}${description.length >= 90 ? '…' : ''}</div>
                             <div class="seller-product-meta">${details || 'More details coming soon.'}</div>
                         </div>

@@ -70,11 +70,12 @@ public class AuthService {
         if ("Senior".equalsIgnoreCase(accountType)) {
             newUser.setDiscountType("SENIOR");
             newUser.setIsPwdSenior(true);
+            newUser.setDiscountStatus(User.DiscountStatus.PENDING);
         } else if ("PWD".equalsIgnoreCase(accountType)) {
             newUser.setDiscountType("PWD");
             newUser.setIsPwdSenior(true);
+            newUser.setDiscountStatus(User.DiscountStatus.PENDING);
         }
-        newUser.setIsPwdSenior(Boolean.TRUE.equals(request.getIsPwdSenior()));
         newUser.setIdNumber(request.getIdNumber());
 
 

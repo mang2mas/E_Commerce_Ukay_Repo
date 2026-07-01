@@ -193,8 +193,60 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     refreshLoginStatusIndicator();
+
+    function redirectToLoginAfterLogout() {
+        sessionStorage.removeItem('pendingRedirect');
+        sessionStorage.clear();
+        currentUserId = null;
+        currentUserRole = null;
+        window.location.replace('./login.html?loggedOut=1');
+    }
+
+    // Logout handler (works on any page with id="logoutBtn")
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            redirectToLoginAfterLogout();
+        });
+    }
+
+    const logoutSidebarBtn = document.getElementById('logoutSidebarBtn');
+    if (logoutSidebarBtn) {
+        logoutSidebarBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            redirectToLoginAfterLogout();
+        });
+    }
+
+    // Profile trigger: follows the page's current BUY/SELL toggle, not just account role,
+    // since a seller browsing in BUY mode should land on their buyer profile.
+    document.body.addEventListener('click', function(e) {
+        const profileTrigger = e.target.closest('.profile-trigger');
+        if (profileTrigger) {
+            const isAuthenticated = Boolean(sessionStorage.getItem('currentUserId'));
+            if (!isAuthenticated) return; // let global interceptor handle login modal
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            const role = sessionStorage.getItem('currentUserRole');
+            if (role === 'ADMIN' || role === 'admin') {
+                window.location.href = './admin.html';
+                return;
+            }
+            const sellToggleActive = document.querySelector('.toggle-btn[data-view="sell"].active');
+            if (sellToggleActive) {
+                goToSellerArea();
+            } else {
+                window.location.href = './ordermanagement.html';
+            }
+        }
+    }, true);
+
     loadProducts();
 
+    // Auto-load cart when on the cart page
+    if ($('#cartItemsContainer').length && currentUserId) {
+        loadCart();
+    }
 
     const navbar = document.querySelector(".navbar");
     if (navbar) {
@@ -213,13 +265,39 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================================================
     // 1. NAVBAR TOGGLE STATES
     // ==========================================================================
+    async function goToSellerArea() {
+        const role = (sessionStorage.getItem('currentUserRole') || '').toLowerCase();
+        if (role === 'seller') {
+            window.location.href = './sellerhomeprofile.html';
+            return;
+        }
+
+        try {
+            const res = await authFetch(`/api/seller/requests?userId=${encodeURIComponent(currentUserId)}`);
+            if (res.ok) {
+                const requests = await res.json();
+                if (Array.isArray(requests) && requests.length > 0) {
+                    const latest = requests.reduce((a, b) => (b.requestId > a.requestId ? b : a));
+                    if (latest.status === 'PENDING') {
+                        window.location.href = './sellerpendingapproval.html';
+                        return;
+                    }
+                }
+            }
+        } catch (e) {
+            // Fall through to registration on any error
+        }
+
+        window.location.href = './sellerregistration.html';
+    }
+
     const toggleButtons = document.querySelectorAll(".toggle-btn");
     toggleButtons.forEach(button => {
         button.addEventListener("click", () => {
             const isSellView = button.dataset.view === 'sell';
 
             if (isSellView && !currentUserId) {
-                const target = './css/SellerRegistration2.html';
+                const target = './sellerregistration.html';
                 sessionStorage.setItem('pendingRedirect', target);
                 const modal = document.getElementById('loginModalOverlay');
                 if (modal) {
@@ -235,8 +313,7 @@ document.addEventListener("DOMContentLoaded", () => {
             button.classList.add("active");
 
             if (isSellView) {
-                const target = './css/SellerRegistration2.html';
-                window.location.href = target;
+                goToSellerArea();
             }
         });
     });
@@ -415,7 +492,7 @@ function setLoggedIn(user){
 
                     const $itemWrapper = $('<div>').addClass('seller-group');
                     const $itemRow = $('<div>').addClass('cart-item');
-                    $itemRow.append($('<img>').attr('src', imageUrl).attr('alt', product.itemName || 'Cart item'));
+                    $itemRow.append($('<img>').attr('src', imageUrl).attr('alt', product.itemName || 'Cart item').attr('onerror', "this.src='/images/item1.jpg'").css({'width':'80px','height':'80px','object-fit':'cover','border-radius':'4px','margin-right':'12px'}));
 
                     const $info = $('<div>').css('flex', '1');
                     $info.append($('<b>').text(product.itemName || 'Untitled item'));
@@ -530,7 +607,7 @@ function setLoggedIn(user){
             }
             const $actions = $card.find('.recommended-actions');
             $actions.append($('<button>').addClass('recommended-price-pill').text(price).prop('disabled', true));
-            $actions.append($('<button>').addClass('btn-add-cart-action').attr('type', 'button').text('ADD TO CART').click(function(event) {
+            $actions.append($('<button>').addClass('btn-add-cart-action').attr('type', 'button').attr('data-product-id', productId).attr('data-product-name', name).text('ADD TO CART').click(function(event) {
                 event.preventDefault();
                 const userId = sessionStorage.getItem('currentUserId');
                 if (!userId) {
@@ -589,95 +666,7 @@ function setLoggedIn(user){
             });
     }
 
-    function loadYouMightAlsoLike(containerSelector, currentProductId, category, style, sellerId, limit = 6) {
-        const container = $(containerSelector);
-        if (!container.length) return;
-
-        container.html('<div class="recommended-loading">Loading suggestions…</div>');
-        const excludedProductId = Number(currentProductId);
-        const desiredCategory = category ? String(category).trim().toLowerCase() : '';
-        const desiredStyle = style ? String(style).trim().toLowerCase() : '';
-        const desiredSellerId = sellerId != null ? String(sellerId) : null;
-
-        const renderFallback = function() {
-            const fallbackQuery = currentUserId ? `?userId=${currentUserId}` : '';
-            $.get(`/api/products/recommended${fallbackQuery}`)
-                .done(function(products) {
-                    const filtered = (products || []).filter(product => String(product.productId) !== String(excludedProductId));
-                    renderRecommendedProducts(filtered.slice(0, limit), containerSelector);
-                })
-                .fail(function(xhr) {
-                    console.error('Failed to load suggestion products:', xhr.responseText);
-                    container.html('<div class="recommended-loading">Unable to load suggestions.</div>');
-                });
-        };
-
-        $.get('/api/products')
-            .done(function(products) {
-                const filtered = (products || []).filter(function(product) {
-                    const productId = product.productId != null ? product.productId : product.id;
-                    return String(productId) !== String(excludedProductId);
-                });
-                if (filtered.length === 0) {
-                    renderFallback();
-                    return;
-                }
-
-                const exactMatches = [];
-                const categoryStyleMatches = [];
-                const categoryMatches = [];
-                const styleMatches = [];
-                const sellerMatches = [];
-                const others = [];
-
-                filtered.forEach(function(product) {
-                    const productSellerId = product.seller ? String(product.seller.userId || '') : '';
-                    const productStyle = product.style ? String(product.style).trim().toLowerCase() : '';
-                    const productCategory = product.category ? String(product.category).trim().toLowerCase() : '';
-
-                    const sameSeller = desiredSellerId && productSellerId && productSellerId === desiredSellerId;
-                    const sameStyle = desiredStyle && productStyle && productStyle === desiredStyle;
-                    const sameCategory = desiredCategory && productCategory && productCategory === desiredCategory;
-
-                    if (sameSeller && sameStyle && sameCategory) {
-                        exactMatches.push(product);
-                    } else if (sameCategory && sameStyle) {
-                        categoryStyleMatches.push(product);
-                    } else if (sameCategory) {
-                        categoryMatches.push(product);
-                    } else if (sameStyle) {
-                        styleMatches.push(product);
-                    } else if (sameSeller) {
-                        sellerMatches.push(product);
-                    } else {
-                        others.push(product);
-                    }
-                });
-
-                const sortedCandidates = [].concat(
-                    exactMatches,
-                    categoryStyleMatches,
-                    categoryMatches,
-                    styleMatches,
-                    sellerMatches,
-                    others
-                );
-
-                const matched = sortedCandidates.slice(0, limit);
-                if (matched.length === 0) {
-                    renderFallback();
-                } else {
-                    renderRecommendedProducts(matched, containerSelector);
-                }
-            })
-            .fail(function(xhr) {
-                console.error('Failed to load related products:', xhr.responseText);
-                renderFallback();
-            });
-    }
-
-
-    function renderCart() { console.log("Cart render baseline updated"); }
+    // (duplicate renderCart removed — real implementation is above)
 
 
     function loadOrders(){
@@ -1137,10 +1126,21 @@ if (modalLoginForm) {
             sessionStorage.setItem('currentUserFullName', data.fullName);
 
 
-            const redirectUrl = sessionStorage.getItem('pendingRedirect') || window.location.href;
+            const redirectUrl = sessionStorage.getItem('pendingRedirect');
             sessionStorage.removeItem('pendingRedirect');
             closeLoginModal();
-            window.location.href = redirectUrl;
+            if (redirectUrl) {
+                window.location.href = redirectUrl;
+            } else {
+                const role = data.role;
+                if (role === 'ADMIN' || role === 'admin') {
+                    window.location.href = './admin.html';
+                } else if (role === 'SELLER' || role === 'seller') {
+                    window.location.href = './sellerhomeprofile.html';
+                } else {
+                    window.location.href = './index.html';
+                }
+            }
         } catch (error) {
             alert('Login failed: ' + (error.message || 'Invalid credentials'));
         }

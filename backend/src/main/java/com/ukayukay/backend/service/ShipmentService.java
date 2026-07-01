@@ -2,9 +2,7 @@ package com.ukayukay.backend.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 import org.springframework.stereotype.Service;
-
 import com.ukayukay.backend.entity.Order;
 import com.ukayukay.backend.entity.Shipment;
 import com.ukayukay.backend.repository.OrderRepository;
@@ -16,13 +14,10 @@ public class ShipmentService {
 
     private final ShipmentRepository shipmentRepository;
     private final OrderRepository orderRepository;
-    private final NotificationService notificationService;
 
-    public ShipmentService(ShipmentRepository shipmentRepository, OrderRepository orderRepository,
-                           NotificationService notificationService) {
+    public ShipmentService(ShipmentRepository shipmentRepository, OrderRepository orderRepository) {
         this.shipmentRepository = shipmentRepository;
         this.orderRepository = orderRepository;
-        this.notificationService = notificationService;
     }
 
     public Shipment createShipment(Integer orderId, Shipment shipment) {
@@ -53,19 +48,7 @@ public class ShipmentService {
             shipment.setDeliveredDate(LocalDateTime.now());
         }
         shipment.setUpdatedAt(LocalDateTime.now());
-        Shipment savedShipment = shipmentRepository.save(shipment);
-
-        if (savedShipment.getOrder() != null && savedShipment.getOrder().getCustomer() != null) {
-            Integer customerId = savedShipment.getOrder().getCustomer().getUserId();
-            notificationService.createNotification(customerId,
-                    "SHIPMENT_UPDATED",
-                    "Shipment " + savedShipment.getStatus(),
-                    String.format("Your shipment for order #%d is now %s.", savedShipment.getOrder().getOrderId(), savedShipment.getStatus()),
-                    savedShipment.getOrder().getOrderId(),
-                    null);
-        }
-
-        return savedShipment;
+        return shipmentRepository.save(shipment);
     }
 
     private void validateShipmentTransition(String current, String next) {

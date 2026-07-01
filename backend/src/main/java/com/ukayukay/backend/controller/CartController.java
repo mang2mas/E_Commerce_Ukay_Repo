@@ -32,13 +32,16 @@ public class CartController {
 
     @GetMapping("/user/{userId}")
     public List<Cart> getCart(@PathVariable Integer userId) {
-        return cartService.getCartByUserId(userId);
+        return cartService.getUserCart(userId);
     }
 
 
     @PostMapping("/add")
-    public ResponseEntity<Cart> addItemToCart(@RequestParam Integer userId, @RequestParam Integer productId) {
-        return ResponseEntity.ok(cartService.addToCart(userId, productId));
+    public ResponseEntity<Cart> addItemToCart(
+            @RequestParam Integer userId,
+            @RequestParam Integer productId,
+            @RequestParam(required = false) Integer quantity) {
+        return ResponseEntity.ok(cartService.addToCart(userId, productId, quantity));
     }
 
 

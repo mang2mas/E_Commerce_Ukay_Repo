@@ -61,7 +61,7 @@ public class SecurityConfig {
             // CSRF is disabled because this is a stateless REST API authenticated via
             // JWT ****** (not browser-based session cookies). There is no
             // session state server-side so cross-site request forgery cannot be exploited.
-            .csrf(AbstractHttpConfigurer::disable)
+            .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
@@ -76,20 +76,26 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/**").permitAll()
                 // Static resources
                 .requestMatchers("/", "/index.html", "/login.html", "/REGISTRATION.html",
-                    "/sellerregistration.html", "/sellerverification.html", "/adminseller.html", "/adminauditlogs.html", "/admincustomers.html", "/checkout.html",
+                    "/sellerregistration.html", "/sellerverification.html", "/admin.html", "/adminseller.html", "/adminauditlogs.html", "/admincustomers.html", "/checkout.html",
                     "/discoverypage.html", "/customerviewall.html", "/ItemDescription.html",
                     "/shoppingcart.html", "/forgotpassword.html", "/contentmoderation.html", "/revenue.html",
                     "/inventorymanagement.html", "/addproduct.html", "/ordermanagement.html",
                     "/addproduct.html", "/editproduct.html", "/productreview.html",
                     "/sellerhomeprofile.html", "/customersellerprofile.html", "/adminuser.html",
+                    "/sellerpendingapproval.html",
                     "/css/**", "/js/**", "/images/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/**/*.html", "/").permitAll()
+                .requestMatchers(HttpMethod.GET, "/").permitAll()
                 // Admin-only endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/moderation/**").hasRole("ADMIN")
                 // Seller endpoints
                 .requestMatchers(HttpMethod.POST, "/api/seller/request").authenticated()
-                .requestMatchers("/api/seller/**").hasAnyRole("SELLER", "ADMIN")
+                .requestMatchers("/api/seller/documents", "/api/seller/documents/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/seller/documents").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/seller/documents").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/seller/requests").authenticated()
+                // Discount (PWD/Senior) ID upload — called right after registration, before a token exists
+                .requestMatchers(HttpMethod.POST, "/api/discount/id-document").permitAll()
                 // All other endpoints require authentication
                 .anyRequest().authenticated()
             )

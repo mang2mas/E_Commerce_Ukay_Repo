@@ -1,220 +1,213 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Item Description</title>
-  <link rel="stylesheet" href="/css/ItemDescription.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" defer></script>
-</head>
-<body>
-  <header class="navbar">
-    <div class="nav-left">
-      <button class="icon-btn" type="button"><i class="fa-solid fa-magnifying-glass"></i></button>
-      <a href="index.html"><img src="/images/logo.png" class="brand-logo" alt="Ukay Ukay"></a>
-    </div>
-
-    <div class="nav-right">
-      <div class="toggle-container">
-        <button class="toggle-btn active" data-view="buy" type="button">BUY</button>
-        <button class="toggle-btn" data-view="sell" type="button">SELL</button>
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Item Description</title>
+    <link rel="stylesheet" href="/css/ItemDescription.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" defer></script>
+  </head>
+  <body>
+    <header class="navbar">
+      <div class="nav-left">
+        <button class="icon-btn" type="button"><i class="fa-solid fa-magnifying-glass"></i></button>
+        <a href="index.html"><img src="/images/logo.png" class="brand-logo" alt="Ukay Ukay"></a>
       </div>
-      <a href="index.html" class="icon-btn home-trigger" aria-label="Home"><i class="fa-solid fa-house"></i></a>
-      <a href="ordermanagement.html" class="icon-btn profile-trigger" aria-label="Profile"><i class="fa-regular fa-user"></i></a>
-      <a href="shoppingcart.html" class="icon-btn cart-trigger" aria-label="Cart"><i class="fa-solid fa-bag-shopping"></i></a>
-      <span id="loginStatus" class="login-status">Not logged in</span>
-    </div>
-  </header>
 
-  <div class="page-layout">
-    <aside class="sidebar">
-      <section class="product-image-section">
-        <div class="main-image">
-          <img id="mainImage" src="/images/item1.jpg" alt="Product image" />
+      <div class="nav-right">
+        <div class="toggle-container">
+          <button class="toggle-btn active" data-view="buy" type="button">BUY</button>
+          <button class="toggle-btn" data-view="sell" type="button">SELL</button>
         </div>
-      </section>
+        <a href="index.html" class="icon-btn home-trigger" aria-label="Home"><i class="fa-solid fa-house"></i></a>
+        <a href="ordermanagement.html" class="icon-btn profile-trigger" aria-label="Profile"><i class="fa-regular fa-user"></i></a>
+        <a href="shoppingcart.html" class="icon-btn cart-trigger" aria-label="Cart"><i class="fa-solid fa-bag-shopping"></i></a>
+        <span id="loginStatus" class="login-status">Not logged in</span>
+      </div>
+    </header>
 
-      <section class="seller-section">
-        <a id="sellerLink" class="seller-card-link" href="./customersellerprofile.html">
-          <div class="seller-card">
-            <div class="seller-icon"><i class="fa-solid fa-user"></i></div>
-            <div class="seller-info">
-              <div id="sellerName" class="seller-name">Sold by <strong>@TIREDTHRIFT</strong></div>
-              <div id="sellerDetails" class="seller-details">Trusted seller on Ukay.</div>
-            </div>
+    <div class="page-layout">
+      <aside class="sidebar">
+        <section class="product-image-section">
+          <div class="main-image">
+            <img id="mainImage" src="/images/item1.jpg" alt="Product image" />
           </div>
-        </a>
-      </section>
-
-    </aside>
-
-    <main class="main-content">
-      <section class="product-details-section">
-        <div class="product-header-row">
-          <span id="productBrand" class="brand">Brand</span>
-          <h1 id="productTitle" class="product-title">Item Title</h1>
-          <div class="price-block">
-            <span id="productPrice" class="price">₱0.00</span>
-            <span id="productCurrency" class="currency">PHP</span>
-          </div>
-        </div>
-
-        <div class="meta-section">
-          <div class="meta-row">
-            <i class="fa-solid fa-scissors"></i>
-            <div>
-              <span id="productCategory">Category: —</span><br>
-              <span id="productCondition">Condition: —</span><br>
-              <span id="productSize">Size: —</span>
-            </div>
-          </div>
-
-          <div class="shipping-info">
-            <i class="fa-solid fa-truck"></i>
-            <div>
-              <div class="shipping-label">ships within 1-2 days</div>
-              <div class="shipping-sublabel">7-day returns</div>
-            </div>
-          </div>
-        </div>
-
-        <section class="description">
-          <p id="productDescription">
-            Loading item details from the catalog...
-          </p>
-          <ul>
-            <li id="productDetailSize">Size: —</li>
-            <li id="productDetailCondition">Condition: —</li>
-            <li id="productDetailMaterial">Material: —</li>
-          </ul>
         </section>
 
-        <div class="action-buttons">
-          <button id="addToCartButton" class="btn-add-cart btn-add-cart-action" type="button">
-            <span>ADD TO CART</span>
-            <i class="fa-solid fa-cart-shopping"></i>
-          </button>
-          <button id="checkoutButton" class="btn-checkout" type="button">
-            <span>CHECKOUT</span>
-            <i class="fa-solid fa-cart-shopping"></i>
-          </button>
-        </div>
+        <section class="seller-section">
+          <a id="sellerLink" class="seller-card-link" href="./customersellerprofile.html">
+            <div class="seller-card">
+              <div class="seller-icon"><i class="fa-solid fa-user"></i></div>
+              <div class="seller-info">
+                <div id="sellerName" class="seller-name">Sold by <strong>@TIREDTHRIFT</strong></div>
+                <div id="sellerDetails" class="seller-details">Trusted seller on Ukay.</div>
+              </div>
+            </div>
+          </a>
+        </section>
 
-        <div class="secure-checkout">
-          <span class="shield-icon"><i class="fa-regular fa-circle-check"></i></span>
-          <span>Secure checkouts · Safe &amp; encrypted payments</span>
-        </div>
-      </section>
+      </aside>
 
-      <section class="recommendations-section">
-        <h2>You might also like</h2>
-        <div id="itemRecommendationsContainer" class="masonry-grid"></div>
-      </section>
-    </main>
-  </div>
+      <main class="main-content">
+        <section class="product-details-section">
+          <div class="product-header-row">
+            <span id="productBrand" class="brand">Brand</span>
+            <h1 id="productTitle" class="product-title">Item Title</h1>
+            <div class="price-block">
+              <span id="productPrice" class="price">₱0.00</span>
+              <span id="productCurrency" class="currency">PHP</span>
+            </div>
+          </div>
 
-  <script src="/js/jquery-3.6.0.min.js"></script>
-  <script src="/js/app.js"></script>
-  <script>
-    function formatPrice(value) {
-      if (value == null || value === '') return 'Price unavailable';
-      const numberValue = Number(value);
-      return Number.isNaN(numberValue) ? String(value) : `₱${numberValue.toFixed(2)}`;
-    }
+          <div class="meta-section">
+            <div class="meta-row">
+              <i class="fa-solid fa-scissors"></i>
+              <div>
+                <span id="productCategory">Category: —</span><br>
+                <span id="productCondition">Condition: —</span><br>
+                <span id="productSize">Size: —</span>
+              </div>
+            </div>
 
-    function updateProductDetails(product) {
-      if (!product) return;
+            <div class="shipping-info">
+              <i class="fa-solid fa-truck"></i>
+              <div>
+                <div class="shipping-label">ships within 1-2 days</div>
+                <div class="shipping-sublabel">7-day returns</div>
+              </div>
+            </div>
+          </div>
 
-      document.getElementById('mainImage').src = product.imagePath || '/images/item1.jpg';
-      document.getElementById('mainImage').alt = product.itemName || 'Product image';
-      document.getElementById('productTitle').textContent = product.itemName || 'Untitled product';
-      document.getElementById('productBrand').textContent = product.style || product.category || 'Fashion';
-      document.getElementById('productPrice').textContent = formatPrice(product.price);
-      document.getElementById('productCurrency').textContent = 'PHP';
-      document.getElementById('productCategory').textContent = `Category: ${product.category || 'N/A'}`;
-      document.getElementById('productCondition').textContent = `Condition: ${product.itemCondition || 'N/A'}`;
-      document.getElementById('productSize').textContent = `Size: ${product.size || 'N/A'}`;
-      document.getElementById('productDescription').textContent = product.description || 'No description available for this item.';
-      document.getElementById('productDetailSize').textContent = `Size: ${product.size || 'N/A'}`;
-      document.getElementById('productDetailCondition').textContent = `Condition: ${product.itemCondition || 'N/A'}`;
-      document.getElementById('productDetailMaterial').textContent = `Material: ${product.style || 'Mixed fabric'}`;
+          <section class="description">
+            <p id="productDescription">
+              Loading item details from the catalog...
+            </p>
+            <ul>
+              <li id="productDetailSize">Size: —</li>
+              <li id="productDetailCondition">Condition: —</li>
+              <li id="productDetailMaterial">Material: —</li>
+            </ul>
+          </section>
 
-      if (product.seller) {
-        const sellerLabel = product.seller.businessName || product.seller.fullName || 'Seller';
-        document.getElementById('sellerName').innerHTML = `Sold by <strong>@${sellerLabel}</strong>`;
-        document.getElementById('sellerDetails').textContent = product.seller.businessDescription || 'Trusted seller on Ukay.';
-        document.getElementById('sellerLink').href = `./customersellerprofile.html?sellerId=${encodeURIComponent(product.seller.userId || '')}`;
+          <div class="action-buttons">
+            <button id="addToCartButton" class="btn-add-cart btn-add-cart-action" type="button">
+              <span>ADD TO CART</span>
+              <i class="fa-solid fa-cart-shopping"></i>
+            </button>
+            <button id="checkoutButton" class="btn-checkout" type="button">
+              <span>CHECKOUT</span>
+              <i class="fa-solid fa-cart-shopping"></i>
+            </button>
+          </div>
+
+          <div class="secure-checkout">
+            <span class="shield-icon"><i class="fa-regular fa-circle-check"></i></span>
+            <span>Secure checkouts · Safe &amp; encrypted payments</span>
+          </div>
+        </section>
+
+      </main>
+    </div>
+
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+      function formatPrice(value) {
+        if (value == null || value === '') return 'Price unavailable';
+        const numberValue = Number(value);
+        return Number.isNaN(numberValue) ? String(value) : `₱${numberValue.toFixed(2)}`;
       }
 
-      const addToCartButton = document.getElementById('addToCartButton');
-      if (addToCartButton) {
-        addToCartButton.dataset.productId = product.productId;
-        addToCartButton.dataset.productName = product.itemName || 'item';
+      function updateProductDetails(product) {
+        if (!product) return;
+
+        document.getElementById('mainImage').src = product.imagePath || '/images/item1.jpg';
+        document.getElementById('mainImage').alt = product.itemName || 'Product image';
+        document.getElementById('productTitle').textContent = product.itemName || 'Untitled product';
+        document.getElementById('productBrand').textContent = product.style || product.category || 'Fashion';
+        document.getElementById('productPrice').textContent = formatPrice(product.price);
+        document.getElementById('productCurrency').textContent = 'PHP';
+        document.getElementById('productCategory').textContent = `Category: ${product.category || 'N/A'}`;
+        document.getElementById('productCondition').textContent = `Condition: ${product.itemCondition || 'N/A'}`;
+        document.getElementById('productSize').textContent = `Size: ${product.size || 'N/A'}`;
+        document.getElementById('productDescription').textContent = product.description || 'No description available for this item.';
+        document.getElementById('productDetailSize').textContent = `Size: ${product.size || 'N/A'}`;
+        document.getElementById('productDetailCondition').textContent = `Condition: ${product.itemCondition || 'N/A'}`;
+        document.getElementById('productDetailMaterial').textContent = `Material: ${product.style || 'Mixed fabric'}`;
+
+        if (product.seller) {
+          const sellerLabel = product.seller.businessName || product.seller.fullName || 'Seller';
+          document.getElementById('sellerName').innerHTML = `Sold by <strong>@${sellerLabel}</strong>`;
+          document.getElementById('sellerDetails').textContent = product.seller.businessDescription || 'Trusted seller on Ukay.';
+          document.getElementById('sellerLink').href = `./customersellerprofile.html?sellerId=${encodeURIComponent(product.seller.userId || '')}`;
+        }
+
+        const addToCartButton = document.getElementById('addToCartButton');
+        if (addToCartButton) {
+          addToCartButton.dataset.productId = product.productId;
+          addToCartButton.dataset.productName = product.itemName || 'item';
+        }
       }
-    }
 
-    function showProductError(message) {
-      const description = document.getElementById('productDescription');
-      if (description) description.textContent = message;
-    }
+      function showProductError(message) {
+        const description = document.getElementById('productDescription');
+        if (description) description.textContent = message;
+      }
 
-    function attachItemActions() {
-      const addToCartButton = document.getElementById('addToCartButton');
-      const checkoutButton = document.getElementById('checkoutButton');
+      function attachItemActions() {
+        const addToCartButton = document.getElementById('addToCartButton');
+        const checkoutButton = document.getElementById('checkoutButton');
 
-      if (addToCartButton) {
-        addToCartButton.addEventListener('click', function () {
-          const productId = this.dataset.productId;
-          const productName = this.dataset.productName || 'item';
-          const userId = sessionStorage.getItem('currentUserId');
+        if (addToCartButton) {
+          addToCartButton.addEventListener('click', function () {
+            const productId = this.dataset.productId;
+            const productName = this.dataset.productName || 'item';
+            const userId = sessionStorage.getItem('currentUserId');
 
-          if (!productId || !userId) {
-            return window.location.href = './login.html';
-          }
+            if (!productId || !userId) {
+              return window.location.href = './login.html';
+            }
 
-          fetch(`/api/cart/add?userId=${encodeURIComponent(userId)}&productId=${encodeURIComponent(productId)}`, {
-            method: 'POST'
-          })
-            .then(response => {
-              if (!response.ok) return response.text().then(text => { throw new Error(text || 'Unable to add to cart'); });
-              alert(`Added ${productName} to cart.`);
+            fetch(`/api/cart/add?userId=${encodeURIComponent(userId)}&productId=${encodeURIComponent(productId)}`, {
+              method: 'POST'
             })
-            .catch(error => alert(error.message || 'Unable to add product to cart.'));
-        });
+              .then(response => {
+                if (!response.ok) return response.text().then(text => { throw new Error(text || 'Unable to add to cart'); });
+                alert(`Added ${productName} to cart.`);
+              })
+              .catch(error => alert(error.message || 'Unable to add product to cart.'));
+          });
+        }
+
+        if (checkoutButton) {
+          checkoutButton.addEventListener('click', function () {
+            window.location.href = './checkout.html';
+          });
+        }
       }
 
-      if (checkoutButton) {
-        checkoutButton.addEventListener('click', function () {
-          window.location.href = './checkout.html';
-        });
-      }
-    }
+      document.addEventListener('DOMContentLoaded', function () {
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get('productId');
+        if (!productId) {
+          showProductError('Unable to load item details. No product selected.');
+          return;
+        }
 
-    document.addEventListener('DOMContentLoaded', function () {
-      const params = new URLSearchParams(window.location.search);
-      const productId = params.get('productId');
-      if (!productId) {
-        showProductError('Unable to load item details. No product selected.');
-        return;
-      }
-
-      fetch(`/api/products/${encodeURIComponent(productId)}`)
-        .then(response => {
-          if (!response.ok) return response.text().then(text => { throw new Error(text || 'Unable to load product details'); });
-          return response.json();
-        })
-        .then(product => {
-          updateProductDetails(product);
-          if (typeof loadYouMightAlsoLike === 'function') {
-            loadYouMightAlsoLike('#itemRecommendationsContainer', product.productId, product.category, product.style, product.seller?.userId, 6);
-          }
-          attachItemActions();
-        })
-        .catch(error => {
-          console.error('Product load error:', error);
-          showProductError('Unable to load item details from the catalog.');
-        });
-    });
-  </script>
-</body>
-</html>
+        fetch(`/api/products/${encodeURIComponent(productId)}`)
+          .then(response => {
+            if (!response.ok) return response.text().then(text => { throw new Error(text || 'Unable to load product details'); });
+            return response.json();
+          })
+          .then(product => {
+            updateProductDetails(product);
+            attachItemActions();
+          })
+          .catch(error => {
+            console.error('Product load error:', error);
+            showProductError('Unable to load item details from the catalog.');
+          });
+      });
+    </script>
+  </body>
+  </html>

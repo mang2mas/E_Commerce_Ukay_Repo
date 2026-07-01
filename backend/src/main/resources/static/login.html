@@ -35,7 +35,8 @@
 
 
     <script>
-        const nextUrl = new URLSearchParams(window.location.search).get('next') || './index.html';
+        const urlParams = new URLSearchParams(window.location.search);
+        const nextUrl = urlParams.get('next') || './index.html';
 
 
         if (sessionStorage.getItem('authToken')) {
@@ -69,6 +70,10 @@
             messageElement.className = `message ${type}`;
         }
 
+        if (urlParams.get('loggedOut') === '1') {
+            showMessage('You have been logged out successfully.', 'info');
+        }
+
 
         document.getElementById('loginForm').addEventListener('submit', async function(event) {
             event.preventDefault();
@@ -92,7 +97,17 @@
                 sessionStorage.setItem('currentUserRole', data.role);
                 sessionStorage.setItem('currentUserEmail', data.email);
                 sessionStorage.setItem('currentUserFullName', data.fullName);
-                window.location.href = nextUrl;
+                // Role-based redirect: only use nextUrl if it was actually set by a redirect
+                const isDefaultUrl = (nextUrl === './index.html' || nextUrl === '/' || nextUrl === '/index.html');
+                if (!isDefaultUrl) {
+                    window.location.href = nextUrl;
+                } else if (data.role === 'ADMIN' || data.role === 'admin') {
+                    window.location.href = './admin.html';
+                } else if (data.role === 'SELLER' || data.role === 'seller') {
+                    window.location.href = './sellerhomeprofile.html';
+                } else {
+                    window.location.href = './index.html';
+                }
             } catch (error) {
                 showMessage('Login failed: ' + (error.message || 'Invalid credentials'));
             }

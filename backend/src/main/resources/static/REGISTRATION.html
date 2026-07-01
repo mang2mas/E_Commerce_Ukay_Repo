@@ -484,6 +484,7 @@ registrationForm.addEventListener('submit', async (event) => {
 
   document.getElementById('registerStatus').textContent = 'Registering...';
 
+  const idFile = document.getElementById('idUpload')?.files?.[0] || null;
 
   try {
     const response = await fetch('/api/auth/register', {
@@ -501,8 +502,24 @@ registrationForm.addEventListener('submit', async (event) => {
       return;
     }
 
+    const createdUser = await response.json();
 
-    document.getElementById('registerStatus').textContent = '';
+    if (idFile && createdUser?.userId) {
+      const idFormData = new FormData();
+      idFormData.append('file', idFile);
+      try {
+        const idResponse = await fetch('/api/discount/id-document?userId=' + encodeURIComponent(createdUser.userId), {
+          method: 'POST',
+          body: idFormData
+        });
+        if (!idResponse.ok) {
+          document.getElementById('registerStatus').textContent = 'Account created, but ID upload failed. You can re-upload it later.';
+        }
+      } catch (idError) {
+        document.getElementById('registerStatus').textContent = 'Account created, but ID upload failed. You can re-upload it later.';
+      }
+    }
+
     registrationForm.reset();
     setPasswordStrength('');
     showSuccessPopup();

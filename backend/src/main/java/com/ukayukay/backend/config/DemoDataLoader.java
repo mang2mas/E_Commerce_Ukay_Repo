@@ -5,8 +5,10 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.ukayukay.backend.entity.Product;
 import com.ukayukay.backend.entity.User;
@@ -18,14 +20,29 @@ public class DemoDataLoader implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+        private final PasswordEncoder passwordEncoder;
 
-    public DemoDataLoader(UserRepository userRepository, ProductRepository productRepository) {
+        @Value("${app.bootstrap.admin-email:admin@ukayukay.local}")
+        private String adminEmail;
+
+        @Value("${app.bootstrap.admin-password:Admin@12345}")
+        private String adminPassword;
+
+        @Value("${app.bootstrap.admin-full-name:System Administrator}")
+        private String adminFullName;
+
+        public DemoDataLoader(UserRepository userRepository, ProductRepository productRepository,
+                        PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
+                this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void run(String... args) {
+                seedAdminAccount();
+                seedDiscountApplicantAccount();
+
         if (productRepository.count() > 0) {
             return;
         }
@@ -77,11 +94,43 @@ public class DemoDataLoader implements CommandLineRunner {
         System.out.println("Seeded demo products and sellers for homepage recommendations.");
     }
 
+        private void seedDiscountApplicantAccount() {
+                userRepository.findByEmail("senior.applicant@example.com").orElseGet(() -> {
+                        User applicant = new User();
+                        applicant.setEmail("senior.applicant@example.com");
+                        applicant.setPassword(passwordEncoder.encode("applicant123"));
+                        applicant.setFullName("Roberto Santos");
+                        applicant.setRole(User.UserRole.buyer);
+                        applicant.setIsActive(true);
+                        applicant.setIsShadowBanned(false);
+                        applicant.setDiscountType("SENIOR");
+                        applicant.setIsPwdSenior(true);
+                        applicant.setDiscountStatus(User.DiscountStatus.PENDING);
+                        applicant.setDiscountIdImageUrl("/images/fit1.jpg");
+                        return userRepository.save(applicant);
+                });
+        }
+
+        private void seedAdminAccount() {
+                userRepository.findByEmail(adminEmail).orElseGet(() -> {
+                        User admin = new User();
+                        admin.setEmail(adminEmail);
+                        admin.setPassword(passwordEncoder.encode(adminPassword));
+                        admin.setFullName(adminFullName);
+                        admin.setRole(User.UserRole.admin);
+                        admin.setIsActive(true);
+                        admin.setIsShadowBanned(false);
+                        admin.setSellerApproved(true);
+                        admin.setVerificationStatus(User.VerificationStatus.APPROVED);
+                        return userRepository.save(admin);
+                });
+        }
+
     private User createSeller(String email, String businessName, String description) {
         return userRepository.findByEmail(email).orElseGet(() -> {
             User seller = new User();
             seller.setEmail(email);
-            seller.setPassword("seller123");
+            seller.setPassword(passwordEncoder.encode("seller123"));
             seller.setFullName(businessName);
             seller.setRole(User.UserRole.seller);
             seller.setSellerApproved(true);

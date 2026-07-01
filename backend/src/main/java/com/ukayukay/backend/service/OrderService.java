@@ -2,8 +2,8 @@ package com.ukayukay.backend.service;
 
 import java.math.BigDecimal;
 import java.util.List;
-
 import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 
 import com.ukayukay.backend.entity.Cart;
 import com.ukayukay.backend.entity.Order;
@@ -17,8 +17,6 @@ import com.ukayukay.backend.repository.ProductRepository;
 import com.ukayukay.backend.repository.UserRepository;
 import com.ukayukay.backend.util.AppConstants;
 
-import jakarta.transaction.Transactional;
-
 @Service
 public class OrderService {
 
@@ -27,17 +25,15 @@ public class OrderService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final OrderItemRepository orderItemRepository;
-    private final NotificationService notificationService;
 
     public OrderService(OrderRepository orderRepository, CartRepository cartRepository,
-                       UserRepository userRepository, ProductRepository productRepository,
-                       OrderItemRepository orderItemRepository, NotificationService notificationService) {
+                        UserRepository userRepository, ProductRepository productRepository,
+                        OrderItemRepository orderItemRepository) {
         this.orderRepository = orderRepository;
         this.cartRepository = cartRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.orderItemRepository = orderItemRepository;
-        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -50,8 +46,7 @@ public class OrderService {
         }
 
         User customer = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException(
-                    String.format(AppConstants.USER_NOT_FOUND, userId)));
+                .orElseThrow(() -> new RuntimeException(String.format(AppConstants.USER_NOT_FOUND, userId)));
 
         List<Cart> cartItems = cartRepository.findByUser_UserId(userId);
         if (cartItems.isEmpty()) {
@@ -61,21 +56,15 @@ public class OrderService {
         BigDecimal baseAmount = calculateBaseAmount(cartItems);
         BigDecimal discountAmount = calculateDiscount(customer, baseAmount);
         BigDecimal discountedBase = baseAmount.subtract(discountAmount);
+        
         BigDecimal taxAmount = discountedBase.multiply(AppConstants.TAX_RATE);
         BigDecimal totalAmount = discountedBase.add(taxAmount).add(AppConstants.SHIPPING_FEE);
 
         Order order = createOrder(customer, shippingAddress, paymentMethod, 
-                                 baseAmount, discountAmount, taxAmount, totalAmount);
+                                   baseAmount, discountAmount, taxAmount, totalAmount);
         Order savedOrder = orderRepository.save(order);
 
         processCartItems(cartItems, savedOrder);
-
-        notificationService.createNotification(userId,
-                "ORDER_PLACED",
-                "Order placed successfully",
-                String.format("Your order #%d has been placed successfully.", savedOrder.getOrderId()),
-                savedOrder.getOrderId(),
-                null);
 
         return savedOrder;
     }
